@@ -1,0 +1,248 @@
+{% extends "home/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+        <span class="hero-tag">
+            NEW SEASON COLLECTION
+        </span>
+
+        <h1>
+            Upgrade Your Fashion Game
+        </h1>
+
+        <p>
+            Discover premium fashion collections,
+            trending outfits, and exclusive deals
+            crafted for modern style lovers.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a href="{% url 'product_list' %}"
+               class="hero-btn primary-btn">
+
+                Shop Collection
+
+            </a>
+
+            <a href="#"
+               class="hero-btn secondary-btn">
+
+                Explore Trends
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CAROUSEL ================= -->
+
+<section class="carousel-section">
+
+    <div class="carousel" id="carousel">
+
+        <div class="slide active">
+            <img src="{% static 'home/images/banner1.jpg' %}" alt="">
+            <div class="overlay">
+                <h2>Premium Branded</h2>
+                <p>Focus On User Comforts</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <img src="{% static 'home/images/banner2.jpg' %}" alt="">
+            <div class="overlay">
+                <h2>New Arrivals</h2>
+                <p>Fresh collection for this season</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <img src="{% static 'home/images/banner3.jpg' %}" alt="">
+            <div class="overlay">
+                <h2>Latest Designs</h2>
+                <p>Collaborated with Top Designers</p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
+
+</section>
+
+
+<!-- ================= DEAL BANNER ================= -->
+
+<section class="deal-banner">
+
+    <div class="deal-content">
+
+        <span>LIMITED TIME OFFER</span>
+
+        <h2>Summer Fashion Sale</h2>
+
+        <p>
+           Offer's Coming Soon.
+        </p>
+
+
+    </div>
+
+</section>
+
+<!-- ================= BEST SELLERS ================= -->
+
+<section class="section">
+
+    <h2 class="section-title">
+        Best Sellers
+    </h2>
+
+    <div class="best-seller-grid">
+
+    {% for product in best_sellers %}
+
+    <div class="best-card">
+
+        <a href="{% url 'product_detail' product.slug %}">
+
+            {% if product.primary_image %}
+
+            <img
+                src="{{ product.primary_image.image.url }}"
+                alt="{{ product.name }}"
+                class="best-product-img"
+            >
+
+            {% else %}
+
+            <img
+                src="{% static 'home/images/no-image.png' %}"
+                alt="No Image"
+                class="best-product-img"
+            >
+
+            {% endif %}
+
+        </a>
+
+        <div class="best-card-content">
+
+            <h3>
+                {{ product.name }}
+            </h3>
+
+            <a
+                href="{% url 'product_detail' product.slug %}"
+                class="view-btn"
+            >
+                View Product
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</section>
+
+<!-- ================= WHY SHOP WITH US ================= -->
+
+<section class="features-section">
+
+    <div class="feature-card">
+
+        <div class="feature-icon">🚚</div>
+
+        <h3>Fast Delivery</h3>
+
+        <p>
+            Quick and reliable shipping across India.
+        </p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <div class="feature-icon">🔒</div>
+
+        <h3>Secure Payments</h3>
+
+        <p>
+            100% secure checkout with Razorpay protection.
+        </p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <div class="feature-icon">↩️</div>
+
+        <h3>Easy Returns</h3>
+
+        <p>
+            Hassle-free returns and refund support.
+        </p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <div class="feature-icon">⭐</div>
+
+        <h3>Premium Quality</h3>
+
+        <p>
+            Carefully selected high-quality fashion products.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= PROMO BANNERS ================= -->
+
+<section class="promo-section">
+
+    <div class="promo-card">
+        <h3>🔥 Flat 50% OFF</h3>
+        <p>On Men's Fashion</p>
+    </div>
+
+    <div class="promo-card">
+        <h3>👗 Women Collection</h3>
+        <p>New Trending Styles</p>
+    </div>
+
+    <div class="promo-card">
+        <h3>👟 Footwear Deals</h3>
+        <p>Starting ₹499</p>
+    </div>
+
+</section>
+
+{% endblock %}

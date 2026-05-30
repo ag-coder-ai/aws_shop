@@ -1,0 +1,23 @@
+<!-- invoice_pdf.html -->
+<h2>Invoice</h2>
+
+<p>Order: {{ order.order_id }}</p>
+<p>Email: {{ order.user.email }}</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Total</th>
+    </tr>
+
+    {% for item in order.items.all %}
+    <tr>
+        <td>{{ item.product_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹{{ item.total_price }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Total: ₹{{ order.total }}</h3>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial; background:#f5f7fb; padding:20px; }
+
+        .card {
+            max-width:600px;
+            margin:auto;
+            background:#fff;
+            padding:30px;
+            border-radius:12px;
+        }
+
+        .header {
+            color:#0ea5e9;
+            font-size:22px;
+            font-weight:bold;
+        }
+
+        .badge {
+            background:#e0f2fe;
+            color:#0369a1;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="header">
+        Return Picked Successfully 📦
+    </div>
+
+    <div class="badge">
+        In Transit to Warehouse
+    </div>
+
+    <p style="margin-top:20px;">
+        Hi {{ order.user.first_name|default:"Customer" }},
+    </p>
+
+    <p>
+        Your returned item has been picked by our courier partner and is on the way to our warehouse.
+    </p>
+
+    <p>
+        Order ID: <b>{{ order.order_id }}</b>
+    </p>
+
+</div>
+
+</body>
+</html>

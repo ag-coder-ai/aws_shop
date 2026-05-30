@@ -1,0 +1,397 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Track Order
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'orders/css/track_order.css' %}">
+
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+
+<div class="tracking-page">
+
+    <div class="tracking-wrapper">
+
+        <!-- ===================================== -->
+        <!-- CANCELLED ORDER -->
+        <!-- ===================================== -->
+
+        {% if order.status == "CANCELLED" %}
+
+        <div class="cancelled-card">
+
+            <div class="cancel-icon">
+                ❌
+            </div>
+
+            <h1>
+                Order Cancelled
+            </h1>
+
+            <p class="cancel-text">
+
+                Your order
+
+                <strong>
+                    {{ order.order_id }}
+                </strong>
+
+                has been cancelled successfully.
+
+            </p>
+
+            <p class="refund-text">
+
+                If payment was completed,
+                refund will be processed shortly.
+
+            </p>
+
+            <div class="cancel-actions">
+
+                <a href="{% url 'product_list' %}"
+                   class="shop-btn">
+
+                    Continue Shopping
+
+                </a>
+
+                <a href="{% url 'order_history' %}"
+                   class="back-btn">
+
+                    Back To Orders
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <!-- ===================================== -->
+        <!-- HEADER -->
+        <!-- ===================================== -->
+
+        <div class="tracking-header">
+
+            <div>
+
+                <p class="mini-title">
+                    ORDER TRACKING
+                </p>
+
+                <h1>
+                    Track Your Shipment
+                </h1>
+
+                <p class="sub-text">
+
+                    Order ID:
+
+                    <strong>
+                        {{ order.order_id }}
+                    </strong>
+
+                </p>
+
+            </div>
+
+            <div class="status-badge
+
+                {% if order.shipping_status == 'DELIVERED' %}
+                    delivered
+
+                {% elif order.shipping_status == 'SHIPPED' %}
+                    shipped
+
+                {% elif order.shipping_status == 'OUT_FOR_DELIVERY' %}
+                    out
+
+                {% else %}
+                    pending
+                {% endif %}
+            ">
+
+                {{ order.shipping_status }}
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- INFO GRID -->
+        <!-- ===================================== -->
+
+        <div class="info-grid">
+
+            <div class="info-card">
+
+                <span>
+                    Courier Partner
+                </span>
+
+                <h3 id="courierPartner">
+
+                    {{ order.courier_partner|default:"Not Assigned Yet" }}
+
+                </h3>
+
+            </div>
+
+            <div class="info-card">
+
+                <span>
+                    Tracking Number
+                </span>
+
+                <h3 id="trackingNumber">
+
+                    {{ order.tracking_number|default:"Pending" }}
+
+                </h3>
+
+            </div>
+
+            <div class="info-card">
+
+                <span>
+                    Estimated Delivery
+                </span>
+
+                <h3 id="estimatedDelivery">
+
+                    {{ order.estimated_delivery|default:"Updating Soon" }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- LIVE TRACK BUTTON -->
+        <!-- ===================================== -->
+
+        {% if tracking_url %}
+
+        <a href="{{ tracking_url }}"
+           target="_blank"
+           class="track-btn">
+
+            Track Shipment Live
+
+        </a>
+
+        {% endif %}
+
+
+        <!-- ===================================== -->
+        <!-- TIMELINE -->
+        <!-- ===================================== -->
+
+        <div class="timeline-card">
+
+            <h2>
+                Shipment Timeline
+            </h2>
+
+            <div class="timeline">
+
+                <!-- PACKED -->
+
+                <div class="timeline-item
+                    {% if order.shipping_status != 'PENDING' %}
+                        active
+                    {% endif %}
+                ">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <h4>
+                            Order Packed
+                        </h4>
+
+                        <p>
+                            Warehouse packed your order
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SHIPPED -->
+
+                <div class="timeline-item
+                    {% if order.shipping_status == 'SHIPPED' or order.shipping_status == 'OUT_FOR_DELIVERY' or order.shipping_status == 'DELIVERED' %}
+                        active
+                    {% endif %}
+                ">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <h4>
+                            Shipped
+                        </h4>
+
+                        <p>
+                            Courier picked up your shipment
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OUT FOR DELIVERY -->
+
+                <div class="timeline-item
+                    {% if order.shipping_status == 'OUT_FOR_DELIVERY' or order.shipping_status == 'DELIVERED' %}
+                        active
+                    {% endif %}
+                ">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <h4>
+                            Out For Delivery
+                        </h4>
+
+                        <p>
+                            Delivery partner is on the way
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DELIVERED -->
+
+                <div class="timeline-item
+                    {% if order.shipping_status == 'DELIVERED' %}
+                        active
+                    {% endif %}
+                ">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <h4>
+                            Delivered
+                        </h4>
+
+                        <p>
+                            Order delivered successfully
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- ACTIVITY LOGS -->
+        <!-- ===================================== -->
+
+        <div class="activity-card">
+
+            <h2>
+                Shipment Updates
+            </h2>
+
+            {% for event in order.events.all %}
+
+            <div class="activity-item">
+
+                <div class="activity-dot"></div>
+
+                <div class="activity-content">
+
+                    <h4>
+                        {{ event.status }}
+                    </h4>
+
+                    <p>
+                        {{ event.message }}
+                    </p>
+
+                    <span>
+                        {{ event.created_at }}
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <p class="empty-text">
+                No shipment updates yet.
+            </p>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- ACTION BUTTONS -->
+        <!-- ===================================== -->
+
+        <div class="action-buttons">
+
+            <a href="{% url 'download_invoice' order.order_id %}"
+               class="invoice-btn">
+
+                Download Invoice
+
+            </a>
+
+            <a href="{% url 'order_history' %}"
+               class="back-btn">
+
+                Back To Orders
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script src="{% static 'orders/js/track_order.js' %}"></script>
+
+</body>
+</html>

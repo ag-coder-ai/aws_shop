@@ -1,0 +1,498 @@
+/* =========================================
+   BASE RESET (INDUSTRY STANDARD)
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Arial, sans-serif;
+}
+
+body{
+    background: #f4f6f9;
+    color: #111827;
+}
+
+/* =========================================
+   LAYOUT
+========================================= */
+
+.checkout-wrapper{
+    max-width: 1350px;
+    margin: auto;
+    padding: 40px 20px;
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+
+/* LEFT */
+.checkout-left{
+    flex: 2;
+}
+
+/* RIGHT */
+.checkout-right{
+    width: 400px;
+    position: sticky;
+    top: 20px;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.checkout-top{
+    margin-bottom: 22px;
+}
+
+.checkout-top h1{
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.checkout-top p{
+    color: #6b7280;
+    margin-top: 6px;
+}
+
+/* =========================================
+   CARDS (MODERN LOOK)
+========================================= */
+
+.checkout-card,
+.summary-card{
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 26px;
+    margin-bottom: 22px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+/* =========================================
+   CARD HEADER
+========================================= */
+
+.card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-header h2{
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* =========================================
+   INPUTS (INDUSTRY LEVEL)
+========================================= */
+
+.input-group{
+    margin-bottom: 16px;
+}
+
+.input-group label{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+.input-group input,
+.input-group textarea{
+
+    width: 100%;
+    padding: 13px 14px;
+
+    border: 1.5px solid #d1d5db;
+    border-radius: 12px;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.25s ease;
+
+    background: #fff;
+}
+
+/* FOCUS STATE */
+.input-group input:focus,
+.input-group textarea:focus{
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17,24,39,0.08);
+}
+
+/* READONLY (PINCODE AUTO FILL STYLE) */
+.input-group input[readonly]{
+    background: #f3f4f6;
+    cursor: not-allowed;
+    color: #6b7280;
+}
+
+/* =========================================
+   GRID SYSTEM
+========================================= */
+
+.grid-2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.grid-3{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+}
+
+/* =========================================
+   CART ITEMS
+========================================= */
+
+.checkout-item{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.item-left{
+    display: flex;
+    gap: 14px;
+}
+
+.item-image{
+    width: 85px;
+    height: 85px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.item-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-details h4{
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.item-details p{
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.item-right{
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* =========================================
+   SUMMARY CARD
+========================================= */
+
+.summary-card h2{
+    font-size: 18px;
+    margin-bottom: 18px;
+}
+
+.summary-row,
+.summary-total{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    font-size: 14px;
+}
+
+.summary-row{
+    color: #6b7280;
+}
+
+.summary-total{
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.summary-divider{
+    height: 1px;
+    background: #e5e7eb;
+    margin: 18px 0;
+}
+
+.free{
+    color: #16a34a;
+    font-weight: 600;
+}
+
+/* =========================================
+   PAYMENT OPTIONS (MODERN UI)
+========================================= */
+
+.payment-box{
+    margin-top: 25px;
+}
+
+.payment-box h3{
+    font-size: 16px;
+    margin-bottom: 14px;
+}
+
+.payment-option{
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 14px;
+
+    display: flex;
+    gap: 12px;
+
+    margin-bottom: 12px;
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+
+    background: #fff;
+}
+
+.payment-option:hover{
+    border-color: #111827;
+    transform: translateY(-1px);
+}
+
+.payment-option.active{
+    border: 2px solid #111827;
+    background: #f9fafb;
+}
+
+.payment-option input{
+    margin-top: 4px;
+}
+
+/* =========================================
+   BUTTON (PREMIUM STYLE)
+========================================= */
+
+.place-order-btn{
+    width: 100%;
+    padding: 16px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: linear-gradient(135deg, #111827, #1f2937);
+
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+
+    margin-top: 18px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.place-order-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+}
+
+.place-order-btn.loading{
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* =========================================
+   SECURITY TEXT
+========================================= */
+
+.secure-line{
+    text-align: center;
+    margin-top: 14px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* =========================================
+   ERROR UI (IMPROVED)
+========================================= */
+
+.field-error{
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 5px;
+    animation: fadeIn 0.2s ease;
+}
+
+.input-error{
+    border-color: #dc2626 !important;
+    background: #fef2f2 !important;
+}
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+@keyframes fadeIn{
+    from{
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================
+   TOAST NOTIFICATION
+========================================= */
+
+.custom-toast{
+
+    position: fixed;
+
+    top: 24px;
+    right: 24px;
+
+    min-width: 320px;
+    max-width: 420px;
+
+    background: #fff;
+
+    border-radius: 18px;
+
+    padding: 16px 18px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.12);
+
+    border: 1px solid #e5e7eb;
+
+    z-index: 999999;
+
+    opacity: 0;
+
+    transform: translateX(120%);
+
+    transition: all 0.35s ease;
+}
+
+.custom-toast.show{
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-content{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.toast-icon{
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    flex-shrink: 0;
+}
+
+.toast-message{
+
+    font-size: 14px;
+    font-weight: 500;
+
+    line-height: 1.5;
+}
+
+/* SUCCESS */
+
+.custom-toast.success{
+    border-left: 5px solid #10b981;
+}
+
+.custom-toast.success .toast-icon{
+    background: #d1fae5;
+    color: #059669;
+}
+
+/* ERROR */
+
+.custom-toast.error{
+    border-left: 5px solid #ef4444;
+}
+
+.custom-toast.error .toast-icon{
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .custom-toast{
+
+        left: 15px;
+        right: 15px;
+
+        min-width: auto;
+        max-width: none;
+
+        top: 15px;
+    }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width: 1000px){
+    .checkout-wrapper{
+        flex-direction: column;
+    }
+
+    .checkout-right{
+        width: 100%;
+        position: relative;
+    }
+}
+
+@media(max-width: 700px){
+
+    .grid-2,
+    .grid-3{
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-item{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

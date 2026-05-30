@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Out For Delivery</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,sans-serif;">
+
+<div style="max-width:650px;margin:40px auto;background:#fff;border-radius:18px;overflow:hidden;">
+
+    <div style="background:#7c3aed;padding:35px;text-align:center;color:white;">
+
+        <h1>
+            Out For Delivery 🚛
+        </h1>
+
+        <p>
+            Order ID: {{ order.order_id }}
+        </p>
+
+    </div>
+
+    <div style="padding:35px;">
+
+        <h2>
+            Hi {{ order.user.first_name|default:"Customer" }},
+        </h2>
+
+        <p style="color:#4b5563;line-height:1.8;">
+            Your order is out for delivery and should arrive today.
+        </p>
+
+        <div style="background:#f8fafc;padding:20px;border-radius:12px;margin-top:20px;">
+
+            <p>
+                <strong>Courier:</strong>
+                {{ order.courier_partner }}
+            </p>
+
+            <p>
+                <strong>Tracking ID:</strong>
+                {{ order.tracking_number }}
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

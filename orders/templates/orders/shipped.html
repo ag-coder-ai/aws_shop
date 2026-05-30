@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Shipped</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,sans-serif;">
+
+<div style="max-width:650px;margin:40px auto;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.08);">
+
+    <!-- HEADER -->
+    <div style="background:#2563eb;padding:35px;text-align:center;color:white;">
+
+        <h1 style="margin:0;font-size:28px;">
+            Your Order Has Been Shipped 🚚
+        </h1>
+
+        <p style="margin-top:10px;font-size:15px;opacity:0.9;">
+            Order ID: {{ order.order_id }}
+        </p>
+
+    </div>
+
+    <!-- BODY -->
+    <div style="padding:35px;">
+
+        <h2 style="margin-top:0;">
+            Hi {{ order.user.first_name|default:"Customer" }},
+        </h2>
+
+        <p style="color:#4b5563;line-height:1.8;">
+            Great news! Your order has been shipped and is now on the way.
+        </p>
+
+        <!-- TRACKING -->
+        <div style="background:#f8fafc;border:1px solid #e5e7eb;padding:20px;border-radius:14px;margin:25px 0;">
+
+            <p>
+                <strong>Courier Partner:</strong>
+                {{ order.courier_partner }}
+            </p>
+
+            <p>
+                <strong>Tracking Number:</strong>
+                {{ order.tracking_number }}
+            </p>
+
+            <p>
+                <strong>Estimated Delivery:</strong>
+                {{ order.estimated_delivery }}
+            </p>
+
+        </div>
+
+        <!-- BUTTON -->
+        <div style="text-align:center;margin-top:35px;">
+
+            <a href="http://127.0.0.1:8000/orders/track/{{ order.order_id }}/"
+               style="
+                    background:#2563eb;
+                    color:white;
+                    padding:14px 28px;
+                    border-radius:10px;
+                    text-decoration:none;
+                    display:inline-block;
+                    font-weight:bold;
+               ">
+                Track Your Order
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div style="padding:20px;text-align:center;background:#f9fafb;color:#6b7280;font-size:13px;">
+
+        Thank you for shopping with us ❤️
+
+    </div>
+
+</div>
+
+</body>
+</html>

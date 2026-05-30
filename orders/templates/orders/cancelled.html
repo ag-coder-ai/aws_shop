@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Cancelled</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,sans-serif;">
+{% include 'partials/navbar.html' %}
+
+<div style="max-width:650px;margin:40px auto;background:white;border-radius:18px;overflow:hidden;">
+
+    <div style="background:#dc2626;padding:35px;text-align:center;color:white;">
+
+        <h1>
+            Order Cancelled ❌
+        </h1>
+
+        <p>
+            Order ID: {{ order.order_id }}
+        </p>
+
+    </div>
+
+    <div style="padding:35px;">
+
+        <h2>
+            Hi {{ order.user.first_name|default:"Customer" }},
+        </h2>
+
+        <p style="line-height:1.8;color:#4b5563;">
+            Your order has been cancelled successfully.
+        </p>
+
+        <p style="line-height:1.8;color:#4b5563;">
+            If payment was already completed, the refund will be processed shortly.
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ product.name }}</title>
+
+    <link rel="stylesheet"
+          href="{% static 'products/css/product_detail.css' %}">
+
+</head>
+
+<body>
+
+{% include 'partials/navbar.html' %}
+
+
+<!-- ===================================================== -->
+<!-- PRODUCT DETAIL -->
+<!-- ===================================================== -->
+<body data-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
+<section class="product-detail-section">
+
+    <div class="product-container">
+
+
+        <!-- ============================================= -->
+        <!-- LEFT SIDE : IMAGES -->
+        <!-- ============================================= -->
+
+        <div class="image-box">
+
+            <!-- MAIN IMAGE -->
+
+            <div class="main-image-wrapper">
+
+                {% if primary_image %}
+
+                    <img id="mainImage"
+                         src="{{ primary_image.image.url }}"
+                         alt="{{ product.name }}">
+
+                {% else %}
+
+                    <img id="mainImage"
+                         src="{% static 'images/no-image.png' %}"
+                         alt="No Image">
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- THUMBNAILS -->
+
+            <div class="thumbs">
+
+                {% for img in images %}
+
+                    <div class="thumb-item">
+
+                        <img src="{{ img.image.url }}"
+                             alt="{{ product.name }}"
+                             onclick="changeImage(this)">
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ============================================= -->
+        <!-- RIGHT SIDE : PRODUCT INFO -->
+        <!-- ============================================= -->
+
+        <div class="info-box">
+
+
+            <!-- CATEGORY -->
+
+            <div class="product-category">
+
+                {{ product.category.name }}
+
+            </div>
+
+
+            <!-- PRODUCT TITLE -->
+
+            <h1 class="product-title">
+
+                {{ product.name }}
+
+            </h1>
+
+
+            <!-- BRAND -->
+
+            <div class="brand-name">
+
+                Brand :
+                <span>{{ product.brand.name }}</span>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="product-description">
+
+                {{ product.description }}
+
+            </div>
+
+
+            <!-- PRICE -->
+
+            <div class="price-box">
+
+                ₹ <span id="price">--</span>
+
+            </div>
+
+
+            <!-- STOCK -->
+
+            <div id="stockStatus"
+                 class="stock-status">
+
+                Select size & color
+
+            </div>
+
+
+
+            <!-- ========================================= -->
+            <!-- SIZE -->
+            <!-- ========================================= -->
+
+            <div class="options">
+
+                <h4>Select Size</h4>
+
+                <div class="option-list">
+
+                    {% for size in sizes %}
+
+                        <button type="button"
+                                class="option-btn size-btn"
+                                onclick="selectSize(this)"
+                                data-size="{{ size }}">
+
+                            {{ size }}
+
+                        </button>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ========================================= -->
+            <!-- COLOR -->
+            <!-- ========================================= -->
+
+            <div class="options">
+
+                <h4>Select Color</h4>
+
+                <div class="color-list">
+
+                    {% for color in colors %}
+
+                        <button type="button"
+                                class="color-btn"
+                                style="background: {{ color.hex_code }}"
+                                onclick="selectColor(this)"
+                                data-color="{{ color.name }}"
+                                title="{{ color.name }}">
+
+                        </button>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ========================================= -->
+            <!-- QUANTITY -->
+            <!-- ========================================= -->
+
+            <div class="options">
+
+                <h4>Quantity</h4>
+
+                <div class="qty-wrapper">
+
+                    <button type="button"
+                            class="qty-btn"
+                            onclick="decreaseQty()">
+
+                        -
+
+                    </button>
+
+                    <input type="text"
+                           id="quantity"
+                           value="1"
+                           readonly>
+
+                    <button type="button"
+                            class="qty-btn"
+                            onclick="increaseQty()">
+
+                        +
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ========================================= -->
+            <!-- ADD TO CART -->
+            <!-- ========================================= -->
+
+            <button type="button"
+                    id="addToCartBtn"
+                    class="add-btn"
+                    disabled>
+
+                Add To Cart
+
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <div id="cartMessage"></div>
+
+
+            <!-- SECURITY -->
+
+            {% csrf_token %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- RELATED PRODUCTS -->
+<!-- ===================================================== -->
+
+<section class="related-section">
+
+    <div class="related-header">
+
+        <h2>You May Also Like</h2>
+
+    </div>
+
+
+    <div class="related-scroll">
+
+        {% for item in related_products %}
+
+            <div class="related-card">
+
+                <a href="{% url 'product_detail' item.slug %}">
+
+
+                    <!-- IMAGE -->
+
+                    <div class="related-img">
+
+                        {% with img=item.images.first %}
+
+                            {% if img %}
+
+                                <img src="{{ img.image.url }}"
+                                     alt="{{ item.name }}">
+
+                            {% else %}
+
+                                <img src="{% static 'images/no-image.png' %}"
+                                     alt="No Image">
+
+                            {% endif %}
+
+                        {% endwith %}
+
+                    </div>
+
+
+
+                    <!-- BODY -->
+
+                    <div class="related-body">
+
+                        <p class="related-brand">
+
+                            {{ item.brand.name }}
+
+                        </p>
+
+                        <h4 class="related-title">
+
+                            {{ item.name }}
+
+                        </h4>
+
+
+                        <!-- PRICE -->
+
+                        <div class="related-price">
+
+                            ₹{{ item.variants.first.wholesale_price }}
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- VARIANT DATA -->
+<!-- ===================================================== -->
+
+{{ variant_data|json_script:"variant-data" }}
+
+
+
+<!-- ===================================================== -->
+<!-- JS -->
+<!-- ===================================================== -->
+
+<script src="{% static 'products/js/product_detail.js' %}"></script>
+
+</body>
+</html>

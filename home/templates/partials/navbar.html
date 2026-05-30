@@ -1,0 +1,74 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'home/css/navbar.css' %}">
+<script defer src="{% static 'home/js/navbar.js' %}"></script>
+
+<header class="header" id="header">
+
+    <a href="/" class="logo">
+        Fashion<span>Hub</span>
+    </a>
+
+    <div class="menu-toggle" id="menuToggle">☰</div>
+
+      <nav class="nav" id="nav">
+
+    <a href="{% url 'product_list' %}">All</a>
+
+    {% for category in categories %}
+        <a href="{% url 'product_list' %}?category={{ category.slug }}">
+            {{ category.name }}
+        </a>
+    {% endfor %}
+
+</nav>
+
+    <div class="nav-actions">
+
+        <!-- GUEST -->
+        {% if not request.user.is_authenticated %}
+        <div class="auth-buttons" id="guestMenu">
+            <a href="{% url 'login' %}" class="login-btn">Login</a>
+            <a href="{% url 'signup' %}" class="signup-btn">Signup</a>
+        </div>
+        {% endif %}
+
+        <!-- AUTH -->
+        {% if request.user.is_authenticated %}
+        <div class="account-dropdown" id="accountWrapper">
+
+            <button class="account-btn" id="accountBtn" type="button">
+
+                <span class="account-avatar">
+                    {{ request.user.full_name|default:request.user.email|first|upper }}
+                </span>
+
+                <span class="account-name">
+                    {{ request.user.full_name|default:request.user.email }}
+                </span>
+
+                <span class="dropdown-icon">▼</span>
+
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+
+                <a href="{% url 'profile' %}">My Profile</a>
+                <a href="{% url 'order_history' %}">My Orders</a>
+                <a href="{% url 'carts' %}">Cart</a>
+
+                <hr>
+
+                <form id="logoutForm">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+</header>

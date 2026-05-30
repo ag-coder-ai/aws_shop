@@ -1,0 +1,283 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Account | FashionHub</title>
+
+<link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
+
+<script defer src="{% static 'accounts/js/signup.js' %}"></script>
+
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+
+<div class="signup-container">
+
+    <!-- LEFT SIDE -->
+
+    <div class="signup-left">
+
+        <div class="overlay"></div>
+
+        <div class="left-content">
+
+            <h1>FashionHub</h1>
+
+            <p>
+                Create your account and start shopping
+                premium fashion collections today.
+            </p>
+
+            <div class="features">
+
+                <div class="feature">
+                    ✓ Secure Checkout
+                </div>
+
+                <div class="feature">
+                    ✓ Fast Delivery
+                </div>
+
+                <div class="feature">
+                    ✓ Premium Brands
+                </div>
+
+                <div class="feature">
+                    ✓ Easy Returns
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+
+    <div class="signup-right">
+
+        <div class="signup-card">
+
+            <div class="top">
+
+                <h2>Create Account</h2>
+
+                <p>
+                    Join FashionHub today
+                </p>
+
+            </div>
+
+            <!-- MESSAGES -->
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="server-message">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+            <!-- FORM -->
+
+            <form method="POST" id="signupForm">
+
+                {% csrf_token %}
+
+                <!-- FULL NAME -->
+
+                <div class="input-group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="full_name"
+                        id="full_name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+
+                    <small class="field-error"></small>
+
+                </div>
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                    <small class="field-error"></small>
+
+                </div>
+                <div class="input-group">
+
+    <label>
+        Mobile Number
+    </label>
+
+    <input
+        type="text"
+        name="phone"
+        id="phone"
+        placeholder="Enter mobile number"
+        maxlength="10"
+        required
+    >
+
+    <small class="field-error"></small>
+
+</div>
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Create password"
+                            required
+                        >
+
+                        <span
+                            class="toggle-password"
+                            data-target="password"
+                        >
+                            👁
+                        </span>
+
+                    </div>
+
+                    <!-- STRENGTH -->
+
+                    <div class="strength">
+
+                        <div class="strength-bar"></div>
+
+                    </div>
+
+                    <small class="strength-text"></small>
+
+                    <small class="field-error"></small>
+
+                </div>
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="input-group">
+
+                    <label>
+                        Confirm Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            id="confirm_password"
+                            placeholder="Confirm password"
+                            required
+                        >
+
+                        <span
+                            class="toggle-password"
+                            data-target="confirm_password"
+                        >
+                            👁
+                        </span>
+
+                    </div>
+
+                    <small class="field-error"></small>
+
+                </div>
+
+                <!-- TERMS -->
+
+                <div class="terms">
+
+                    <input
+                        type="checkbox"
+                        id="terms"
+                        required
+                    >
+
+                    <label for="terms">
+
+                        I agree to the
+                        <a href="#">
+                            Terms & Conditions
+                        </a>
+
+                    </label>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="signup-btn"
+                    id="signupBtn"
+                >
+
+                    Create Account
+
+                </button>
+
+            </form>
+
+            <!-- LOGIN -->
+
+            <div class="bottom-text">
+
+                Already have an account?
+
+                <a href="{% url 'login'%}">
+                    Login
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

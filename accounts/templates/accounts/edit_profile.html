@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Profile</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #f59e0b;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 6px;
+        }
+
+        button:hover {
+            background: #111827;
+            color: white;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>Edit Profile</h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <input type="text"
+               name="full_name"
+               value="{{ request.user.full_name|default_if_none:'' }}"
+               placeholder="Enter your full name"
+               required>
+        <!-- EMAIL -->
+        <label>Email</label>
+        <input type="email"
+               name="email"
+               value="{{ request.user.email }}"
+               required>
+
+        <!-- PHONE -->
+        <label>Phone</label>
+        <input type="text"
+               name="phone"
+               value="{{ profile.phone|default_if_none:'' }}"
+               placeholder="Enter your phone number"
+               required>
+
+        <button type="submit">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

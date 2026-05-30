@@ -1,0 +1,348 @@
+<!-- templates/cart/cart.html -->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Shopping Cart</title>
+
+    <link rel="stylesheet"
+          href="{% static 'carts/css/carts.css' %}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+
+<div class="cart-container">
+
+    <!-- =========================================
+         LEFT SECTION
+    ========================================== -->
+
+    <div class="cart-left">
+
+        <!-- HEADER -->
+
+        <div class="cart-header">
+
+            <h1>Shopping Cart</h1>
+
+            <p>
+
+                <span id="cart-count">
+                    {{ cart.total_items }}
+                </span>
+
+                Items
+
+            </p>
+
+        </div>
+
+
+        <!-- =========================================
+             CART ITEMS
+        ========================================== -->
+
+        {% for item in items %}
+
+        <div class="cart-card"
+             id="cart-item-{{ item.id }}">
+
+            <!-- IMAGE -->
+
+            <div class="cart-image">
+
+                {% with img=item.variant.product.images.first %}
+
+                    {% if img %}
+
+                        <img src="{{ img.image.url }}"
+                             alt="{{ item.variant.product.name }}">
+
+                    {% endif %}
+
+                {% endwith %}
+
+            </div>
+
+
+            <!-- PRODUCT CONTENT -->
+
+            <div class="cart-content">
+
+                <h3>
+                    {{ item.variant.product.name }}
+                </h3>
+
+                <p>
+
+                    Size:
+                    {{ item.variant.size.name }}
+
+                </p>
+
+                <p>
+
+                    Color:
+                    {{ item.variant.color.name }}
+
+                </p>
+
+                <div class="price">
+
+                    ₹{{ item.variant.wholesale_price }}
+
+                </div>
+
+            </div>
+
+
+            <!-- QUANTITY -->
+
+            <div class="qty-box">
+
+                <button onclick="updateQty(
+                    {{ item.id }},
+                    'decrease'
+                )">
+
+                    -
+
+                </button>
+
+                <span id="qty-{{ item.id }}">
+
+                    {{ item.quantity }}
+
+                </span>
+
+                <button onclick="updateQty(
+                    {{ item.id }},
+                    'increase'
+                )">
+
+                    +
+
+                </button>
+
+            </div>
+
+
+            <!-- ITEM TOTAL -->
+
+            <div class="item-total">
+
+                ₹<span id="total-{{ item.id }}">
+
+                    {{ item.total_price }}
+
+                </span>
+
+            </div>
+
+
+            <!-- REMOVE BUTTON -->
+
+            <button class="remove-btn"
+                    onclick="removeItem(
+                        {{ item.id }}
+                    )">
+
+                Remove
+
+            </button>
+
+        </div>
+
+        {% empty %}
+
+        <!-- EMPTY CART -->
+
+        <div class="empty-cart">
+
+            <div class="empty-cart-icon">
+
+                <i class="fa-solid fa-cart-shopping"></i>
+
+            </div>
+
+            <h2>Your Cart Is Empty</h2>
+
+            <p>
+                Looks like you haven’t added anything yet.
+            </p>
+
+            <a href="/"
+               class="continue-shopping-btn">
+
+                Continue Shopping
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =========================================
+         RIGHT SIDEBAR - ORDER SUMMARY
+    ========================================== -->
+
+    {% if cart.total_items > 0 %}
+
+    <div class="cart-summary">
+
+        <!-- HEADER -->
+
+        <div class="summary-header">
+
+            <h2>Order Summary</h2>
+
+        </div>
+
+
+        <!-- SUBTOTAL -->
+
+        <div class="summary-row">
+
+            <span>Subtotal</span>
+
+            <span id="cart-subtotal">
+
+                ₹{{ cart.subtotal }}
+
+            </span>
+
+        </div>
+
+
+        <!-- SHIPPING -->
+
+        <div class="summary-row">
+
+            <span>Shipping</span>
+
+            <span id="cart-shipping">
+
+                {% if cart.subtotal > 999 %}
+
+                    FREE
+
+                {% else %}
+
+                    ₹{{ cart.shipping_charge }}
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <!-- DISCOUNT -->
+
+        <div class="summary-row discount">
+
+            <span>Discount</span>
+
+            <span id="cart-discount">
+
+                -₹{{ cart.discount_amount }}
+
+            </span>
+
+        </div>
+
+
+        <!-- DIVIDER -->
+
+        <hr class="divider">
+
+
+        <!-- TOTAL -->
+
+        <div class="summary-row total">
+
+            <span>Total Payable</span>
+
+            <span id="cart-total">
+
+                ₹{{ cart.total_amount }}
+
+            </span>
+
+        </div>
+
+
+        <!-- SAVINGS -->
+
+        {% if cart.discount_amount > 0 %}
+
+        <p class="save-text">
+
+            🎉 You saved ₹{{ cart.discount_amount }}
+            on this order
+
+        </p>
+
+        {% endif %}
+
+
+        <!-- CHECKOUT BUTTON -->
+
+        <a href="{% url 'checkout' %}"
+           class="checkout-btn">
+
+            <i class="fas fa-lock"></i>
+
+            Proceed To Checkout
+
+        </a>
+
+
+        <!-- SECURITY -->
+
+        <div class="secure-box">
+
+            🔒 Secure Payment |
+            Cash on Delivery Available
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =========================================
+     CSRF TOKEN
+========================================== -->
+
+{% csrf_token %}
+
+
+<!-- =========================================
+     JS
+========================================== -->
+
+<script src="{% static 'carts/js/carts.js' %}"></script>
+
+</body>
+</html>

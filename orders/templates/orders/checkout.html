@@ -1,0 +1,393 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Secure Checkout</title>
+
+    <link rel="stylesheet"
+          href="{% static 'orders/css/checkout.css' %}">
+
+    <!-- Razorpay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+<body>
+
+<div class="checkout-wrapper">
+
+    <!-- ===================================== -->
+    <!-- LEFT -->
+    <!-- ===================================== -->
+
+    <div class="checkout-left">
+
+        <!-- HEADER -->
+
+        <div class="checkout-top">
+
+            <h1>Secure Checkout</h1>
+
+            <p>
+                Complete your purchase securely
+            </p>
+
+        </div>
+
+
+        <!-- SHIPPING ADDRESS -->
+
+        <div class="checkout-card">
+
+            <div class="card-header">
+
+                <h2>Shipping Information</h2>
+
+            </div>
+
+            <form id="addressForm">
+
+                <div class="grid-2">
+
+                    <div class="input-group">
+
+                        <label>Full Name</label>
+
+
+                <input
+                type="text"
+                name="full_name"
+                id="fullName"
+                value="{{ request.user.full_name|default_if_none:'' }}"
+                placeholder="Enter your full name"
+                required
+                >
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Phone Number</label>
+
+                         <input
+                            type="text"
+                            name="phone"
+                            id="phone"
+                            value="{{ request.user.phone|default_if_none:'' }}"
+                            placeholder="+91 9876543210"
+                            required
+                         >
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Email Address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        value="{{ request.user.email }}"
+                        placeholder="example@email.com"
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Address</label>
+
+                    <textarea
+                        id="address"
+                        rows="4"
+                        placeholder="Flat, House no, Building, Area"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="grid-3">
+
+                    <div class="input-group">
+
+                        <label>Pincode</label>
+
+                        <input
+                            type="text"
+                            id="pincode"
+                            placeholder="560001"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label>City</label>
+
+                        <input
+                            type="text"
+                            id="city"
+                            placeholder="Bangalore"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>State</label>
+
+                        <input
+                            type="text"
+                            id="state"
+                            placeholder="Karnataka"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- ORDER ITEMS -->
+
+        <div class="checkout-card">
+
+            <div class="card-header">
+
+                <h2>Order Items</h2>
+
+                <span>
+                    {{ cart.total_items }} Items
+                </span>
+
+            </div>
+
+
+            {% for item in items %}
+
+            <div class="checkout-item">
+
+                <div class="item-left">
+
+                    <div class="item-image">
+
+                        {% with img=item.variant.product.images.first %}
+
+                            {% if img %}
+                                <img src="{{ img.image.url }}">
+                            {% else %}
+                                <img src="{% static 'images/no-image.png' %}">
+                            {% endif %}
+
+                        {% endwith %}
+
+                    </div>
+
+                    <div class="item-details">
+
+                        <h4>
+                            {{ item.variant.product.name }}
+                        </h4>
+
+                        <p>
+                            Size:
+                            {{ item.variant.size.name }}
+                        </p>
+
+                        <p>
+                            Color:
+                            {{ item.variant.color.name }}
+                        </p>
+
+                        <p>
+                            Quantity:
+                            {{ item.quantity }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="item-right">
+
+                    ₹{{ item.total_price }}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================== -->
+    <!-- RIGHT -->
+    <!-- ===================================== -->
+
+    <div class="checkout-right">
+
+        <div class="summary-card">
+            <!-- CHECKOUT MESSAGE -->
+
+            <div id="checkoutMessage"
+                 class="checkout-message">
+            </div>
+
+            <h2>Order Summary</h2>
+
+
+            <div class="summary-row">
+
+                <span>Subtotal</span>
+
+                <span>
+                    ₹{{ cart.subtotal }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>Shipping</span>
+
+                <span class="free">
+                    FREE
+                </span>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>Discount</span>
+
+                <span>
+                    ₹0.00
+                </span>
+
+            </div>
+
+
+            <div class="summary-divider"></div>
+
+
+            <div class="summary-total">
+
+                <span>Total</span>
+
+                <span id="grandTotal">
+                    ₹{{ cart.total_amount }}
+                </span>
+
+            </div>
+
+
+            <!-- PAYMENT -->
+
+            <div class="payment-box">
+
+                <h3>Payment Method</h3>
+
+
+                <label class="payment-option active">
+
+                    <input
+                        type="radio"
+                        name="payment"
+                        value="COD"
+                        checked
+                    >
+
+                    <div>
+
+                        <strong>
+                            Cash On Delivery
+                        </strong>
+
+                        <p>
+                            Pay after receiving your order
+                        </p>
+
+                    </div>
+
+                </label>
+
+
+                <label class="payment-option">
+
+                    <input
+                        type="radio"
+                        name="payment"
+                        value="PREPAID"
+                    >
+
+                    <div>
+
+                        <strong>
+                            Pay Online
+                        </strong>
+
+                        <p>
+                            UPI / Cards / Netbanking / Wallet
+                        </p>
+
+                    </div>
+
+                </label>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button id="placeOrderBtn"
+                    class="place-order-btn">
+
+                Place Secure Order
+
+            </button>
+
+
+            <div class="secure-line">
+
+                🔒 100% Secure Checkout Powered by Razorpay
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% csrf_token %}
+
+<script src="{% static 'orders/js/checkout.js' %}"></script>
+
+</body>
+</html>

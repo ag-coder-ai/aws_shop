@@ -1,0 +1,180 @@
+<!-- templates/orders/history.html -->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>My Orders</title>
+
+    <link rel="stylesheet"
+          href="{% static 'orders/css/history.css' %}">
+
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+
+<div class="history-container">
+
+    <!-- HEADER -->
+    <div class="history-header">
+
+        <div>
+
+            <h1>
+                My Orders
+            </h1>
+        </div>
+
+    </div>
+
+
+    <!-- EMPTY STATE -->
+    {% if not orders %}
+
+    <div class="empty-orders">
+
+        <div class="empty-icon">
+            📦
+        </div>
+
+        <h2>No Orders Yet</h2>
+
+        <p>
+            Your placed orders will appear here.
+        </p>
+
+        <a href="{% url 'product_list' %}" class="shop-btn">
+            Continue Shopping
+        </a>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ORDER LIST -->
+    {% for order in orders %}
+
+    <div class="order-card">
+
+        <!-- TOP -->
+        <div class="order-top">
+
+            <div class="order-left">
+
+                <div class="order-id">
+                    Order #{{ order.order_id }}
+                </div>
+
+                <div class="order-date">
+                    {{ order.created_at|date:"d M Y, h:i A" }}
+                </div>
+
+            </div>
+
+            <div class="order-right">
+
+                <div class="status
+                    {% if order.status == 'PAID' %}
+                        paid
+                    {% elif order.status == 'DELIVERED' %}
+                        delivered
+                    {% elif order.status == 'CANCELLED' %}
+                        cancelled
+                    {% elif order.status == 'SHIPPED' %}
+                        shipped
+                    {% else %}
+                        pending
+                    {% endif %}
+                ">
+
+                    {{ order.status }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ITEMS -->
+        <div class="order-items">
+
+            {% for item in order.items.all %}
+
+            <div class="item-row">
+
+                <div class="item-info">
+
+                    <h4>
+                        {{ item.product_name }}
+                    </h4>
+
+                    <p>
+                        Size: {{ item.size }}
+                        •
+                        Color: {{ item.color }}
+                    </p>
+
+                    <p>
+                        Qty: {{ item.quantity }}
+                    </p>
+
+                </div>
+
+                <div class="item-price">
+                    ₹{{ item.total_price }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="order-footer">
+
+            <div class="total">
+                Total:
+                <strong>
+                    ₹{{ order.total }}
+                </strong>
+            </div>
+
+            <div class="actions">
+
+                <a href="{% url 'order_detail' order.order_id %}"
+                   class="action-btn">
+
+                    View Details
+
+                </a>
+
+                {% if order.status == "PENDING" or order.status == "PAID" %}
+
+                <button class="cancel-btn">
+                    Cancel Order
+                </button>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<script src="{% static 'orders/js/history.js' %}"></script>
+
+</body>
+</html>

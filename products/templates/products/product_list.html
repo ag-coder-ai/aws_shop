@@ -1,0 +1,440 @@
+<!-- templates/products/product_list.html -->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Products</title>
+
+    <link rel="stylesheet"
+          href="{% static 'products/css/product_list.css' %}">
+
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+<div class="shop-container">
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>Filters</h2>
+
+        </div>
+
+        <form method="GET">
+
+            <!-- SEARCH -->
+
+            <div class="filter-box">
+
+                <h3>Search</h3>
+
+                <input type="text"
+                       name="search"
+                       placeholder="Search products..."
+                       value="{{ search_query }}">
+
+            </div>
+
+
+            <!-- CATEGORY -->
+
+            <div class="filter-box">
+
+                <h3>Categories</h3>
+
+                {% for category in categories %}
+
+                <label class="filter-option">
+
+                    <input type="radio"
+                           name="category"
+                           value="{{ category.slug }}"
+                           {% if selected_category == category.slug %}
+                           checked
+                           {% endif %}>
+
+                    <span>{{ category.name }}</span>
+
+                </label>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- BRAND -->
+
+            <div class="filter-box">
+
+                <h3>Brands</h3>
+
+                {% for brand in brands %}
+
+                <label class="filter-option">
+
+                    <input type="radio"
+                           name="brand"
+                           value="{{ brand.slug }}"
+                           {% if selected_brand == brand.slug %}
+                           checked
+                           {% endif %}>
+
+                    <span>{{ brand.name }}</span>
+
+                </label>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- SIZE -->
+
+            <div class="filter-box">
+
+                <h3>Sizes</h3>
+
+                <label class="filter-option">
+
+                    <input type="radio"
+                           name="size"
+                           value="S">
+
+                    <span>S</span>
+
+                </label>
+
+                <label class="filter-option">
+
+                    <input type="radio"
+                           name="size"
+                           value="M">
+
+                    <span>M</span>
+
+                </label>
+
+                <label class="filter-option">
+
+                    <input type="radio"
+                           name="size"
+                           value="L">
+
+                    <span>L</span>
+
+                </label>
+
+                <label class="filter-option">
+
+                    <input type="radio"
+                           name="size"
+                           value="XL">
+
+                    <span>XL</span>
+
+                </label>
+
+            </div>
+
+
+            <!-- PRICE -->
+
+            <div class="filter-box">
+
+                <h3>Price Range</h3>
+
+                <div class="price-inputs">
+
+                    <input type="number"
+                           name="min_price"
+                           placeholder="Min">
+
+                    <input type="number"
+                           name="max_price"
+                           placeholder="Max">
+
+                </div>
+
+            </div>
+
+
+            <!-- SORT -->
+
+            <div class="filter-box">
+
+                <h3>Sort By</h3>
+
+                <select name="sort">
+
+                    <option value="">Newest</option>
+
+                    <option value="price_low">
+                        Price Low To High
+                    </option>
+
+                    <option value="price_high">
+                        Price High To Low
+                    </option>
+
+                    <option value="name_az">
+                        A - Z
+                    </option>
+
+                    <option value="name_za">
+                        Z - A
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="filter-actions">
+
+                <button type="submit"
+                        class="apply-btn">
+
+                    Apply Filters
+
+                </button>
+
+                <a href="{% url 'product_list' %}"
+                   class="reset-btn">
+
+                    Reset
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </aside>
+
+
+    <!-- ================================================= -->
+    <!-- PRODUCT SECTION -->
+    <!-- ================================================= -->
+
+    <section class="product-section">
+
+        <!-- TOP BAR -->
+
+        <div class="product-topbar">
+
+            <div>
+
+                <h1>All Products</h1>
+
+                <p>
+                    Showing premium wholesale collections
+                </p>
+
+            </div>
+
+            <div class="product-count">
+
+                {{ page_obj.paginator.count }} Products
+
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCTS GRID -->
+
+        <div class="products-grid">
+
+            {% for product in products %}
+
+            <div class="product-card">
+
+                <!-- IMAGE -->
+
+                           <div class="product-image">
+
+                        {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}"
+                             alt="{{ product.name }}">
+                                {% else %}
+                        <img src="{% static 'images/no-image.png' %}">
+                    {% endif %}
+
+
+            </div>
+
+
+                <!-- CONTENT -->
+
+                <div class="product-content">
+
+                    <div class="brand">
+
+                        {{ product.brand.name }}
+
+                    </div>
+
+                    <h3>
+
+                        {{ product.name }}
+
+                    </h3>
+
+                    <p class="category">
+
+                        {{ product.category.name }}
+
+                    </p>
+
+
+                    <!-- PRICE -->
+
+                    <div class="price">
+
+                        ₹{{ product.variants.first.wholesale_price }}
+
+                    </div>
+
+
+                    <!-- STOCK -->
+
+                    {% if product.total_stock > 0 %}
+
+                    <div class="stock in-stock">
+
+                        In Stock
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="stock out-stock">
+
+                        Out Of Stock
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- SIZES -->
+
+                    <div class="sizes">
+
+                        {% for variant in product.variants.all %}
+
+                        <span>
+
+                            {{ variant.size.name }}
+
+                        </span>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                   <a href="{% url 'product_detail' product.slug %}"
+                         class="view-btn">
+
+                            View Details
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="empty-products">
+
+                <h2>No Products Found</h2>
+
+                <p>
+                    Try changing your filters
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- PAGINATION -->
+
+        {% if is_paginated %}
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+            <a href="?page={{ page_obj.previous_page_number }}">
+                Previous
+            </a>
+
+            {% endif %}
+
+
+            {% for num in page_obj.paginator.page_range %}
+
+            {% if page_obj.number == num %}
+
+            <span class="active">
+
+                {{ num }}
+
+            </span>
+
+            {% else %}
+
+            <a href="?page={{ num }}">
+
+                {{ num }}
+
+            </a>
+
+            {% endif %}
+
+            {% endfor %}
+
+
+            {% if page_obj.has_next %}
+
+            <a href="?page={{ page_obj.next_page_number }}">
+                Next
+            </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+</body>
+
+</html>

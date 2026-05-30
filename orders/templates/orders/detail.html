@@ -1,0 +1,161 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Detail</title>
+    <link rel="stylesheet" href="{% static 'orders/css/detail.css' %}">
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+
+<div class="detail-container">
+
+    <!-- HEADER -->
+    <div class="detail-header">
+
+        <div>
+            <p class="small-text">Order ID</p>
+            <h1>#{{ order.order_id }}</h1>
+        </div>
+
+        <div class="header-actions">
+
+            <button class="copy-btn"
+                    onclick="copyOrderId('{{ order.order_id }}')">
+                Copy ID
+            </button>
+
+            <a class="track-btn"
+               href="/orders/track/{{ order.order_id }}/">
+                Track Order
+            </a>
+
+            {% if order.status == "PENDING" or order.status == "CONFIRMED" %}
+            <button class="cancel-btn"
+                    onclick="cancelOrder('{{ order.order_id }}')">
+                Cancel Order
+            </button>
+            {% endif %}
+
+        </div>
+
+        <div class="status-box {{ order.status|lower }}">
+            {{ order.status }}
+        </div>
+
+    </div>
+
+    <!-- META -->
+    <div class="meta-grid">
+
+        <div class="meta-card">
+            <p class="meta-label">Ordered On</p>
+            <h3>{{ order.created_at|date:"d M Y, h:i A" }}</h3>
+        </div>
+
+        <div class="meta-card">
+            <p class="meta-label">Payment</p>
+            <h3>{{ order.payment_method }}</h3>
+        </div>
+
+        <div class="meta-card">
+            <p class="meta-label">Total</p>
+            <h3 class="price">₹{{ order.total }}</h3>
+        </div>
+
+    </div>
+
+    <!-- ITEMS -->
+    <div class="items-section">
+
+        <div class="section-title">Items</div>
+
+        {% for item in items %}
+        <div class="item-card">
+
+            <div class="item-left">
+
+                <div class="item-image">
+                    {% if item.product_image %}
+                        <img src="{{ item.product_image.url }}">
+                    {% endif %}
+                </div>
+
+                <div class="item-info">
+                    <h3>{{ item.product_name }}</h3>
+                    <p>Size: {{ item.size }}</p>
+                    <p>Color: {{ item.color }}</p>
+                    <p>Qty: {{ item.quantity }}</p>
+                </div>
+
+            </div>
+
+            <div class="item-price">
+                ₹{{ item.price }}
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- RETURN SECTION (ONLY AFTER DELIVERY) -->
+    {% if order.status == "DELIVERED" %}
+
+    <div class="return-box">
+
+        <h3>Return Order</h3>
+
+        <select id="returnReason">
+            <option value="Damaged">Damaged Product</option>
+            <option value="Wrong Item">Wrong Item Delivered</option>
+            <option value="Size Issue">Size Issue</option>
+            <option value="Quality Issue">Quality Issue</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <textarea id="returnComment"
+                  placeholder="Describe your issue..."></textarea>
+
+        <button class="return-btn"
+                onclick="requestReturn('{{ order.order_id }}')">
+            Request Return
+        </button>
+
+    </div>
+
+    {% endif %}
+
+    <!-- SUMMARY -->
+    <div class="summary-card">
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span>₹{{ order.subtotal }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Shipping</span>
+            <span>₹{{ order.shipping_charge }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Discount</span>
+            <span>- ₹{{ order.discount }}</span>
+        </div>
+
+        <div class="summary-row total">
+            <span>Total</span>
+            <span>₹{{ order.total }}</span>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{% static 'orders/js/detail.js' %}"></script>
+
+</body>
+</html>

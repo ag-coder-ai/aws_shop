@@ -1,0 +1,268 @@
+/* static/orders/css/history.css */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#f5f5f5;
+    color:#111;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.history-container{
+    max-width:1200px;
+    margin:auto;
+    padding:40px 20px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.history-header{
+    margin-bottom:30px;
+}
+
+.mini-title{
+    color:#666;
+    font-size:13px;
+    text-transform:uppercase;
+    margin-bottom:5px;
+}
+
+.history-header h1{
+    font-size:36px;
+    font-weight:700;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-orders{
+    background:#fff;
+    border-radius:20px;
+    padding:70px 30px;
+    text-align:center;
+}
+
+.empty-icon{
+    font-size:60px;
+    margin-bottom:20px;
+}
+
+.empty-orders h2{
+    margin-bottom:10px;
+}
+
+.empty-orders p{
+    color:#666;
+    margin-bottom:25px;
+}
+
+.shop-btn{
+    display:inline-block;
+    padding:14px 24px;
+    background:#000;
+    color:#fff;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+/* =========================
+   ORDER CARD
+========================= */
+
+.order-card{
+    background:#fff;
+    border-radius:20px;
+    margin-bottom:25px;
+    overflow:hidden;
+    box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* =========================
+   TOP
+========================= */
+
+.order-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px;
+    border-bottom:1px solid #eee;
+}
+
+.order-id{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:6px;
+}
+
+.order-date{
+    color:#666;
+    font-size:14px;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+    padding:8px 16px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+.paid{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.delivered{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.cancelled{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.shipped{
+    background:#ede9fe;
+    color:#6d28d9;
+}
+
+.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+/* =========================
+   ITEMS
+========================= */
+
+.order-items{
+    padding:10px 25px;
+}
+
+.item-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    border-bottom:1px solid #f1f1f1;
+}
+
+.item-row:last-child{
+    border-bottom:none;
+}
+
+.item-info h4{
+    font-size:16px;
+    margin-bottom:8px;
+}
+
+.item-info p{
+    color:#666;
+    font-size:14px;
+    margin-bottom:4px;
+}
+
+.item-price{
+    font-weight:700;
+    font-size:17px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.order-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px;
+    border-top:1px solid #eee;
+    background:#fafafa;
+}
+
+.total{
+    font-size:18px;
+}
+
+.actions{
+    display:flex;
+    gap:12px;
+}
+
+.action-btn,
+.cancel-btn{
+    padding:12px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.action-btn{
+    background:#000;
+    color:#fff;
+}
+
+.cancel-btn{
+    background:#fff;
+    border:1px solid #ddd;
+}
+
+.action-btn:hover{
+    opacity:0.9;
+}
+
+.cancel-btn:hover{
+    background:#f5f5f5;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:768px){
+
+    .order-top,
+    .order-footer,
+    .item-row{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .action-btn,
+    .cancel-btn{
+        width:100%;
+        text-align:center;
+    }
+
+    .history-header h1{
+        font-size:28px;
+    }
+
+}

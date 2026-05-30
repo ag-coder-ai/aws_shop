@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial; background:#f5f7fb; padding:20px; }
+
+        .card {
+            max-width:600px;
+            margin:auto;
+            background:#fff;
+            padding:30px;
+            border-radius:12px;
+        }
+
+        .header {
+            color:#7c3aed;
+            font-size:22px;
+            font-weight:bold;
+        }
+
+        .badge {
+            background:#ede9fe;
+            color:#6d28d9;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:12px;
+            display:inline-block;
+        }
+
+        .box {
+            margin-top:20px;
+            background:#f9fafb;
+            padding:15px;
+            border-radius:8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="header">
+        Pickup Scheduled 🚚
+    </div>
+
+    <div class="badge">
+        Courier will visit soon
+    </div>
+
+    <p style="margin-top:20px; color:#374151;">
+        Hi {{ order.user.first_name|default:"Customer" }},
+    </p>
+
+    <p>
+        Your return pickup has been scheduled.
+        Please keep the product ready with original packaging.
+    </p>
+
+    <div class="box">
+        <b>Order ID:</b> {{ order.order_id }} <br>
+        <b>Next Step:</b> Courier pickup
+    </div>
+
+</div>
+
+</body>
+</html>

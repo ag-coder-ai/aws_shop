@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background: #fff;
+            padding: 25px;
+            margin: auto;
+            border-radius: 10px;
+        }
+
+        .header {
+            font-size: 20px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .order-id {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .box {
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        🎉 Order Confirmed!
+    </div>
+
+    <div class="order-id">
+        Order ID: <strong>{{ order.order_id }}</strong>
+    </div>
+
+    <p>Hi {{ order.user.username }}, your order has been successfully placed.</p>
+
+    <div class="box">
+        <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        <p class="total">Total: ₹{{ order.total }}</p>
+    </div>
+
+    <h4>Items:</h4>
+
+    {% for item in order.items.all %}
+        <div class="box">
+            {{ item.product_name }} (x{{ item.quantity }}) - ₹{{ item.price }}
+        </div>
+    {% endfor %}
+
+    <a class="btn" href="http://127.0.0.1:4040.ngrok-free.app/orders/track/{{ order.order_id }}/">
+        Track Order
+    </a>
+
+    <p style="margin-top:20px;color:#777;">
+        Thank you for shopping with us ❤️
+    </p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | FashionHub</title>
+
+    <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+
+    <script defer src="{% static 'accounts/js/login.js' %}"></script>
+
+</head>
+
+<body>
+
+{% include 'partials/navbar.html' %}
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<div class="login-container">
+
+    <div class="login-box">
+
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p>Login to continue shopping</p>
+        </div>
+
+        <form id="loginForm">
+
+            {% csrf_token %}
+
+            <!-- EMAIL -->
+            <div class="input-group">
+
+                <label>Email Address</label>
+
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                >
+
+                <small class="error"></small>
+
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="input-group">
+
+                <label>Password</label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                    >
+
+                    <span class="toggle-password" id="togglePassword">
+                        👁
+                    </span>
+
+                </div>
+
+                <small class="error"></small>
+
+                <div class="forgot-password">
+                    <a href="{% url 'password_reset' %}">
+                        Forgot Password?
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- REMEMBER -->
+            <div class="remember-box">
+
+                <label class="remember-label">
+
+                    <input type="checkbox" name="remember">
+
+                    <span>Remember me</span>
+
+                </label>
+
+            </div>
+
+            <!-- BUTTON -->
+            <button type="submit" id="loginBtn">
+
+                <span class="btn-text">
+                    Login
+                </span>
+
+                <span class="loader hidden"></span>
+
+            </button>
+
+        </form>
+
+        <div class="bottom">
+
+            Don't have an account?
+
+            <a href="{% url 'signup' %}">
+                Signup
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

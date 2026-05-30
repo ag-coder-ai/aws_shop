@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f7fb;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .header {
+            color: #2563eb;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .info {
+            margin-top: 20px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .order-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="header">
+        Return Request Approved 🎉
+    </div>
+
+    <div class="badge">
+        ACTION REQUIRED: Pickup will be scheduled soon
+    </div>
+
+    <div class="info">
+
+        Hi {{ order.user.first_name|default:"Customer" }},
+
+        <br><br>
+
+        Your return request has been <b>approved</b>.
+
+        <br><br>
+
+        Our logistics team will schedule a pickup soon. You will receive pickup details shortly.
+
+    </div>
+
+    <div class="order-box">
+
+        <b>Order ID:</b> {{ order.order_id }} <br>
+        <b>Status:</b> Return Approved <br>
+
+    </div>
+
+</div>
+
+</body>
+</html>

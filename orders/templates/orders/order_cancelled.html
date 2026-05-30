@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Cancelled</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+            font-family: Arial, sans-serif;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            padding: 30px 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .cancel-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 14px;
+            background: #ef4444;
+            color: white;
+            font-size: 12px;
+            border-radius: 20px;
+        }
+
+        .content {
+            padding: 30px;
+            color: #111827;
+        }
+
+        .content h2 {
+            margin-bottom: 10px;
+        }
+
+        .order-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #e5e7eb;
+        }
+
+        .order-box p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #ef4444;
+        }
+
+        .info {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 18px;
+            background: #111827;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #f59e0b;
+            color: black;
+        }
+    </style>
+
+</head>
+
+<body>
+{% include 'partials/navbar.html' %}
+
+<div class="email-wrapper">
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <h1>FashionHub</h1>
+
+            <span class="cancel-badge">
+                ORDER CANCELLED
+            </span>
+
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <h2>Hi {{ user.full_name|default:user.email }},</h2>
+
+            <p class="info">
+                Your order has been successfully cancelled as per your request.
+            </p>
+
+            <!-- ORDER DETAILS -->
+            <div class="order-box">
+
+                <p>
+                    Order ID:
+                    <span class="highlight">
+                        {{ order.order_id }}
+                    </span>
+                </p>
+
+                <p>
+                    Status:
+                    <span class="highlight">
+                        Cancelled
+                    </span>
+                </p>
+
+                <p>
+                    If payment was made, refund (if applicable) will be processed soon.
+                </p>
+
+            </div>
+
+            <p class="info">
+                If you cancelled this by mistake, you can place a new order anytime.
+            </p>
+
+            <a href="#" class="btn">
+                Shop Again
+            </a>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+
+            © {{ now|date:"Y" }} FashionHub. All rights reserved.
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
