@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'payments',
     'home',
     'accounts',
+    'wishlist',
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

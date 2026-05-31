@@ -344,3 +344,201 @@ if(addToCartBtn){
     });
 
 }
+
+
+/* ======================================================
+   WISHLIST
+====================================================== */
+
+function getSelectedVariantId() {
+
+    const size = document.querySelector(".size-btn.active")?.dataset.size;
+    const color = document.querySelector(".color-btn.active")?.dataset.color;
+
+    if (!size || !color) return null;
+
+    const variants = JSON.parse(
+        document.getElementById("variant-data").textContent
+    );
+
+    const match = variants.find(v =>
+        v.size === size && v.color === color
+    );
+
+    return match ? match.id : null;
+}
+
+
+/* =========================================
+   WISHLIST TOGGLE
+========================================= */
+
+function showToast(message, type = "success") {
+
+    /* REMOVE OLD TOAST */
+
+    const oldToast =
+        document.querySelector(".custom-toast");
+
+    if (oldToast) {
+        oldToast.remove();
+    }
+
+    /* CREATE TOAST */
+
+    const toast = document.createElement("div");
+
+    toast.className = `custom-toast ${type}`;
+
+    toast.innerHTML = `
+        <div class="toast-content">
+
+            <div class="toast-icon">
+                ${type === "success" ? "✓" : "!"}
+            </div>
+
+            <div class="toast-message">
+                ${message}
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    /* SHOW */
+
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 100);
+
+    /* HIDE */
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+
+    }, 3000);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const wishlistBtn = document.getElementById("wishlistBtn");
+
+    if (!wishlistBtn) return;
+
+    function isAuthenticated() {
+
+        return document.body.dataset.authenticated === "true";
+    }
+
+    wishlistBtn.addEventListener("click", async () => {
+
+        /* =========================================
+           LOGIN CHECK
+        ========================================= */
+
+        if (!isAuthenticated()) {
+
+            showToast(
+                "Please login to use wishlist",
+                "error"
+            );
+
+            return;
+        }
+
+        /* =========================================
+           PRODUCT ID
+        ========================================= */
+
+        const productId =
+            wishlistBtn.dataset.productId;
+
+        if (!productId) {
+
+            showToast(
+                "Product not found",
+                "error"
+            );
+
+            return;
+        }
+
+        try {
+
+            /* =========================================
+               API REQUEST
+            ========================================= */
+
+            const res = await post(
+                "/wishlist/toggle/",
+                {
+                    product_id: productId
+                }
+            );
+
+            console.log("Wishlist Response:", res);
+
+            /* =========================================
+               SUCCESS
+            ========================================= */
+
+            if (res.success) {
+
+                /* TOGGLE HEART */
+
+                wishlistBtn.classList.toggle(
+                    "active",
+                    res.added
+                );
+
+               wishlistBtn.innerHTML = res.added
+                        ? "❤️"
+                        : "🤍";
+
+                    wishlistBtn.classList.toggle(
+                        "active",
+                        res.added
+                    );
+
+                /* SUCCESS TOAST */
+
+                if (res.added) {
+
+                    showToast(
+                        "Successfully added to wishlist",
+                        "success"
+                    );
+
+                } else {
+
+                    showToast(
+                        "Removed from wishlist",
+                        "success"
+                    );
+                }
+
+            } else {
+
+                showToast(
+                    res.message || "Wishlist failed",
+                    "error"
+                );
+            }
+
+        } catch (err) {
+
+            console.error("Wishlist Error:", err);
+
+            showToast(
+                "Something went wrong",
+                "error"
+            );
+        }
+    });
+});

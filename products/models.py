@@ -426,3 +426,5 @@ class InventoryLog(BaseModel):
             f"{self.variant.sku} - "
             f"{self.transaction_type}"
         )
+
+

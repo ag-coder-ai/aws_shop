@@ -35,16 +35,17 @@ def checkout_view(request):
         "items": cart.items.all()
     })
 
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import F
 from django.core.exceptions import ValidationError
-
 from .models import Order, OrderItem, ShippingAddress
 from products.models import ProductVariant, InventoryLog
 from orders.models import OrderItem
 from orders.services import send_order_email
+import re
+from django.core.validators import validate_email
+
+
 @login_required
 @transaction.atomic
 def create_checkout(request):
@@ -139,8 +140,130 @@ def create_checkout(request):
         )
 
         # =========================================
+        # VALIDATION
+        # =========================================
+
+        field_errors = {}
+
+        full_name = data.get("full_name", "").strip()
+
+        phone = data.get("phone", "").strip()
+
+        email = data.get("email", "").strip().lower()
+
+        address = data.get("address", "").strip()
+
+        city = data.get("city", "").strip()
+
+        state = data.get("state", "").strip()
+
+        pincode = data.get("pincode", "").strip()
+
+        # =========================================
+        # FULL NAME
+        # =========================================
+
+        if not full_name:
+
+            field_errors["full_name"] = [
+                "Full name is required"
+            ]
+
+        elif len(full_name) < 3:
+
+            field_errors["full_name"] = [
+                "Full name must be at least 3 characters"
+            ]
+
+        # =========================================
+        # PHONE VALIDATION
+        # =========================================
+
+        phone_regex = r"^[6-9]\d{9}$"
+
+        if not re.match(phone_regex, phone):
+            field_errors["phone"] = [
+                "Enter valid 10 digit Indian mobile number"
+            ]
+
+        # =========================================
+        # EMAIL VALIDATION
+        # =========================================
+
+        try:
+
+            validate_email(email)
+
+        except ValidationError:
+
+            field_errors["email"] = [
+                "Enter a valid email address"
+            ]
+
+        # =========================================
+        # ADDRESS VALIDATION
+        # =========================================
+
+        if not address:
+
+            field_errors["address_line_1"] = [
+                "Address is required"
+            ]
+
+        elif len(address) < 10:
+
+            field_errors["address_line_1"] = [
+                "Address is too short"
+            ]
+
+        # =========================================
+        # CITY VALIDATION
+        # =========================================
+
+        if not city:
+            field_errors["city"] = [
+                "City is required"
+            ]
+
+        # =========================================
+        # STATE VALIDATION
+        # =========================================
+
+        if not state:
+            field_errors["state"] = [
+                "State is required"
+            ]
+
+        # =========================================
+        # PINCODE VALIDATION
+        # =========================================
+
+        pincode_regex = r"^[1-9][0-9]{5}$"
+
+        if not re.match(pincode_regex, pincode):
+            field_errors["postal_code"] = [
+                "Enter valid 6 digit Indian pincode"
+            ]
+
+        # =========================================
+        # RETURN ERRORS
+        # =========================================
+
+        if field_errors:
+            return JsonResponse({
+
+                "success": False,
+
+                "field_errors": field_errors
+
+            }, status=400)
+
+
+        # =========================================
         # CREATE SHIPPING ADDRESS
         # =========================================
+
+
 
         try:
 
@@ -149,18 +272,18 @@ def create_checkout(request):
                 order=order,
 
                 full_name=data.get("full_name"),
+                # full_name=full_name
+                phone=phone,
 
-                phone=data.get("phone"),
+                email=email,
 
-                email=data.get("email"),
+                address_line_1=address,
 
-                address_line_1=data.get("address"),
+                city=city,
 
-                city=data.get("city"),
+                state=state,
 
-                state=data.get("state"),
-
-                postal_code=data.get("pincode"),
+                postal_code=pincode,
 
                 country="India"
             )

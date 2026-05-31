@@ -1,0 +1,144 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Wishlist</title>
+
+    <link rel="stylesheet"
+          href="{% static 'wishlist/css/wishlist.css' %}">
+
+</head>
+
+<body>
+
+{% include 'partials/navbar.html' %}
+
+<section class="wishlist-section">
+
+    <div class="wishlist-header">
+
+        <h1>My Wishlist</h1>
+
+        <p>
+            Save your favorite products for later
+        </p>
+
+    </div>
+
+    {% if items %}
+
+    <div class="wishlist-grid">
+
+        {% for item in items %}
+
+        <div class="wishlist-card">
+
+            <!-- REMOVE -->
+            <button class="wishlist-remove-btn"
+                    onclick="removeWishlist('{{ item.product.id }}', this)">
+
+                ✕
+
+            </button>
+
+            {% if item.product.slug %}
+
+            <a href="{% url 'product_detail' item.product.slug %}">
+
+            {% else %}
+
+            <a href="#">
+
+            {% endif %}
+
+                <!-- IMAGE -->
+                <div class="wishlist-image">
+
+                    {% with img=item.product.images.first %}
+
+                        {% if img %}
+
+                            <img src="{{ img.image.url }}"
+                                 alt="{{ item.product.name }}">
+
+                        {% else %}
+
+                            <img src="{% static 'images/no-image.png' %}"
+                                 alt="No Image">
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                </div>
+
+                <!-- CONTENT -->
+                <div class="wishlist-content">
+
+                    <p class="wishlist-brand">
+
+                        {{ item.product.brand.name }}
+
+                    </p>
+
+                    <h3 class="wishlist-title">
+
+                        {{ item.product.name }}
+
+                    </h3>
+
+                    <div class="wishlist-price">
+
+                        ₹{{ item.product.variants.first.wholesale_price }}
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-wishlist">
+
+        <img src="{% static 'images/empty-wishlist.png' %}"
+             alt="Wishlist Empty">
+
+        <h2>Your wishlist is empty 💔</h2>
+
+        <p>
+            Explore products and save your favorites.
+        </p>
+
+        <a href="/"
+           class="shop-btn">
+
+            Continue Shopping
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+<script src="{% static 'wishlist/js/wishlist.js' %}"></script>
+
+</body>
+
+</html>

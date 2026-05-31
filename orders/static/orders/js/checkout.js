@@ -5,7 +5,10 @@
 ========================================= */
 
 function getCSRF() {
-    return document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
+
+    return document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+    )?.value || "";
 }
 
 /* =========================================
@@ -15,11 +18,17 @@ function getCSRF() {
 async function post(url, body = {}) {
 
     const response = await fetch(url, {
+
         method: "POST",
+
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+
+            "Content-Type":
+                "application/x-www-form-urlencoded",
+
             "X-CSRFToken": getCSRF()
         },
+
         body: new URLSearchParams(body)
     });
 
@@ -43,7 +52,9 @@ function getVal(id) {
 
 function showToast(message, type = "success") {
 
-    const oldToast = document.querySelector(".custom-toast");
+    const oldToast = document.querySelector(
+        ".custom-toast"
+    );
 
     if (oldToast) {
         oldToast.remove();
@@ -54,20 +65,30 @@ function showToast(message, type = "success") {
     toast.className = `custom-toast ${type}`;
 
     toast.innerHTML = `
+
         <div class="toast-content">
+
             <div class="toast-icon">
+
                 ${type === "success" ? "✓" : "!"}
+
             </div>
+
             <div class="toast-message">
+
                 ${message}
+
             </div>
+
         </div>
     `;
 
     document.body.appendChild(toast);
 
     setTimeout(() => {
+
         toast.classList.add("show");
+
     }, 100);
 
     setTimeout(() => {
@@ -75,7 +96,9 @@ function showToast(message, type = "success") {
         toast.classList.remove("show");
 
         setTimeout(() => {
+
             toast.remove();
+
         }, 300);
 
     }, 3000);
@@ -87,17 +110,21 @@ function showToast(message, type = "success") {
 
 function clearErrors() {
 
-    document.querySelectorAll(".field-error").forEach(el => {
-        el.remove();
-    });
+    document.querySelectorAll(".field-error")
+        .forEach(el => {
 
-    document.querySelectorAll(".input-error").forEach(el => {
-        el.classList.remove("input-error");
-    });
+            el.remove();
+        });
+
+    document.querySelectorAll(".input-error")
+        .forEach(el => {
+
+            el.classList.remove("input-error");
+        });
 }
 
 /* =========================================
-   FIELD ERRORS
+   SHOW FIELD ERRORS
 ========================================= */
 
 function showFieldErrors(errors) {
@@ -105,12 +132,19 @@ function showFieldErrors(errors) {
     clearErrors();
 
     const fieldMap = {
+
         full_name: "fullName",
+
         phone: "phone",
+
         email: "email",
+
         address_line_1: "address",
+
         city: "city",
+
         state: "state",
+
         postal_code: "pincode"
     };
 
@@ -124,7 +158,8 @@ function showFieldErrors(errors) {
 
         input.classList.add("input-error");
 
-        const errorDiv = document.createElement("div");
+        const errorDiv =
+            document.createElement("div");
 
         errorDiv.className = "field-error";
 
@@ -143,6 +178,306 @@ function showFieldErrors(errors) {
 }
 
 /* =========================================
+   VALIDATE FORM
+========================================= */
+
+function validateCheckoutForm() {
+
+    clearErrors();
+
+    let errors = {};
+
+    const fullName = getVal("fullName");
+
+    const phone = getVal("phone");
+
+    const email = getVal("email")
+        .toLowerCase();
+
+    const address = getVal("address");
+
+    const city = getVal("city");
+
+    const state = getVal("state");
+
+    const pincode = getVal("pincode");
+
+    /* =========================================
+       FULL NAME
+    ========================================= */
+
+    if (!fullName) {
+
+        errors.full_name = [
+            "Full name is required"
+        ];
+
+    } else if (fullName.length < 3) {
+
+        errors.full_name = [
+            "Full name must be at least 3 characters"
+        ];
+    }
+
+    /* =========================================
+       PHONE VALIDATION
+    ========================================= */
+
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    if (!phoneRegex.test(phone)) {
+
+        errors.phone = [
+            "Enter valid 10 digit Indian mobile number"
+        ];
+    }
+
+    /* =========================================
+       EMAIL VALIDATION
+    ========================================= */
+
+    /* =========================================
+   EMAIL VALIDATION
+========================================= */
+
+const disposableDomains = [
+
+    "tempmail.com",
+    "10minutemail.com",
+    "guerrillamail.com",
+    "mailinator.com",
+    "yopmail.com",
+    "fakeinbox.com",
+    "trashmail.com",
+    "sharklasers.com"
+];
+
+const emailValue = email.trim().toLowerCase();
+
+/* =========================================
+   BASIC CHECK
+========================================= */
+
+if (!emailValue) {
+
+    errors.email = [
+        "Email address is required"
+    ];
+}
+
+/* =========================================
+   LENGTH CHECK
+========================================= */
+
+else if (emailValue.length > 254) {
+
+    errors.email = [
+        "Email address is too long"
+    ];
+}
+
+/* =========================================
+   ADVANCED EMAIL REGEX
+========================================= */
+
+else {
+
+    const emailRegex =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+    if (!emailRegex.test(emailValue)) {
+
+        errors.email = [
+            "Enter valid email address"
+        ];
+    }
+
+    else {
+
+        const parts = emailValue.split("@");
+
+        const localPart = parts[0];
+
+        const domainPart = parts[1];
+
+        /* =========================================
+           LOCAL PART VALIDATION
+        ========================================= */
+
+        if (localPart.length > 64) {
+
+            errors.email = [
+                "Invalid email username"
+            ];
+        }
+
+        else if (
+            localPart.startsWith(".") ||
+            localPart.endsWith(".")
+        ) {
+
+            errors.email = [
+                "Invalid email format"
+            ];
+        }
+
+        else if (localPart.includes("..")) {
+
+            errors.email = [
+                "Email cannot contain consecutive dots"
+            ];
+        }
+
+        /* =========================================
+           DOMAIN VALIDATION
+        ========================================= */
+
+        else if (!domainPart.includes(".")) {
+
+            errors.email = [
+                "Invalid email domain"
+            ];
+        }
+
+        else if (
+            domainPart.startsWith("-") ||
+            domainPart.endsWith("-")
+        ) {
+
+            errors.email = [
+                "Invalid email domain"
+            ];
+        }
+
+        else if (domainPart.includes("..")) {
+
+            errors.email = [
+                "Invalid email domain"
+            ];
+        }
+
+        /* =========================================
+           BLOCK DISPOSABLE EMAILS
+        ========================================= */
+
+        else if (
+            disposableDomains.includes(domainPart)
+        ) {
+
+            errors.email = [
+                "Temporary email addresses are not allowed"
+            ];
+        }
+
+        /* =========================================
+           DOMAIN EXTENSION VALIDATION
+        ========================================= */
+
+        else {
+
+            const domainParts =
+                domainPart.split(".");
+
+            const extension =
+                domainParts[domainParts.length - 1];
+
+            if (extension.length < 2) {
+
+                errors.email = [
+                    "Invalid email domain extension"
+                ];
+            }
+        }
+    }
+}
+
+    /* =========================================
+       ADDRESS VALIDATION
+    ========================================= */
+
+    if (!address) {
+
+        errors.address_line_1 = [
+            "Address is required"
+        ];
+
+    } else if (address.length < 10) {
+
+        errors.address_line_1 = [
+            "Address is too short"
+        ];
+    }
+
+    /* =========================================
+       CITY VALIDATION
+    ========================================= */
+
+    if (!city) {
+
+        errors.city = [
+            "City is required"
+        ];
+    }
+
+    /* =========================================
+       STATE VALIDATION
+    ========================================= */
+
+    if (!state) {
+
+        errors.state = [
+            "State is required"
+        ];
+    }
+
+    /* =========================================
+       PINCODE VALIDATION
+    ========================================= */
+
+    const pincodeRegex = /^[1-9][0-9]{5}$/;
+
+    if (!pincodeRegex.test(pincode)) {
+
+        errors.postal_code = [
+            "Enter valid 6 digit Indian pincode"
+        ];
+    }
+
+    /* =========================================
+       SHOW ERRORS
+    ========================================= */
+
+    if (Object.keys(errors).length > 0) {
+
+        showFieldErrors(errors);
+
+        return false;
+    }
+
+    return true;
+}
+
+/* =========================================
+   PAYMENT OPTION ACTIVE STATE
+========================================= */
+
+document.querySelectorAll(".payment-option")
+    .forEach(option => {
+
+        option.addEventListener("click", () => {
+
+            document.querySelectorAll(
+                ".payment-option"
+            ).forEach(el => {
+
+                el.classList.remove("active");
+            });
+
+            option.classList.add("active");
+        });
+    });
+
+/* =========================================
    CHECKOUT
 ========================================= */
 
@@ -150,18 +485,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Checkout JS Loaded");
 
-    const btn = document.getElementById("placeOrderBtn");
+    const btn =
+        document.getElementById("placeOrderBtn");
 
     if (!btn) {
-        console.error("Place Order button not found");
+
+        console.error(
+            "Place Order button not found"
+        );
+
         return;
     }
 
     btn.addEventListener("click", async (e) => {
 
         e.preventDefault();
-
-        console.log("BUTTON CLICKED");
 
         clearErrors();
 
@@ -171,12 +509,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
+            /* =========================================
+               FRONTEND VALIDATION
+            ========================================= */
+
+            const isValid =
+                validateCheckoutForm();
+
+            if (!isValid) {
+
+                btn.disabled = false;
+
+                btn.innerText =
+                    "Place Secure Order";
+
+                return;
+            }
+
             const paymentMethod =
-                document.querySelector('input[name="payment"]:checked')?.value;
+                document.querySelector(
+                    'input[name="payment"]:checked'
+                )?.value;
 
             if (!paymentMethod) {
 
-                showToast("Select payment method", "error");
+                showToast(
+                    "Select payment method",
+                    "error"
+                );
+
+                btn.disabled = false;
+
+                btn.innerText =
+                    "Place Secure Order";
 
                 return;
             }
@@ -185,49 +550,61 @@ document.addEventListener("DOMContentLoaded", () => {
                CREATE CHECKOUT
             ========================================= */
 
-            const checkout = await post("/orders/create-checkout/", {
+            const checkout = await post(
 
-                full_name: getVal("fullName"),
+                "/orders/create-checkout/",
 
-                phone: getVal("phone"),
+                {
 
-                email: getVal("email"),
+                    full_name:
+                        getVal("fullName"),
 
-                address: getVal("address"),
+                    phone:
+                        getVal("phone"),
 
-                city: getVal("city"),
+                    email:
+                        getVal("email")
+                            .toLowerCase(),
 
-                state: getVal("state"),
+                    address:
+                        getVal("address"),
 
-                pincode: getVal("pincode"),
+                    city:
+                        getVal("city"),
 
-                payment_method: paymentMethod
-            });
+                    state:
+                        getVal("state"),
 
-            console.log("CHECKOUT RESPONSE:", checkout);
+                    pincode:
+                        getVal("pincode"),
+
+                    payment_method:
+                        paymentMethod
+                }
+            );
+
+            console.log(
+                "CHECKOUT RESPONSE:",
+                checkout
+            );
 
             /* =========================================
-               VALIDATION ERRORS
+               BACKEND VALIDATION ERRORS
             ========================================= */
-
-           console.log("FULL CHECKOUT RESPONSE:", checkout);
 
             if (!checkout.success) {
 
-                console.log("CHECKOUT FAILED");
-
                 if (checkout.field_errors) {
 
-                    console.log("FIELD ERRORS:", checkout.field_errors);
-
-                    showFieldErrors(checkout.field_errors);
+                    showFieldErrors(
+                        checkout.field_errors
+                    );
 
                 } else {
 
-                    console.log("MESSAGE:", checkout.message);
-
                     showToast(
-                        checkout.message || "Checkout failed",
+                        checkout.message ||
+                        "Checkout failed",
                         "error"
                     );
                 }
@@ -235,14 +612,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-
             /* =========================================
                COD FLOW
             ========================================= */
 
             if (paymentMethod === "COD") {
 
-                showToast("Order placed successfully");
+                showToast(
+                    "Order placed successfully"
+                );
 
                 setTimeout(() => {
 
@@ -258,10 +636,6 @@ document.addEventListener("DOMContentLoaded", () => {
                PREPAID FLOW
             ========================================= */
 
-          /* =========================================
-               PREPAID FLOW
-            ========================================= */
-
             const payment = await post(
 
                 "/payments/create/",
@@ -269,15 +643,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 {
                     amount: checkout.amount
                 }
-
             );
 
-            console.log("PAYMENT RESPONSE:", payment);
+            console.log(
+                "PAYMENT RESPONSE:",
+                payment
+            );
 
             if (!payment.success) {
 
                 showToast(
-                    payment.message || "Payment initialization failed",
+                    payment.message ||
+                    "Payment initialization failed",
                     "error"
                 );
 
@@ -300,29 +677,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 name: "Fashion Hub",
 
-                description: "Secure Checkout",
+                description:
+                    "Secure Checkout",
 
-                handler: async function (response) {
+                handler: async function (
+                    response
+                ) {
 
                     try {
 
-                        const verify = await post("/payments/verify/", {
+                        const verify =
+                            await post(
 
-                            razorpay_order_id:
-                                response.razorpay_order_id,
+                                "/payments/verify/",
 
-                            razorpay_payment_id:
-                                response.razorpay_payment_id,
+                                {
 
-                            razorpay_signature:
-                                response.razorpay_signature
-                        });
+                                    razorpay_order_id:
+                                        response
+                                        .razorpay_order_id,
 
-                        console.log("VERIFY RESPONSE:", verify);
+                                    razorpay_payment_id:
+                                        response
+                                        .razorpay_payment_id,
+
+                                    razorpay_signature:
+                                        response
+                                        .razorpay_signature
+                                }
+                            );
+
+                        console.log(
+                            "VERIFY RESPONSE:",
+                            verify
+                        );
 
                         if (verify.success) {
 
-                            showToast("Payment successful");
+                            showToast(
+                                "Payment successful"
+                            );
 
                             setTimeout(() => {
 
@@ -334,7 +728,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         } else {
 
                             showToast(
-                                verify.message || "Payment verification failed",
+
+                                verify.message ||
+
+                                "Payment verification failed",
+
                                 "error"
                             );
                         }
@@ -344,7 +742,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         console.error(err);
 
                         showToast(
+
                             "Payment verification failed",
+
                             "error"
                         );
                     }
@@ -363,11 +763,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 prefill: {
 
-                    name: getVal("fullName"),
+                    name:
+                        getVal("fullName"),
 
-                    email: getVal("email"),
+                    email:
+                        getVal("email"),
 
-                    contact: getVal("phone")
+                    contact:
+                        getVal("phone")
                 },
 
                 theme: {
@@ -375,13 +778,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
-            const razorpay = new Razorpay(options);
+            const razorpay =
+                new Razorpay(options);
 
             razorpay.open();
 
         } catch (err) {
 
-            console.error("CHECKOUT ERROR:", err);
+            console.error(
+                "CHECKOUT ERROR:",
+                err
+            );
 
             showToast(
                 "Unable to process checkout",
@@ -392,7 +799,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             btn.disabled = false;
 
-            btn.innerText = "Place Secure Order";
+            btn.innerText =
+                "Place Secure Order";
         }
     });
 });

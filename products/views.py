@@ -294,6 +294,16 @@ from .models import (
 # PRODUCT DETAIL VIEW
 # INDUSTRY LEVEL
 # =========================================================
+from django.views.generic import DetailView
+from django.db.models import Prefetch
+
+from products.models import (
+    Product,
+    ProductVariant
+)
+
+from wishlist.models import Wishlist
+
 
 class ProductDetailView(DetailView):
 
@@ -306,9 +316,6 @@ class ProductDetailView(DetailView):
     slug_field = "slug"
 
     slug_url_kwarg = "slug"
-
-
-
 
     # =====================================================
     # OPTIMIZED QUERYSET
@@ -324,7 +331,7 @@ class ProductDetailView(DetailView):
             # PRODUCT IMAGES
             "images",
 
-            # ACTIVE VARIANTS ONLY
+            # ACTIVE VARIANTS
             Prefetch(
                 "variants",
                 queryset=ProductVariant.objects.filter(
@@ -339,7 +346,6 @@ class ProductDetailView(DetailView):
             is_active=True
         )
 
-
     # =====================================================
     # CONTEXT DATA
     # =====================================================
@@ -349,7 +355,6 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         product = self.object
-
 
         # =================================================
         # IMAGES
@@ -369,9 +374,7 @@ class ProductDetailView(DetailView):
             ),
 
             images[0] if images else None
-
         )
-
 
         # =================================================
         # VARIANTS
@@ -382,7 +385,6 @@ class ProductDetailView(DetailView):
         )
 
         context["variants"] = variants
-
 
         # =================================================
         # VARIANT DATA FOR JS
@@ -408,9 +410,7 @@ class ProductDetailView(DetailView):
             }
 
             for variant in variants
-
         ]
-
 
         # =================================================
         # UNIQUE SIZES
@@ -422,11 +422,8 @@ class ProductDetailView(DetailView):
 
                 variant.size.name
                 for variant in variants
-
             )
-
         )
-
 
         # =================================================
         # UNIQUE COLORS
@@ -446,11 +443,9 @@ class ProductDetailView(DetailView):
 
                     "hex_code":
                         variant.color.hex_code
-
                 }
 
         context["colors"] = unique_colors.values()
-
 
         # =================================================
         # DEFAULT PRICE
@@ -462,9 +457,7 @@ class ProductDetailView(DetailView):
 
             first_variant.wholesale_price
             if first_variant else 0
-
         )
-
 
         # =================================================
         # TOTAL STOCK
@@ -474,9 +467,7 @@ class ProductDetailView(DetailView):
 
             variant.stock_quantity
             for variant in variants
-
         )
-
 
         # =================================================
         # RELATED PRODUCTS
@@ -500,7 +491,19 @@ class ProductDetailView(DetailView):
             id=product.id
         )[:8]
 
+        # =================================================
+        # WISHLIST STATUS
+        # =================================================
+
+        is_in_wishlist = False
+
+        if self.request.user.is_authenticated:
+
+            is_in_wishlist = Wishlist.objects.filter(
+                user=self.request.user,
+                product=product
+            ).exists()
+
+        context["is_in_wishlist"] = is_in_wishlist
 
         return context
-
-
