@@ -9,7 +9,7 @@ function getCSRF() {
 }
 
 /* ==============================
-   FETCH WRAPPER (POST JSON SAFE)
+   FETCH WRAPPER
 ============================== */
 
 async function post(url, body = {}) {
@@ -31,7 +31,32 @@ async function post(url, body = {}) {
 ============================== */
 
 function money(value) {
-    return `₹${Number(value || 0).toFixed(2)}`;
+
+    if (value === null || value === undefined) return "₹0.00";
+
+    // remove ₹, commas, spaces safely
+    const cleanValue = String(value)
+        .replace(/₹/g, "")
+        .replace(/,/g, "")
+        .trim();
+
+    const num = Number(cleanValue);
+
+    if (isNaN(num)) return "₹0.00";
+
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2
+    }).format(num);
+}
+
+/* ==============================
+   SAFE ELEMENT HELPERS
+============================== */
+
+function el(id) {
+    return document.getElementById(id);
 }
 
 /* ==============================
@@ -42,13 +67,46 @@ function updateCartUI(data) {
 
     if (!data) return;
 
-    const totalEl = document.getElementById("cart-total");
-    const subEl = document.getElementById("cart-subtotal");
-    const countEl = document.getElementById("cart-count");
+    const totalEl = el("cart-total");
+    const subEl = el("cart-subtotal");
+    const countEl = el("cart-count");
 
     if (totalEl) totalEl.innerText = money(data.cart_total);
     if (subEl) subEl.innerText = money(data.cart_subtotal);
     if (countEl) countEl.innerText = data.cart_count || 0;
+
+    /* 🔥 HANDLE EMPTY CART INSTANTLY */
+    handleEmptyCart(data.cart_count);
+}
+
+/* ==============================
+   EMPTY CART HANDLER (NEW)
+============================== */
+
+function handleEmptyCart(count) {
+
+    if (count > 0) return;
+
+    const cartItems = document.getElementById("cart-items-wrapper");
+    const summary = document.querySelector(".cart-summary");
+    const cartLeft = document.querySelector(".cart-left");
+
+    if (cartItems) cartItems.remove();
+    if (summary) summary.remove();
+
+    if (cartLeft && !document.querySelector(".empty-cart")) {
+
+        cartLeft.innerHTML += `
+            <div class="empty-cart" id="empty-cart">
+                <i class="fa fa-cart-shopping empty-cart-icon"></i>
+                <h2>Your Cart Is Empty</h2>
+                <p>Looks like you haven’t added anything yet.</p>
+                <a href="/" class="continue-shopping-btn">
+                    Continue Shopping
+                </a>
+            </div>
+        `;
+    }
 }
 
 /* ==============================
@@ -66,22 +124,23 @@ async function updateQty(itemId, action, btn = null) {
             action: action
         });
 
-        if (!res.success) {
-            alert(res.message);
+       if (!res.success) {
+            showToast(res.message, "error");
             return;
         }
 
         const data = res.data;
 
-        const qtyEl = document.getElementById(`qty-${itemId}`);
-        const totalEl = document.getElementById(`total-${itemId}`);
+        const qtyEl = el(`qty-${itemId}`);
+        const totalEl = el(`total-${itemId}`);
 
         if (qtyEl) qtyEl.innerText = data.quantity;
         if (totalEl) totalEl.innerText = money(data.item_total);
 
         updateCartUI(data);
 
-        const row = document.getElementById(`cart-item-${itemId}`);
+        /* 🔥 subtle animation */
+        const row = el(`cart-item-${itemId}`);
         if (row) {
             row.classList.add("cart-updated");
             setTimeout(() => row.classList.remove("cart-updated"), 300);
@@ -95,14 +154,17 @@ async function updateQty(itemId, action, btn = null) {
 }
 
 /* ==============================
-   REMOVE ITEM
+   REMOVE ITEM (IMPROVED)
 ============================== */
 
 async function removeItem(itemId) {
 
-    const row = document.getElementById(`cart-item-${itemId}`);
+    const row = el(`cart-item-${itemId}`);
 
-    if (row) row.style.opacity = "0.5";
+    if (row) {
+        row.style.opacity = "0.6";
+        row.style.pointerEvents = "none";
+    }
 
     try {
 
@@ -111,13 +173,18 @@ async function removeItem(itemId) {
         });
 
         if (!res.success) {
+
+            if (row) {
+                row.style.opacity = "1";
+                row.style.pointerEvents = "auto";
+            }
+
             alert(res.message);
-            if (row) row.style.opacity = "1";
             return;
         }
 
         if (row) {
-            row.style.transition = "0.3s";
+            row.style.transition = "0.25s ease";
             row.style.transform = "scale(0.95)";
             row.style.opacity = "0";
 
@@ -132,7 +199,7 @@ async function removeItem(itemId) {
 }
 
 /* ==============================
-   CART SYNC ON PAGE LOAD
+   CART SYNC ON LOAD
 ============================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -151,10 +218,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ==============================
-   CHECKOUT NAVIGATION (FIXED)
+   CHECKOUT BUTTON SAFETY
 ============================== */
 
-// SAFE: only attach if element exists
 const checkoutBtn = document.getElementById("checkoutBtn");
 
 if (checkoutBtn) {
@@ -162,4 +228,32 @@ if (checkoutBtn) {
         e.preventDefault();
         window.location.href = "/checkout/";
     });
+}
+
+
+/* ==============================
+   TOAST FUNCTION
+============================== */
+
+function showToast(message, type = "info") {
+
+    const container = document.getElementById("toast-container");
+
+    if (!container) return;
+
+    const toast = document.createElement("div");
+
+    toast.className = `toast ${type}`;
+
+    toast.innerText = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(120%)";
+
+        setTimeout(() => toast.remove(), 300);
+
+    }, 2500);
 }

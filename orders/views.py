@@ -117,6 +117,17 @@ def create_checkout(request):
     # =========================================
 
     if payment_method == "COD":
+        # =========================================
+        # COD LIMIT CHECK
+        # =========================================
+
+        if cart.total_amount > 2000:
+            return JsonResponse({
+
+                "success": False,
+                "message": "Cash on Delivery is allowed only for orders below ₹2000. Please choose online payment."
+
+            }, status=400)
 
         # =========================================
         # CREATE ORDER

@@ -5,163 +5,99 @@
 {% block content %}
 {% load static %}
 
-<!-- ================= HERO ================= -->
 
-<section class="hero">
+<!-- ================= HERO SECTION ================= -->
 
-    <div class="hero-overlay"></div>
+<section class="brand-hero">
 
-    <div class="hero-content">
+    <div class="hero-slider">
 
-        <span class="hero-tag">
-            NEW SEASON COLLECTION
-        </span>
-
-        <h1>
-            Upgrade Your Fashion Game
-        </h1>
-
-        <p>
-            Discover premium fashion collections,
-            trending outfits, and exclusive deals
-            crafted for modern style lovers.
-        </p>
-
-        <div class="hero-buttons">
-
-            <a href="{% url 'product_list' %}"
-               class="hero-btn primary-btn">
-
-                Shop Collection
-
-            </a>
-
-            <a href="#"
-               class="hero-btn secondary-btn">
-
-                Explore Trends
-
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ================= CAROUSEL ================= -->
-
-<section class="carousel-section">
-
-    <div class="carousel" id="carousel">
-
-        <div class="slide active">
-            <img src="{% static 'home/images/banner1.jpg' %}" alt="">
-            <div class="overlay">
-                <h2>Premium Branded</h2>
-                <p>Focus On User Comforts</p>
-            </div>
-        </div>
-
-        <div class="slide">
-            <img src="{% static 'home/images/banner2.jpg' %}" alt="">
-            <div class="overlay">
-                <h2>New Arrivals</h2>
-                <p>Fresh collection for this season</p>
-            </div>
-        </div>
-
-        <div class="slide">
-            <img src="{% static 'home/images/banner3.jpg' %}" alt="">
-            <div class="overlay">
-                <h2>Latest Designs</h2>
-                <p>Collaborated with Top Designers</p>
-
-            </div>
-        </div>
-
-    </div>
-
-    <div class="dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-    </div>
-
-</section>
-
-
-<!-- ================= DEAL BANNER ================= -->
-
-<section class="deal-banner">
-
-    <div class="deal-content">
-
-        <span>LIMITED TIME OFFER</span>
-
-        <h2>Summer Fashion Sale</h2>
-
-        <p>
-           Offer's Coming Soon.
-        </p>
-
-
-    </div>
-
-</section>
-
-<!-- ================= BEST SELLERS ================= -->
-
-<section class="section">
-
-    <h2 class="section-title">
-        Best Sellers
-    </h2>
-
-    <div class="best-seller-grid">
-
-    {% for product in best_sellers %}
-
-    <div class="best-card">
-
-        <a href="{% url 'product_detail' product.slug %}">
-
-            {% if product.primary_image %}
+        <div class="hero-slide active">
 
             <img
-                src="{{ product.primary_image.image.url }}"
-                alt="{{ product.name }}"
-                class="best-product-img"
+                src="{% static 'home/images/hero1.jpg' %}"
+                alt="Premium Cotton Wear"
             >
 
-            {% else %}
+            <div class="hero-overlay"></div>
 
-            <img
-                src="{% static 'home/images/no-image.png' %}"
-                alt="No Image"
-                class="best-product-img"
-            >
+            <div class="hero-content">
 
-            {% endif %}
+                <h1>
+                    Elevate Your Everyday Style
+                </h1>
 
-        </a>
+                <p>
+                    Discover premium cotton T-Shirts, Shirts,
+                    Hoodies & Trousers crafted for comfort,
+                    minimal luxury and modern streetwear fashion.
+                </p>
 
-        <div class="best-card-content">
+                <div class="hero-actions">
+
+                    <a href="{% url 'product_list' %}"
+                       class="hero-btn primary-btn">
+
+                        Shop Collection
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CATEGORY SECTION ================= -->
+
+
+<section class="category-section">
+
+    <div class="section-header">
+
+        <span>SHOP BY CATEGORY</span>
+
+        <h2>
+            Essential Fashion Categories
+        </h2>
+
+    </div>
+
+    <div class="category-grid">
+
+  {% for category in categories|slice:":4" %}
+
+    <a
+        href="/products/?category={{ category.slug }}"
+        class="category-card"
+    >
+
+        {% if category.image %}
+
+        <img
+            src="{{ category.image.url }}"
+            alt="{{ category.name }}"
+        >
+
+        {% endif %}
+
+        <div class="category-overlay">
 
             <h3>
-                {{ product.name }}
+                {{ category.name }}
             </h3>
 
-            <a
-                href="{% url 'product_detail' product.slug %}"
-                class="view-btn"
-            >
-                View Product
-            </a>
+            <span>
+                Explore Collection
+            </span>
 
         </div>
 
-    </div>
+    </a>
 
     {% endfor %}
 
@@ -169,78 +105,205 @@
 
 </section>
 
-<!-- ================= WHY SHOP WITH US ================= -->
+<!-- ================= FEATURED PRODUCTS ================= -->
 
-<section class="features-section">
+<section class="featured-section">
 
-    <div class="feature-card">
+    <div class="section-header">
 
-        <div class="feature-icon">🚚</div>
+        <span>BEST SELLERS</span>
 
-        <h3>Fast Delivery</h3>
-
-        <p>
-            Quick and reliable shipping across India.
-        </p>
+        <h2>
+            Trending Premium Wears
+        </h2>
 
     </div>
 
-    <div class="feature-card">
+    <div class="product-grid">
 
-        <div class="feature-icon">🔒</div>
+        {% for product in best_sellers %}
 
-        <h3>Secure Payments</h3>
+        <div class="product-card">
 
-        <p>
-            100% secure checkout with Razorpay protection.
-        </p>
+            <div class="product-image-wrapper">
 
-    </div>
+                <a href="{% url 'product_detail' product.slug %}">
 
-    <div class="feature-card">
+                    {% if product.primary_image %}
 
-        <div class="feature-icon">↩️</div>
+                    <img
+                        src="{{ product.primary_image.image.url }}"
+                        alt="{{ product.name }}"
+                        class="product-image"
+                    >
 
-        <h3>Easy Returns</h3>
+                    {% else %}
 
-        <p>
-            Hassle-free returns and refund support.
-        </p>
+                    <img
+                        src="{% static 'home/images/no-image.png' %}"
+                        alt="No Image"
+                        class="product-image"
+                    >
 
-    </div>
+                    {% endif %}
 
-    <div class="feature-card">
+                </a>
 
-        <div class="feature-icon">⭐</div>
+            </div>
 
-        <h3>Premium Quality</h3>
+            <div class="product-content">
 
-        <p>
-            Carefully selected high-quality fashion products.
-        </p>
+                <span class="product-brand">
+                    PREMIUM COTTON
+                </span>
+
+                <h3>
+                    {{ product.name }}
+                </h3>
+
+                <div class="product-bottom">
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
 
     </div>
 
 </section>
 
+<!-- ================= BRAND STORY ================= -->
 
-<!-- ================= PROMO BANNERS ================= -->
+<section class="brand-story">
 
-<section class="promo-section">
+    <div class="story-image">
 
-    <div class="promo-card">
-        <h3>🔥 Flat 50% OFF</h3>
-        <p>On Men's Fashion</p>
+        <img
+            src="{% static 'home/images/brand-story.jpg' %}"
+            alt="Brand Story"
+        >
+
     </div>
 
-    <div class="promo-card">
-        <h3>👗 Women Collection</h3>
-        <p>New Trending Styles</p>
+    <div class="story-content">
+
+        <span>OUR BRAND</span>
+
+        <h2>
+            Built For Modern Fashion Lovers
+        </h2>
+
+        <p>
+            We create premium cotton clothing that combines
+            comfort, durability and luxury aesthetics.
+            Every product is designed for everyday wear
+            while maintaining elevated street-style appeal.
+        </p>
+
+        <div class="story-features">
+
+            <div class="story-feature">
+                 100% Premium Cotton
+            </div>
+
+            <div class="story-feature">
+                 Minimal Luxury Design
+            </div>
+
+            <div class="story-feature">
+                Long Lasting Comfort
+            </div>
+
+            <div class="story-feature">
+                 Modern Streetwear Fits
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="promo-card">
-        <h3>👟 Footwear Deals</h3>
-        <p>Starting ₹499</p>
+</section>
+
+<!-- ================= WHY CHOOSE US ================= -->
+
+<section class="why-us-section">
+
+    <div class="section-header">
+
+        <span>WHY CHOOSE US</span>
+
+        <h2>
+            Premium Experience Guaranteed
+        </h2>
+
+    </div>
+
+    <div class="why-grid">
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                🚚
+            </div>
+
+            <h3>Fast Delivery</h3>
+
+            <p>
+                Quick delivery across India
+                with live tracking support.
+            </p>
+
+        </div>
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                🔒
+            </div>
+
+            <h3>Secure Payments</h3>
+
+            <p>
+                Razorpay protected secure
+                online payment system.
+            </p>
+
+        </div>
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                ⭐
+            </div>
+
+            <h3>Premium Quality</h3>
+
+            <p>
+                Carefully crafted luxury
+                cotton fashion products.
+            </p>
+
+        </div>
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                ↩️
+            </div>
+
+            <h3>Easy Returns</h3>
+
+            <p>
+                Hassle-free returns with
+                smooth customer support.
+            </p>
+
+        </div>
+
     </div>
 
 </section>

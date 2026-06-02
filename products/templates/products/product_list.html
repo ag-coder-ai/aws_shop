@@ -16,6 +16,8 @@
 
     <link rel="stylesheet"
           href="{% static 'products/css/product_list.css' %}">
+    <script src="{% static 'products/js/product_list.js' %}"></script>
+
 
 </head>
 
@@ -29,9 +31,13 @@
 
     <aside class="sidebar">
 
-        <div class="sidebar-header">
+      <div class="sidebar-header">
 
             <h2>Filters</h2>
+
+            <div class="sidebar-close" onclick="toggleFilters()">
+                ✕
+            </div>
 
         </div>
 
@@ -229,6 +235,7 @@
     </aside>
 
 
+
     <!-- ================================================= -->
     <!-- PRODUCT SECTION -->
     <!-- ================================================= -->
@@ -249,11 +256,17 @@
 
             </div>
 
+          <div class="mobile-topbar">
+
+            <button class="mobile-filter-btn" onclick="toggleFilters()">
+                ☰ Filters
+            </button>
+
             <div class="product-count">
-
-                {{ page_obj.paginator.count }} Products
-
+                {{ products.count }} Products
             </div>
+
+        </div>
 
         </div>
 

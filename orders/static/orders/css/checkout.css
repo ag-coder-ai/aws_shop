@@ -11,8 +11,12 @@
 }
 
 body{
-    background: #f4f6f9;
-    color: #111827;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    background:#f6f7fb;
+    color:#111827;
+
+    /* ✅ FIX: fixed navbar offset */
+    padding-top:65px;
 }
 
 /* =========================================
@@ -494,5 +498,203 @@ body{
     .checkout-item{
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+
+
+
+/* =========================================
+   🔥 ULTRA RESPONSIVE FIX (MOBILE FIRST FLOW)
+========================================= */
+
+/* MOBILE-FIRST STACK ORDER FIX */
+@media (max-width: 1000px) {
+
+    .checkout-wrapper {
+        flex-direction: column;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    /* FORCE ORDER FLOW LIKE REAL APPS */
+    .checkout-left {
+        order: 1;
+        width: 100%;
+    }
+
+    .checkout-right {
+        order: 2;
+        width: 100%;
+        position: relative;
+        top: unset;
+    }
+
+    /* CART ITEMS FULL WIDTH */
+    .checkout-card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    /* ITEM LAYOUT FIX */
+    .checkout-item {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .item-left {
+        width: 100%;
+    }
+
+    .item-image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .item-details h4 {
+        font-size: 14px;
+        line-height: 1.3;
+    }
+
+    /* PRICE ALIGN FIX */
+    .item-right {
+        align-self: flex-start;
+        font-size: 16px;
+    }
+
+    /* =====================================
+       🧾 SHIPPING FORM MOBILE FIX
+    ===================================== */
+
+    .input-group input,
+    .input-group textarea {
+        width: 100%;
+        font-size: 14px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .grid-2,
+    .grid-3 {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    /* LABEL FIX */
+    .input-group label {
+        font-size: 12px;
+    }
+
+    /* =====================================
+       🧾 SUMMARY CARD MOBILE FIX
+    ===================================== */
+
+    .summary-card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .summary-row {
+        font-size: 13px;
+    }
+
+    .summary-total {
+        font-size: 18px;
+    }
+
+    /* =====================================
+       🛒 PAYMENT BOX MOBILE
+    ===================================== */
+
+    .payment-option {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    /* BUTTON FULL WIDTH LIKE APP */
+    .place-order-btn {
+        width: 100%;
+        font-size: 14px;
+        padding: 14px;
+    }
+}
+
+/* =========================================
+   📱 SMALL MOBILE (VERY IMPORTANT FIX)
+========================================= */
+
+@media (max-width: 600px) {
+
+    .checkout-wrapper {
+        padding: 12px;
+    }
+
+    .checkout-top h1 {
+        font-size: 22px;
+    }
+
+    .checkout-top p {
+        font-size: 13px;
+    }
+
+    /* CARD SPACING FIX */
+    .checkout-card,
+    .summary-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    /* IMAGE + TEXT STACK CLEAN */
+    .item-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .item-details h4 {
+        font-size: 13px;
+    }
+
+    .item-details p {
+        font-size: 12px;
+    }
+
+    /* INPUT COMFORT FIX */
+    .input-group input,
+    .input-group textarea {
+        font-size: 13px;
+    }
+
+    /* SUMMARY TEXT */
+    .summary-row {
+        font-size: 12px;
+    }
+
+    .summary-total {
+        font-size: 16px;
+    }
+}
+
+/* =========================================
+   📲 EXTRA SMALL DEVICES (iPhone SE etc.)
+========================================= */
+
+@media (max-width: 380px) {
+
+    .checkout-top h1 {
+        font-size: 20px;
+    }
+
+    .checkout-card,
+    .summary-card {
+        padding: 12px;
+    }
+
+    .item-image {
+        width: 55px;
+        height: 55px;
+    }
+
+    .place-order-btn {
+        font-size: 13px;
     }
 }

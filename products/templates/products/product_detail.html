@@ -298,15 +298,14 @@
 
     </div>
 
-
     <div class="related-scroll">
 
         {% for item in related_products %}
 
             <div class="related-card">
 
-                <a href="{% url 'product_detail' item.slug %}">
-
+                <a href="{% url 'product_detail' item.slug %}"
+                   class="related-link">
 
                     <!-- IMAGE -->
 
@@ -330,11 +329,11 @@
 
                     </div>
 
-
-
                     <!-- BODY -->
 
                     <div class="related-body">
+
+                        <!-- BRAND -->
 
                         <p class="related-brand">
 
@@ -342,18 +341,23 @@
 
                         </p>
 
+                        <!-- TITLE -->
+
                         <h4 class="related-title">
 
                             {{ item.name }}
 
                         </h4>
 
-
                         <!-- PRICE -->
 
-                        <div class="related-price">
+                        <div class="related-footer">
 
-                            ₹{{ item.variants.first.wholesale_price }}
+                            <div class="related-price">
+
+                                ₹{{ item.variants.first.wholesale_price }}
+
+                            </div>
 
                         </div>
 
@@ -368,7 +372,6 @@
     </div>
 
 </section>
-
 
 
 <!-- ===================================================== -->

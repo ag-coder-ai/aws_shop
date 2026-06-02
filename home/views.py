@@ -5,14 +5,21 @@ from django.shortcuts import render
 from products.models import Product
 from products.models import Category
 
-
 def home_view(request):
 
-    categories = Category.objects.all()[:8]
+    categories = Category.objects.filter(
+        is_active=True
+    ).order_by(
+        "name"
+    )[:6]
 
     best_sellers = Product.objects.filter(
         is_active=True
-    ).order_by("-created_at")[:8]
+    ).select_related(
+        "category"
+    ).order_by(
+        "-created_at"
+    )[:8]
 
     context = {
 

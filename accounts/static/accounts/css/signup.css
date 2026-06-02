@@ -8,6 +8,7 @@ font-family:Arial,sans-serif;
 body{
 background:#f3f4f6;
 min-height:100vh;
+padding-top:65px;
 }
 
 /* CONTAINER */
@@ -16,58 +17,7 @@ min-height:100vh;
 display:grid;
 grid-template-columns:1fr 1fr;
 min-height:100vh;
-}
-
-/* LEFT */
-
-.signup-left{
-position:relative;
-background:
-linear-gradient(
-rgba(17,24,39,0.7),
-rgba(17,24,39,0.85)
-),
-url("../images/signup-banner.jpg");
-
-background-size:cover;
-background-position:center;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-padding:40px;
-color:white;
-}
-
-.left-content{
-position:relative;
-z-index:2;
-max-width:500px;
-}
-
-.left-content h1{
-font-size:54px;
-margin-bottom:20px;
-}
-
-.left-content p{
-font-size:18px;
-line-height:1.8;
-opacity:0.9;
-margin-bottom:35px;
-}
-
-.features{
-display:grid;
-gap:15px;
-}
-
-.feature{
-background:rgba(255,255,255,0.08);
-padding:14px 18px;
-border-radius:10px;
-backdrop-filter:blur(10px);
+ padding-top:10px;
 }
 
 /* RIGHT */

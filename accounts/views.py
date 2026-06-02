@@ -401,7 +401,7 @@ class LogoutView(View):
             "Logged out successfully."
         )
 
-        redirect_url = reverse("login")
+        redirect_url = reverse("product_list")
 
         # =========================
         # AJAX RESPONSE

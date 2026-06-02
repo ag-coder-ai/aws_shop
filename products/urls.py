@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from .views import ProductListView,ProductDetailView
+from .views import ProductListView,ProductDetailView,category_products
 
 
 urlpatterns = [
@@ -18,4 +18,10 @@ urlpatterns = [
         ProductDetailView.as_view(),
         name="product_detail"
     ),
+    path(
+        "category/<slug:slug>/",
+        category_products,
+        name="category_products"
+    ),
+
 ]

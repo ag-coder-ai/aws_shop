@@ -1,27 +1,29 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Order Success</title>
 
-    <link rel="stylesheet"
-          href="{% static 'orders/css/success.css' %}">
+    <link rel="stylesheet" href="{% static 'orders/css/success.css' %}">
 
+    <!-- IMPORTANT: if navbar JS exists, ensure it's included -->
+    <script defer src="{% static 'js/navbar.js' %}"></script>
 </head>
 
 <body>
+
 {% include 'partials/navbar.html' %}
 
 <div class="success-container">
 
     <div class="success-card">
 
-        <div class="success-icon">
-            ✓
-        </div>
+        <div class="success-icon">✓</div>
 
         <h1>Order Placed Successfully</h1>
 
@@ -54,13 +56,9 @@
 
         <div class="success-actions">
 
-            <a href="/" class="continue-btn">
-                Continue Shopping
-            </a>
+            <a href="/" class="continue-btn">Continue Shopping</a>
 
-            <a href="/orders/history/" class="orders-btn">
-                View Orders
-            </a>
+            <a href="/orders/history/" class="orders-btn">View Orders</a>
 
         </div>
 

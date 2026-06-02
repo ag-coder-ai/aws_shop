@@ -1,21 +1,33 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Order Detail</title>
+
     <link rel="stylesheet" href="{% static 'orders/css/detail.css' %}">
+
 </head>
 
 <body>
+
+<!-- ✅ NAVBAR (UNCHANGED, MUST HAVE IDS INSIDE NAVBAR.HTML) -->
 {% include 'partials/navbar.html' %}
 
-<div class="detail-container">
+<!-- PAGE WRAPPER -->
+<main class="detail-container">
 
-    <!-- HEADER -->
-    <div class="detail-header">
+    <!-- =========================
+         HEADER
+    ========================== -->
+    <section class="detail-header">
 
-        <div>
+        <div class="order-title">
             <p class="small-text">Order ID</p>
             <h1>#{{ order.order_id }}</h1>
         </div>
@@ -45,32 +57,33 @@
             {{ order.status }}
         </div>
 
-    </div>
+    </section>
 
-    <!-- META -->
-    <div class="meta-grid">
+    <!-- =========================
+         META INFO
+    ========================== -->
+    <section class="meta-grid">
 
         <div class="meta-card">
-            <p class="meta-label">Ordered On</p>
+            <p>Ordered On</p>
             <h3>{{ order.created_at|date:"d M Y, h:i A" }}</h3>
         </div>
 
         <div class="meta-card">
-            <p class="meta-label">Payment</p>
+            <p>Payment</p>
             <h3>{{ order.payment_method }}</h3>
         </div>
 
-        <div class="meta-card">
-            <p class="meta-label">Total</p>
-            <h3 class="price">₹{{ order.total }}</h3>
-        </div>
 
-    </div>
 
-    <!-- ITEMS -->
-    <div class="items-section">
+    </section>
 
-        <div class="section-title">Items</div>
+    <!-- =========================
+         ITEMS
+    ========================== -->
+    <section class="items-section">
+
+        <h2>Items</h2>
 
         {% for item in items %}
         <div class="item-card">
@@ -88,48 +101,51 @@
                     <p>Size: {{ item.size }}</p>
                     <p>Color: {{ item.color }}</p>
                     <p>Qty: {{ item.quantity }}</p>
+                    <p>Price: ₹{{ item.price }}</p>
                 </div>
 
             </div>
 
-            <div class="item-price">
-                ₹{{ item.price }}
-            </div>
+
 
         </div>
         {% endfor %}
 
-    </div>
+    </section>
 
-    <!-- RETURN SECTION (ONLY AFTER DELIVERY) -->
+    <!-- =========================
+         RETURN (ONLY DELIVERED)
+    ========================== -->
     {% if order.status == "DELIVERED" %}
 
-    <div class="return-box">
+    <section class="return-box">
 
         <h3>Return Order</h3>
 
         <select id="returnReason">
-            <option value="Damaged">Damaged Product</option>
-            <option value="Wrong Item">Wrong Item Delivered</option>
-            <option value="Size Issue">Size Issue</option>
-            <option value="Quality Issue">Quality Issue</option>
-            <option value="Other">Other</option>
+            <option>Damaged Product</option>
+            <option>Wrong Item Delivered</option>
+            <option>Size Issue</option>
+            <option>Quality Issue</option>
+            <option>Other</option>
         </select>
 
         <textarea id="returnComment"
-                  placeholder="Describe your issue..."></textarea>
+                  placeholder="Describe issue..."></textarea>
 
         <button class="return-btn"
                 onclick="requestReturn('{{ order.order_id }}')">
             Request Return
         </button>
 
-    </div>
+    </section>
 
     {% endif %}
 
-    <!-- SUMMARY -->
-    <div class="summary-card">
+    <!-- =========================
+         SUMMARY
+    ========================== -->
+    <section class="summary-card">
 
         <div class="summary-row">
             <span>Subtotal</span>
@@ -151,10 +167,11 @@
             <span>₹{{ order.total }}</span>
         </div>
 
-    </div>
+    </section>
 
-</div>
+</main>
 
+<!-- JS -->
 <script src="{% static 'orders/js/detail.js' %}"></script>
 
 </body>

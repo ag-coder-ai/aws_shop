@@ -507,3 +507,35 @@ class ProductDetailView(DetailView):
         context["is_in_wishlist"] = is_in_wishlist
 
         return context
+
+
+from django.shortcuts import render, get_object_or_404
+
+from .models import Category, Product
+
+
+def category_products(request, slug):
+
+    category = get_object_or_404(
+        Category,
+        slug=slug
+    )
+
+    products = Product.objects.filter(
+        category=category,
+        is_active=True
+    )
+
+    context = {
+
+        "category": category,
+
+        "products": products,
+
+    }
+
+    return render(
+        request,
+        "products/category_products.html",
+        context
+    )

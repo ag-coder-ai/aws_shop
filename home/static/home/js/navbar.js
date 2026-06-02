@@ -2,24 +2,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const menuToggle = document.getElementById("menuToggle");
     const nav = document.getElementById("nav");
+    const overlay = document.querySelector(".nav-overlay");
 
     const accountBtn = document.getElementById("accountBtn");
     const dropdown = document.getElementById("dropdownMenu");
-
     const logoutForm = document.getElementById("logoutForm");
 
     /* =========================
-       MOBILE MENU
+       MOBILE MENU TOGGLE (SAFE)
     ========================= */
-    if (menuToggle && nav) {
+
+    if (menuToggle && nav && overlay) {
+
         menuToggle.addEventListener("click", () => {
-            nav.classList.toggle("show");
+
+            nav.classList.toggle("active");
+            overlay.classList.toggle("active");
+
+            const isOpen = nav.classList.contains("active");
+
+            menuToggle.innerHTML = isOpen ? "✕" : "☰";
+
+            document.body.style.overflow = isOpen ? "hidden" : "auto";
+        });
+
+        /* CLOSE NAV ON LINK CLICK */
+        nav.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                nav.classList.remove("active");
+                overlay.classList.remove("active");
+                menuToggle.innerHTML = "☰";
+                document.body.style.overflow = "auto";
+            });
+        });
+
+        /* CLOSE ON OVERLAY CLICK */
+        overlay.addEventListener("click", () => {
+            nav.classList.remove("active");
+            overlay.classList.remove("active");
+            menuToggle.innerHTML = "☰";
+            document.body.style.overflow = "auto";
         });
     }
 
     /* =========================
-       DROPDOWN TOGGLE
+       ACCOUNT DROPDOWN
     ========================= */
+
     if (accountBtn && dropdown) {
 
         accountBtn.addEventListener("click", (e) => {
@@ -32,17 +61,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 dropdown.classList.remove("show");
             }
         });
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                dropdown.classList.remove("show");
-            }
-        });
     }
 
     /* =========================
-       LOGOUT (REAL-TIME FIX)
+       LOGOUT
     ========================= */
+
     if (logoutForm) {
 
         logoutForm.addEventListener("submit", async function (e) {
@@ -64,16 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (data.success) {
-
-                    // 🔥 INSTANT UI FIX (NO REFRESH NEEDED)
-                    const account = document.getElementById("accountWrapper");
-                    const guest = document.getElementById("guestMenu");
-
-                    if (account) account.style.display = "none";
-                    if (guest) guest.style.display = "flex";
-
                     window.location.href = data.redirect_url;
-
                 } else {
                     alert(data.message);
                 }
