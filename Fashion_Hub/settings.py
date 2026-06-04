@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-a$l6a2k0ws+*iw7pn0fg@e8n%ulm09kd-isi^(-m3x$!-d1@3q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["10.27.67.164","127.0.0.1","192.168.1.16"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'Fashion_Hub.urls'
@@ -130,7 +131,7 @@ LOGIN_URL = "login"
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # settings.py
 
