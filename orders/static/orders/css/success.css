@@ -28,16 +28,12 @@ body {
 
 .success-container {
     min-height: calc(100vh - 80px);
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     padding: 20px;
-
-    /* CRITICAL FIX: prevents blocking navbar clicks */
     position: relative;
-    z-index: 1;
+
 }
 
 /* =========================================

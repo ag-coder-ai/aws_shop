@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+
+
     const menuToggle = document.getElementById("menuToggle");
     const nav = document.getElementById("nav");
     const overlay = document.querySelector(".nav-overlay");
@@ -9,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutForm = document.getElementById("logoutForm");
 
     /* =========================
-       MOBILE MENU TOGGLE (SAFE)
+       MOBILE MENU TOGGLE
     ========================= */
 
     if (menuToggle && nav && overlay) {
@@ -26,7 +28,13 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.style.overflow = isOpen ? "hidden" : "auto";
         });
 
-        /* CLOSE NAV ON LINK CLICK */
+        overlay.addEventListener("click", () => {
+            nav.classList.remove("active");
+            overlay.classList.remove("active");
+            menuToggle.innerHTML = "☰";
+            document.body.style.overflow = "auto";
+        });
+
         nav.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", () => {
                 nav.classList.remove("active");
@@ -35,36 +43,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.body.style.overflow = "auto";
             });
         });
-
-        /* CLOSE ON OVERLAY CLICK */
-        overlay.addEventListener("click", () => {
-            nav.classList.remove("active");
-            overlay.classList.remove("active");
-            menuToggle.innerHTML = "☰";
-            document.body.style.overflow = "auto";
-        });
     }
 
     /* =========================
-       ACCOUNT DROPDOWN
+       ACCOUNT DROPDOWN (FIXED SAFE VERSION)
     ========================= */
 
     if (accountBtn && dropdown) {
-
-        accountBtn.addEventListener("click", (e) => {
+        accountBtn.addEventListener("click", function (e) {
+            e.preventDefault();
             e.stopPropagation();
             dropdown.classList.toggle("show");
         });
 
-        document.addEventListener("click", (e) => {
-            if (!accountBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        document.addEventListener("click", function (e) {
+
+            if (!accountBtn.contains(e.target) &&
+                !dropdown.contains(e.target)) {
+
                 dropdown.classList.remove("show");
             }
         });
+
+    } else {
+        console.warn("Dropdown elements not found on this page");
     }
 
     /* =========================
-       LOGOUT
+       LOGOUT HANDLER
     ========================= */
 
     if (logoutForm) {
@@ -94,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
             } catch (err) {
-                console.error(err);
+                console.error("Logout error:", err);
                 alert("Logout failed");
             }
         });

@@ -21,8 +21,8 @@ html {
 /* =========================================
    HEADER WRAPPER
 ========================================= */
-
 .header {
+    z-index: 10000;
     position: fixed;
     top: 0;
     left: 0;
@@ -37,7 +37,7 @@ html {
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
-    z-index: 10000;
+    z-index: 999999; /* 🔥 highest priority */
 }
 
 /* =========================================
@@ -115,6 +115,7 @@ html {
     display: flex;
     align-items: center;
     gap: 8px;
+    position: relative;  /* ✅ ADD THIS */
 
     padding: 6px 10px;
 
@@ -145,8 +146,8 @@ html {
 /* =========================================
    DROPDOWN
 ========================================= */
-
 .dropdown-menu {
+    z-index: 10000;
     position: absolute;
     right: 12px;
     top: 60px;
@@ -164,6 +165,8 @@ html {
     flex-direction: column;
 
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    /* safety */
+    overflow: hidden;
 }
 
 .dropdown-menu.show {
@@ -183,9 +186,6 @@ html {
 }
 /* =========================================
    DROPDOWN LINKS + BUTTONS
-========================================= */
-/* =========================================
-   FIX DROPDOWN UNWANTED LINES / BORDERS
 ========================================= */
 
 .dropdown-menu{
@@ -299,42 +299,73 @@ html {
     .menu-toggle {
         display: block;
     }
+/* =========================
+   MOBILE NAV - GLASS SIDEBAR STYLE
+========================= */
 
-    /* mobile nav below header */
     .nav {
         position: fixed;
-        top: 70px;   /* IMPORTANT: BELOW HEADER */
-        left: 0;
+        top: 70px;              /* below header */
+        left: 1%;            /* hidden like sidebar */
 
-        width: 100%;
-        height: auto;
+        width: 88%;             /* same as your sidebar */
+        height: calc(100vh - 70px);
 
-        background: rgba(17, 24, 39, 0.98);
+        padding: 18px;
 
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;   /* CENTER categories */
+        flex-direction: column;
         gap: 10px;
+        border-radius:20px;
 
-        padding: 12px;
+        overflow-y: auto;
 
-        transform: translateY(-120%);
-        transition: 0.3s ease;
+        /* GLASS EFFECT */
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
 
-        z-index: 9999;
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+
+        box-shadow: 10px 0 40px rgba(0, 0, 0, 0.2);
+
+        transition: 0.35s ease;
+
+        z-index: 10000;
     }
 
+    /* OPEN STATE */
     .nav.active {
-        transform: translateY(0);
+        left: 0;
     }
+
+    /* =========================
+       NAV LINKS (CLEAN GLASS STYLE)
+    ========================= */
 
     .nav a {
-        padding: 8px 12px;
-        border-radius: 20px;
+        width: 100%;
+        padding: 12px 14px;
 
-        background: rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        color: #111827;
+        font-size: 14px;
+        font-weight: 500;
+
+        text-decoration: none;
+
+        transition: 0.25s ease;
     }
 
+    .nav a:hover {
+        background: rgba(245, 158, 11, 0.15);
+        border-color: rgba(245, 158, 11, 0.3);
+        transform: translateX(5px);
+    }
     .nav-actions {
         padding-right: 10px;
     }
@@ -356,6 +387,7 @@ html {
 
     .account-btn {
         padding: 6px 8px;
+        position: relative; /* REQUIRED for absolute dropdown positioning */
     }
 }
 
@@ -381,11 +413,12 @@ html {
 
     /* HEADER SAFETY */
     .header {
+        z-index: 10000;
         position: fixed;
         top: 0;
         left: 0;
         height: 70px;
-        z-index: 10000;
+
     }
 
     /* LOGO LEFT (NO SHIFT) */
@@ -450,6 +483,8 @@ html {
         gap: 10px;
 
         overflow-y: auto;
+        overflow-x: visible;   /* ✅ ADD THIS */
+
 
         /* hidden state */
         transform: translateY(-10px);
@@ -458,7 +493,7 @@ html {
 
         transition: 0.25s ease;
 
-        z-index: 9999;
+        z-index: 10000;
     }
 
     /* OPEN STATE */

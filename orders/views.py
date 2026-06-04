@@ -297,11 +297,13 @@ def get_pincode_data(request, pin):
             "success": False,
             "message": str(e)
         })
-
 @login_required
 def order_success(request):
 
     order_id = request.GET.get("order_id")
+
+    if not order_id:
+        return redirect("home")  # or cart page
 
     order = Order.objects.filter(
         order_id=order_id,
@@ -311,7 +313,6 @@ def order_success(request):
     return render(request, "orders/success.html", {
         "order": order
     })
-
 
 # orders/views.py
 
