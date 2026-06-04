@@ -1,0 +1,1 @@
+web: gunicorn Fashion_Hub.wsgi:application
