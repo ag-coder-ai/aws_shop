@@ -173,7 +173,7 @@ RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET", default="")
 
 
 
-from decouple import config
+
 EMAIL_TIMEOUT = 10
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
