@@ -9,16 +9,22 @@ from payments.models import Payment
 from django.views.decorators.csrf import csrf_exempt
 from orders.services import send_order_email
 from orders.models import OrderItem
+from carts.models import Cart
 
 import razorpay
 from django.conf import settings
 
-client = razorpay.Client(
-    auth=(
-        settings.RAZORPAY_KEY_ID,
-        settings.RAZORPAY_KEY_SECRET
+import razorpay
+from django.conf import settings
+
+def get_razorpay_client():
+    return razorpay.Client(
+        auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        )
     )
-)
+
 
 @login_required
 def create_payment(request):
@@ -39,11 +45,14 @@ def create_payment(request):
     except Cart.DoesNotExist:
         return JsonResponse({"success": False, "message": "Cart not found"})
 
+    client = get_razorpay_client()
+
     razorpay_order = client.order.create({
         "amount": int(cart.total_amount * 100),
         "currency": "INR",
         "payment_capture": 1
     })
+
 
     payment = Payment.objects.create(
         order=None,  # IMPORTANT: no order yet
@@ -83,6 +92,8 @@ def verify_payment(request):
     data = request.POST
 
     try:
+        client = get_razorpay_client()
+
         client.utility.verify_payment_signature({
             "razorpay_order_id": data["razorpay_order_id"],
             "razorpay_payment_id": data["razorpay_payment_id"],
