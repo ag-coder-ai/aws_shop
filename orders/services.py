@@ -225,41 +225,37 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 
+
+
+import resend
+
+from django.template.loader import render_to_string
+
 def send_order_email(order, subject, template_name, context_extra=None):
 
+    if context_extra is None:
+        context_extra = {}
+
+    context = {
+        "order": order,
+        "user": order.user,
+        **context_extra
+    }
+
+    html_content = render_to_string(template_name, context)
+
     try:
-        if context_extra is None:
-            context_extra = {}
+        response = resend.Emails.send({
+            "from": "Your Store <onboarding@resend.dev>",
+            "to": order.user.email,
+            "subject": subject,
+            "html": html_content,
+        })
 
-        context = {
-            "order": order,
-            "user": order.user,
-            **context_extra
-        }
+        print("RESEND RESPONSE:", response)
 
-        html_content = render_to_string(template_name, context)
+        print("EMAIL SENT SUCCESSFULLY")
 
-        text_content = f"""
-        Hello {order.user.first_name or 'Customer'},
 
-        {subject}
-
-        Order ID: {order.order_id}
-
-        Thank you for shopping with us.
-        """
-
-        email = EmailMultiAlternatives(
-            subject=subject,
-            body=text_content,
-            from_email=settings.EMAIL_HOST_USER,
-            to=[order.user.email],
-        )
-
-        email.attach_alternative(html_content, "text/html")
-
-        email.send(fail_silently=False)
     except Exception as e:
-        print("EMAIL SYSTEM ERROR:", e)
-
-
+        print("EMAIL ERROR:", e)
