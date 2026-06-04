@@ -1,529 +1,417 @@
-<!-- =========================================
-     FOOTER START
-========================================= -->
 <style>
 
-    /* =========================================
-   FOOTER
-========================================= */
-/* =========================================
-   FOOTER
-========================================= */
 
-.footer{
-    background:#0f1115;
-    color:#ffffff;
-    margin-top:80px;
-    overflow:hidden;
+/* =========================
+   ROOT
+========================= */
+
+:root{
+    --bg:#0b0d12;
+    --card:#141a24;
+    --text:#ffffff;
+    --muted:#9aa3b2;
+    --border:rgba(255,255,255,0.08);
+    --accent:#7c5cff;
+    --radius:14px;
 }
 
-/* =========================================
-   COMMON
-========================================= */
+/* =========================
+   BASE
+========================= */
 
-.container{
-    width:90%;
-    max-width:1400px;
+.footer{
+    background:linear-gradient(180deg,#0f121a,#0b0d12);
+    color:var(--text);
+    margin-top:80px;
+    padding-top:40px;
+}
+
+/* container */
+.footer-container{
+    width:92%;
+    max-width:1200px;
     margin:auto;
 }
 
-.footer a{
-    text-decoration:none;
-    transition:0.3s ease;
-}
-
-.footer ul{
-    list-style:none;
-    padding:0;
-    margin:0;
-}
-
-/* =========================================
-   TOP FOOTER
-========================================= */
+/* =========================
+   TOP LAYOUT
+========================= */
 
 .footer-top{
     display:grid;
-    grid-template-columns:
-        1.8fr
-        1fr
-        1fr
-        1fr;
-    gap:50px;
-    padding:80px 0 60px;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:40px;
+    padding:50px 0;
 }
 
-/* =========================================
-   BRAND
-========================================= */
-
+/* BRAND */
 .footer-logo{
-    font-size:32px;
+    font-size:30px;
     font-weight:900;
-    color:#ffffff;
-    letter-spacing:2px;
-    display:inline-block;
-    margin-bottom:24px;
-}
-
-.footer-description{
-    color:#b5b5b5;
-    line-height:1.9;
-    font-size:15px;
-    margin-bottom:28px;
-    max-width:340px;
-}
-
-/* =========================================
-   SOCIALS
-========================================= */
-
-.footer-socials{
+    letter-spacing:0.5px;
     display:flex;
+    gap:10px;
     align-items:center;
-    gap:14px;
-    flex-wrap:wrap;
 }
 
-.footer-socials a{
-    width:46px;
-    height:46px;
-    border-radius:50%;
-    background:#1b1f27;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#ffffff;
-    font-size:18px;
-    transition:0.35s ease;
+.footer-desc{
+    color:var(--muted);
+    margin-top:12px;
+    line-height:1.7;
+    font-size:14px;
 }
 
-.footer-socials a:hover{
-    background:#ffffff;
-    color:#111111;
-    transform:translateY(-4px);
-}
-
-/* =========================================
-   TITLES
-========================================= */
+/* =========================
+   TITLE
+========================= */
 
 .footer-title{
-    font-size:18px;
-    font-weight:700;
-    margin-bottom:28px;
+    font-size:15px;
+    margin-bottom:18px;
     position:relative;
 }
 
 .footer-title::after{
     content:"";
-    width:40px;
+    width:30px;
     height:2px;
-    background:#ffffff;
+    background:var(--accent);
     position:absolute;
     left:0;
-    bottom:-10px;
+    bottom:-6px;
 }
 
-/* =========================================
+/* =========================
    LINKS
-========================================= */
+========================= */
 
 .footer-links{
     display:flex;
     flex-direction:column;
-    gap:16px;
+    gap:10px;
 }
 
-.footer-links a{
-    color:#b5b5b5;
-    font-size:15px;
-    transition:0.3s ease;
+/* ITEM CARD */
+.footer-item{
+    position:relative;
 }
 
-.footer-links a:hover{
-    color:#ffffff;
-    padding-left:6px;
+/* LINK */
+.footer-item a{
+    display:block;
+    padding:12px 14px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);
+    color:#fff;
+    text-decoration:none;
+    transition:0.25s;
+    font-size:14px;
 }
 
-/* =========================================
-   MIDDLE BAR
-========================================= */
-
-.footer-middle{
-    border-top:1px solid rgba(255,255,255,0.08);
-    border-bottom:1px solid rgba(255,255,255,0.08);
+.footer-item a:hover{
+    background:rgba(124,92,255,0.12);
+    border-color:rgba(124,92,255,0.4);
+    transform:translateY(-2px);
 }
 
-.footer-middle-wrapper{
+/* =========================
+   DESKTOP POPUP (CLEAN)
+========================= */
+
+.footer-popup{
+    position:absolute;
+    top:50%;
+    left:105%;
+    width:230px;
+    transform:translateY(-50%);
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+
+    opacity:0;
+    visibility:hidden;
+    transition:0.25s;
+    z-index:99;
+}
+
+.footer-item:hover .footer-popup{
+    opacity:1;
+    visibility:visible;
+}
+
+/* popup text */
+.footer-popup h4{
+    font-size:14px;
+    margin-bottom:6px;
+    color:#fff;
+}
+
+.footer-popup p{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.4;
+}
+
+/* =========================
+   FEATURES (MODERN CARDS)
+========================= */
+
+.footer-features{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:25px;
-    padding:28px 0;
+    gap:16px;
+    padding:30px 0;
+    border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
 }
 
-.footer-feature{
+.feature{
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
     display:flex;
+    gap:10px;
     align-items:center;
-    justify-content:center;
-    gap:14px;
-    text-align:center;
+    font-size:13px;
 }
 
-.footer-feature i{
-    font-size:22px;
-}
-
-.footer-feature span{
-    font-size:15px;
-    color:#d6d6d6;
-}
-
-/* =========================================
-   BOTTOM FOOTER
-========================================= */
+/* =========================
+   BOTTOM
+========================= */
 
 .footer-bottom{
-    padding:24px 0;
-}
-
-.footer-bottom-wrapper{
     display:flex;
     justify-content:space-between;
-    align-items:center;
-    gap:20px;
+    padding:20px 0;
+    color:var(--muted);
+    font-size:13px;
 }
 
-.footer-bottom p{
-    color:#9f9f9f;
-    font-size:14px;
-}
-
-.footer-bottom-links{
-    display:flex;
-    align-items:center;
-    gap:24px;
-    flex-wrap:wrap;
-}
-
-.footer-bottom-links a{
-    color:#9f9f9f;
-    font-size:14px;
-}
-
-.footer-bottom-links a:hover{
-    color:#ffffff;
-}
-
-/* =========================================
-   LARGE TABLETS
-========================================= */
-
-@media(max-width:1100px){
-
-    .footer-top{
-        grid-template-columns:
-            repeat(2,1fr);
-        gap:40px;
-    }
-
-    .footer-middle-wrapper{
-        grid-template-columns:
-            repeat(2,1fr);
-    }
-
-}
-/* =========================================
-   MOBILE FOOTER - CLEAN ROW LAYOUT
-========================================= */
+/* =========================
+   MOBILE (PRO UI)
+========================= */
 
 @media(max-width:768px){
 
-    .footer{
-        margin-top:60px;
-    }
-
-    /* TOP FOOTER → STACKED LAYOUT */
+    /* STACK TOP INTO FLEX GRID */
     .footer-top{
-        display:grid;
-        grid-template-columns:1fr;
-        gap:28px;
-
-        padding:50px 16px 40px;
-    }
-
-    /* EACH COLUMN FULL WIDTH CARD */
-    .footer-column{
-        width:100%;
-
-        background:rgba(255,255,255,0.03);
-        border:1px solid rgba(255,255,255,0.08);
-        border-radius:16px;
-
-        padding:18px;
-    }
-
-    /* BRAND STAYS FULL WIDTH */
-    .footer-brand{
-        grid-column:auto;
-    }
-
-    .footer-logo{
-        font-size:24px;
-        margin-bottom:14px;
-    }
-
-    .footer-description{
-        font-size:14px;
-        line-height:1.7;
-        max-width:100%;
-    }
-
-    /* SECTION TITLE */
-    .footer-title{
-        font-size:16px;
-        margin-bottom:18px;
-    }
-
-    /* LINKS */
-    .footer-links{
-        gap:12px;
-    }
-
-    .footer-links a{
-        font-size:14px;
-    }
-
-    /* SOCIAL ICONS */
-    .footer-socials a{
-        width:42px;
-        height:42px;
-        font-size:16px;
-    }
-
-    /* MIDDLE SECTION → CLEAN GRID */
-    .footer-middle-wrapper{
-        display:grid;
-        grid-template-columns:1fr;
-        gap:16px;
-        padding:20px 16px;
-    }
-
-    .footer-feature{
         display:flex;
-        align-items:center;
-        justify-content:flex-start;
+        flex-wrap:wrap;
         gap:12px;
+    }
 
-        background:#151922;
-        border-radius:12px;
+    .footer-brand{
+        width:100%;
+    }
+
+    /* 2 COLUMN LAYOUT */
+    .footer-column{
+        width:calc(50% - 6px);
+        background:rgba(255,255,255,0.03);
+        border:1px solid var(--border);
+        border-radius:14px;
         padding:14px;
-        text-align:left;
     }
 
-    .footer-feature i{
-        font-size:18px;
+    /* LINKS GRID */
+    .footer-links{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
     }
 
-    .footer-feature span{
-        font-size:14px;
+    .footer-item a{
+        font-size:12px;
+        text-align:center;
+        padding:10px;
     }
 
-    /* BOTTOM SECTION */
-    .footer-bottom-wrapper{
+    /* ACCORDION */
+    .footer-popup{
+        position:relative;
+        left:auto;
+        top:auto;
+        transform:none;
+
+        max-height:0;
+        overflow:hidden;
+        opacity:1;
+        visibility:visible;
+
+        padding:0;
+        margin-top:0;
+
+        background:rgba(124,92,255,0.08);
+        border:1px solid rgba(124,92,255,0.2);
+        border-radius:10px;
+
+        transition:max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .footer-item.active .footer-popup{
+        max-height:240px;
+        padding:10px;
+        margin-top:8px;
+    }
+
+    .footer-features{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .footer-bottom{
         flex-direction:column;
         text-align:center;
-        gap:12px;
-        padding:20px 16px;
-    }
-
-    .footer-bottom-links{
-        justify-content:center;
-        gap:16px;
-        flex-wrap:wrap;
+        gap:8px;
     }
 }
+
+/* SMALL MOBILE */
+@media(max-width:480px){
+
+    .footer-column{
+        width:100%;
+    }
+
+    .footer-links{
+        grid-template-columns:1fr;
+    }
+
+    .footer-features{
+        grid-template-columns:1fr;
+    }
+}
+
+
 </style>
+
+<!-- ========================= FOOTER ========================= -->
 
 <footer class="footer">
 
-    <!-- TOP FOOTER -->
-    <div class="footer-top container">
+<div class="footer-container">
+
+    <!-- TOP -->
+    <div class="footer-top">
 
         <!-- BRAND -->
-        <div class="footer-column footer-brand">
-
-            <a href="/" class="footer-logo">
-                Fashion_Hub
-            </a>
-
-            <p class="footer-description">
-                Premium cotton fashion crafted for comfort,
-                durability, and modern lifestyle.
-                Discover quality T-Shirts, Hoodies,
-                Shirts, and Trousers designed for everyday wear.
+        <div class="footer-brand">
+            <div class="footer-logo">🧵 UnityThreads</div>
+            <p class="footer-desc">
+                Premium cotton streetwear built for comfort, durability and modern lifestyle.
             </p>
-
-            <div class="footer-socials">
-
-                <a href="#" aria-label="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-
-                <a href="#" aria-label="Facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-
-                <a href="#" aria-label="Twitter">
-                    <i class="fab fa-x-twitter"></i>
-                </a>
-
-                <a href="#" aria-label="YouTube">
-                    <i class="fab fa-youtube"></i>
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- SHOP -->
-        <div class="footer-column">
-
-            <h3 class="footer-title">
-                Shop
-            </h3>
-
-            <ul class="footer-links">
-
-                <li>
-                    <a href="#">
-                        T-Shirts
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Hoodies
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Shirts
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Trousers
-                    </a>
-                </li>
-
-            </ul>
-
-
         </div>
 
         <!-- COMPANY -->
         <div class="footer-column">
+            <h3 class="footer-title">Company</h3>
 
-            <h3 class="footer-title">
-                Company
-            </h3>
+            <div class="footer-links">
 
-            <ul class="footer-links">
+                <div class="footer-item">
+                    <a href="#">About</a>
+                    <div class="footer-popup">
+                        <h4>About Us</h4>
+                        <p>We create premium fashion clothing for everyday wear.</p>
+                    </div>
+                </div>
 
-                <li>
-                    <a href="#">
-                        About Us
-                    </a>
-                </li>
+                <div class="footer-item">
+                    <a href="#">Careers</a>
+                    <div class="footer-popup">
+                        <h4>Careers</h4>
+                        <p>Join our growing fashion and tech team.</p>
+                    </div>
+                </div>
 
-                <li>
-                    <a href="#">
-                        Careers
-                    </a>
-                </li>
+                <div class="footer-item">
+                    <a href="#">Blog</a>
+                    <div class="footer-popup">
+                        <h4>Blog</h4>
+                        <p>Latest fashion trends and styling guides.</p>
+                    </div>
+                </div>
 
-                <li>
-                    <a href="#">
-                        Blogs
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Contact
-                    </a>
-                </li>
-
-
-            </ul>
+            </div>
         </div>
+
         <!-- SUPPORT -->
         <div class="footer-column">
+            <h3 class="footer-title">Support</h3>
 
-            <h3 class="footer-title">
-                Support
-            </h3>
+            <div class="footer-links">
 
-            <ul class="footer-links">
+                <div class="footer-item">
+                    <a href="#">Help</a>
+                    <div class="footer-popup">
+                        <h4>Help Center</h4>
+                        <p>Get support for orders and account issues.</p>
+                    </div>
+                </div>
 
-                <li>
-                    <a href="#">
-                        Help Center
-                    </a>
-                </li>
+                <div class="footer-item">
+                    <a href="#">Shipping</a>
+                    <div class="footer-popup">
+                        <h4>Shipping</h4>
+                        <p>Fast delivery across India with tracking.</p>
+                    </div>
+                </div>
 
-                <li>
-                    <a href="#">
-                        Shipping Policy
-                    </a>
-                </li>
+                <div class="footer-item">
+                    <a href="#">Returns</a>
+                    <div class="footer-popup">
+                        <h4>Returns</h4>
+                        <p>Easy return and refund policy.</p>
+                    </div>
+                </div>
 
-                <li>
-                    <a href="#">
-                        Return & Refund
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Privacy Policy
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Terms & Conditions
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
-
-
-    <!-- BOTTOM FOOTER -->
-    <div class="footer-bottom">
-
-        <div class="container footer-bottom-wrapper">
-
-            <p>
-                © 2026 @@@@. All Rights Reserved.
-            </p>
-
+            </div>
         </div>
 
     </div>
 
+    <!-- FEATURES -->
+    <div class="footer-features">
+
+        <div class="feature">🚚 Fast Delivery</div>
+        <div class="feature">🔒 Secure Payment</div>
+        <div class="feature">🔁 Easy Returns</div>
+        <div class="feature">📞 24/7 Support</div>
+
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="footer-bottom">
+        <div>© 2026 UnityThreads</div>
+        <div>Privacy • Terms • Cookies</div>
+    </div>
+
+</div>
+
 </footer>
 
-<!-- =========================================
-     FONT AWESOME
-========================================= -->
+<!-- ========================= JS ========================= -->
 
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-/>
+<script>
+const items = document.querySelectorAll(".footer-item");
+
+items.forEach(item => {
+    const link = item.querySelector("a");
+
+    link.addEventListener("click", (e) => {
+        if(window.innerWidth <= 768){
+            e.preventDefault();
+
+            const isOpen = item.classList.contains("active");
+
+            items.forEach(i => i.classList.remove("active"));
+
+            if(!isOpen){
+                item.classList.add("active");
+            }
+        }
+    });
+});
+</script>

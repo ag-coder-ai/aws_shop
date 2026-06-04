@@ -233,67 +233,187 @@ body {
     border: 1px solid #d1d5db;
     color: #111827;
 }
-
 /* =========================================
-   CANCEL CARD
+   CANCEL CARD (DESKTOP)
 ========================================= */
 
 .cancelled-card {
     max-width: 700px;
-    margin: auto;
+    width: 100%;
+    margin: 40px auto;
     background: #fff;
     border-radius: 24px;
     padding: 40px;
     text-align: center;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
 .cancel-icon {
     width: 80px;
     height: 80px;
-    margin: auto;
+    margin: 0 auto 20px;
     border-radius: 50%;
     background: #fee2e2;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     font-size: 36px;
-    margin-bottom: 20px;
 }
 
 /* =========================================
-   RESPONSIVE
+   MOBILE FIRST FIX
 ========================================= */
 
 @media (max-width: 900px) {
-    .info-grid {
-        grid-template-columns: 1fr;
+
+    .cancelled-card {
+        padding: 28px;
+        border-radius: 18px;
+        margin: 20px 12px;
+    }
+
+    .cancel-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 30px;
     }
 
     .tracking-header h1 {
         font-size: 26px;
     }
 
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 @media (max-width: 600px) {
 
     .tracking-page {
-        padding: 20px 12px;
+        padding: 12px;
     }
 
-    .timeline {
-        padding-left: 24px;
+    .cancelled-card {
+        padding: 20px;
+        border-radius: 14px;
     }
 
-    .timeline-dot {
-        left: -22px;   /* adjust for mobile */
-    }
-
-    .timeline-content {
-        padding: 10px 12px;
+    .cancel-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 26px;
     }
 
     .tracking-header {
-        padding: 20px;
+        padding: 16px;
+    }
+
+    .tracking-header h1 {
+        font-size: 22px;
+        line-height: 1.3;
+    }
+
+    .timeline {
+        padding-left: 20px;
+    }
+
+    .timeline-dot {
+        left: -18px;
+        width: 10px;
+        height: 10px;
+    }
+
+    .timeline-content {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* =========================================
+   CANCEL ACTION BUTTONS (DESKTOP)
+========================================= */
+
+.cancel-actions{
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.shop-btn,
+.back-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    min-width: 180px;
+
+    transition: all 0.25s ease;
+}
+
+/* PRIMARY (Continue Shopping) */
+.shop-btn{
+    background: #111827;
+    color: #fff;
+    border: 1px solid #111827;
+}
+
+.shop-btn:hover{
+    background: #1f2937;
+    transform: translateY(-2px);
+}
+
+/* SECONDARY (Back To Orders) */
+.back-btn{
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+}
+
+.back-btn:hover{
+    background: #e5e7eb;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   MOBILE FIX
+========================================= */
+
+@media (max-width: 768px){
+
+    .cancel-actions{
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 12px;
+        margin-top: 20px;
+        padding: 0 10px;
+    }
+
+    .shop-btn,
+    .back-btn{
+        width: 100%;
+        min-width: unset;
+
+        padding: 14px;
+
+        font-size: 15px;
+
+        border-radius: 10px;
     }
 }

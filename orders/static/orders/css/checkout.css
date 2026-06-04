@@ -364,115 +364,130 @@ body{
     }
 }
 
+/* =========================
+   TOAST
+========================= */
+/* =========================
+   TOAST
+========================= */
 
-/* =========================================
-   TOAST NOTIFICATION
-========================================= */
+/* =========================
+   TOAST CONTAINER
+========================= */
 
-.custom-toast{
-
+#toast-container{
     position: fixed;
 
-    top: 24px;
-    right: 24px;
+    top: 80px; /* always below navbar */
+    right: 20px;
 
-    min-width: 320px;
+    width: 40%;
     max-width: 420px;
-
-    background: #fff;
-
-    border-radius: 18px;
-
-    padding: 16px 18px;
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,0.12);
-
-    border: 1px solid #e5e7eb;
 
     z-index: 999999;
 
-    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-    transform: translateX(120%);
-
-    transition: all 0.35s ease;
+    pointer-events: none;
 }
 
+/* =========================
+   TOAST BOX
+========================= */
+
+.custom-toast{
+
+    width: 100%;
+
+    background: #fff;
+
+    border-radius: 14px;
+
+    padding: 14px 16px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+
+    opacity: 0;
+
+    /* IMPORTANT: only ONE animation method */
+    transform: translateX(120%);
+
+    transition: all 0.3s ease;
+
+    pointer-events: auto;
+}
+
+/* SHOW STATE */
 .custom-toast.show{
     opacity: 1;
     transform: translateX(0);
 }
 
+/* =========================
+   CONTENT
+========================= */
+
 .toast-content{
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
 .toast-icon{
-
-    width: 34px;
-    height: 34px;
-
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 16px;
-    font-weight: 700;
-
-    flex-shrink: 0;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
 }
 
-.toast-message{
-
-    font-size: 14px;
-    font-weight: 500;
-
-    line-height: 1.5;
-}
-
-/* SUCCESS */
+/* =========================
+   TYPES
+========================= */
 
 .custom-toast.success{
-    border-left: 5px solid #10b981;
+    border-left:5px solid #10b981;
 }
-
-.custom-toast.success .toast-icon{
-    background: #d1fae5;
-    color: #059669;
-}
-
-/* ERROR */
 
 .custom-toast.error{
-    border-left: 5px solid #ef4444;
+    border-left:5px solid #ef4444;
 }
 
-.custom-toast.error .toast-icon{
-    background: #fee2e2;
-    color: #dc2626;
+.custom-toast.info{
+    border-left:5px solid #3b82f6;
 }
 
-/* MOBILE */
+/* =========================
+   MOBILE FIX (IMPORTANT)
+========================= */
 
-@media(max-width:600px){
+@media(max-width:768px){
+
+    #toast-container{
+        top: 75px;
+        left: 50%;
+        right: auto;
+
+        transform: translateX(-50%);
+
+        width: 92%;
+        max-width: none;
+    }
 
     .custom-toast{
+        transform: translateY(-20px);
+    }
 
-        left: 15px;
-        right: 15px;
-
-        min-width: auto;
-        max-width: none;
-
-        top: 15px;
+    .custom-toast.show{
+        transform: translateY(0);
     }
 }
-
 /* =========================================
    RESPONSIVE
 ========================================= */

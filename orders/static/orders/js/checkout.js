@@ -83,7 +83,7 @@ function showToast(message, type = "success") {
         </div>
     `;
 
-    document.body.appendChild(toast);
+document.getElementById("toast-container").appendChild(toast);
 
     setTimeout(() => {
 

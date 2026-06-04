@@ -435,8 +435,8 @@ html {
         top: 70px; /* ALWAYS BELOW HEADER */
         left: 0;
 
-        width: 100%;
-        height: calc(100vh - 70px);
+        width: 50%;
+        height: calc(50vh - 40px);
 
         background: rgba(17, 24, 39, 0.98);
         backdrop-filter: blur(14px);
@@ -466,6 +466,7 @@ html {
         transform: translateY(0);
         opacity: 1;
         visibility: visible;
+
     }
 
     /* =========================
@@ -522,6 +523,7 @@ html {
     .menu-toggle {
         font-size: 26px;
     }
+
 }
 
 /* =========================================

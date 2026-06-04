@@ -158,9 +158,7 @@ section{
 /* =========================
    CATEGORY SECTION
 ========================= */
-/* =========================
-   CATEGORY SECTION
-========================= */
+
 
 .category-section{
     padding:80px 5%;
@@ -391,69 +389,106 @@ section{
 }
 
 /* =========================
-   BRAND STORY (PREMIUM REDESIGN)
+   BRAND STORY (GRID LAYOUT)
 ========================= */
 
 .brand-story{
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     align-items:center;
     gap:80px;
 
     padding:120px 8%;
 
-    background:linear-gradient(
-        to bottom,
-        #ffffff,
-        #f9fafb
-    );
+    background: linear-gradient(to bottom, #ffffff, #f9fafb);
 }
 
+
+
 /* =========================
-   IMAGE SIDE (MORE MODERN LOOK)
+   IMAGE SIDE (3D PREMIUM FIXED)
+========================= */
+
+/* =========================
+   IMAGE SIDE (RESPONSIVE 3D CLEAN)
 ========================= */
 
 .story-image{
     position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:3px;
+    margin:10px;
 }
 
-.story-image img{
-    width:100%;
-    height:680px;
-
-    border-radius:28px;
-    object-fit:cover;
-
-    box-shadow:
-        0 30px 80px rgba(0,0,0,0.12);
-
-    transition:0.4s ease;
-}
-
-/* subtle hover zoom */
-.story-image:hover img{
-    transform:scale(1.02);
-}
-
-/* decorative glow behind image */
+/* OUTER GLOW FRAME */
 .story-image::before{
     content:"";
     position:absolute;
-    inset:-20px;
+    inset:-14px;
 
-    background:radial-gradient(
-        circle,
-        rgba(245,158,11,0.15),
+    border-radius:28px;
+
+    background: radial-gradient(
+        circle at 30% 30%,
+        rgba(245,158,11,0.18),
+        rgba(124,77,255,0.12),
         transparent 60%
     );
 
-    z-index:-1;
-    filter:blur(20px);
+    filter: blur(16px);
+    z-index:0;
 }
 
-/* =========================
-   TEXT CONTENT
-========================= */
+/* DEPTH SHADOW LAYER */
+.story-image::after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    transform: translate(-12px, -12px); /* 👈 TOP-LEFT offset */
+    border-radius:28px;
+
+    background: rgba(0,0,0,0.06);
+    z-index:0;
+}
+
+/* MAIN IMAGE (REDUCED SIZE) */
+.story-image img{
+    width:100%;
+    max-width:520px;
+    height:520px;
+
+    object-fit:cover;
+    border-radius:24px;
+
+    position:relative;
+    z-index:2;
+
+    /* TOP-LEFT LIGHT SOURCE SHADOW */
+    box-shadow:
+        -18px -18px 35px rgba(0,0,0,0.18),  /* top-left shadow */
+         10px 12px 30px rgba(0,0,0,0.10),   /* bottom-right soft depth */
+         inset 0 0 0 1px rgba(255,255,255,0.08);
+
+    transform: perspective(1000px) rotateY(-3deg) rotateX(2deg);
+    transition: all 0.5s ease;
+}
+
+/* HOVER (DESKTOP ONLY STRONG EFFECT) */
+
+.story-image:hover img{
+    transform: perspective(1000px)
+               rotateY(0deg)
+               rotateX(0deg)
+               translateY(-8px)
+               scale(1.02);
+
+    box-shadow:
+        0 40px 90px rgba(0,0,0,0.22),
+        inset 0 0 0 1px rgba(255,255,255,0.12);
+}
 
 .story-content span{
     font-size:12px;
@@ -461,13 +496,13 @@ section{
     text-transform:uppercase;
     color:#f59e0b;
     font-weight:600;
+
 }
 
 .story-content h2{
     font-size:48px;
     line-height:1.2;
     margin:16px 0 20px;
-
     color:#111827;
 }
 
@@ -475,14 +510,9 @@ section{
     font-size:16px;
     line-height:1.9;
     color:#4b5563;
-
     margin-bottom:28px;
     max-width:520px;
 }
-
-/* =========================
-   FEATURES GRID (MODERN CARDS)
-========================= */
 
 .story-features{
     display:grid;
@@ -491,12 +521,10 @@ section{
 }
 
 .story-feature{
-    background:#ffffff;
-
+    background:#fff;
     padding:16px 18px;
 
     border-radius:14px;
-
     font-size:14px;
     font-weight:500;
 
@@ -504,33 +532,25 @@ section{
 
     border:1px solid rgba(0,0,0,0.06);
 
-    box-shadow:
-        0 10px 25px rgba(0,0,0,0.04);
-
-    transition:0.25s ease;
+    box-shadow:0 10px 25px rgba(0,0,0,0.04);
 
     display:flex;
     align-items:center;
     gap:10px;
+
+    transition:0.25s ease;
 }
 
-/* check icon style */
 .story-feature::before{
     content:"✓";
     color:#f59e0b;
     font-weight:900;
 }
 
-/* hover effect */
 .story-feature:hover{
     transform:translateY(-3px);
-    border-color:rgba(245,158,11,0.3);
     box-shadow:0 14px 30px rgba(0,0,0,0.08);
 }
-
-/* =========================
-   TABLET
-========================= */
 
 @media(max-width:992px){
     .brand-story{
@@ -547,58 +567,33 @@ section{
         font-size:40px;
     }
 }
-
-/* =========================
-   MOBILE (VERY CLEAN STACK)
-========================= */
-
 @media(max-width:768px){
 
     .brand-story{
-        padding:70px 5%;
-        text-align:left;
+        padding-left:20px;   /* ✅ left gap */
+        padding-right:20px;  /* ✅ right gap */
+    }
+
+    .story-content{
+        padding:0 5px; /* extra inner breathing space */
     }
 
     .story-image img{
-        height:420px;
-        border-radius:20px;
+        width:100%;
+        max-width:100%;
+        height:380px;
+        transform:none;
     }
 
-    .story-content h2{
-        font-size:32px;
+    .story-image:hover img{
+        transform: scale(1.02) translateY(-4px);
     }
 
-    .story-content p{
-        font-size:15px;
-    }
-
-    .story-features{
-        grid-template-columns:1fr;
-    }
-
-    .story-feature{
-        padding:14px;
+    .story-image::before{
+        filter: blur(12px);
     }
 }
 
-/* =========================
-   SMALL MOBILE
-========================= */
-
-@media(max-width:480px){
-
-    .story-image img{
-        height:360px;
-    }
-
-    .story-content h2{
-        font-size:28px;
-    }
-
-    .story-content p{
-        font-size:14px;
-    }
-}
 /* =========================
    STATS
 ========================= */
