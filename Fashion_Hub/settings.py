@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'home',
     'accounts',
     'wishlist',
+    "cloudinary",
+    "cloudinary_storage",
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -90,6 +92,7 @@ DATABASES = {
     }
 }
 
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -139,13 +142,16 @@ RAZORPAY_KEY_ID = "rzp_test_SrypSSZCYzAO4r"
 RAZORPAY_KEY_SECRET = "GsQNPXp6knkcdHKQUILdrlfe"
 
 
+EMAIL_TIMEOUT = 10
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "agvasu2015@gmail.com"
-EMAIL_HOST_PASSWORD = "kjui bxsp ewca wpiy"
+import os
+
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
