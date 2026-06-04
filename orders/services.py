@@ -225,49 +225,42 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 
-def send_order_email(
-    order,
-    subject,
-    template_name,
-    context_extra=None
-):
+def send_order_email(order, subject, template_name, context_extra=None):
 
-    if context_extra is None:
-        context_extra = {}
+    try:
+        if context_extra is None:
+            context_extra = {}
 
-    context = {
-        "order": order,
-        "user": order.user,
-        **context_extra
-    }
+        context = {
+            "order": order,
+            "user": order.user,
+            **context_extra
+        }
 
-    html_content = render_to_string(
-        template_name,
-        context
-    )
+        html_content = render_to_string(template_name, context)
 
-    text_content = f"""
-    Hello {order.user.first_name or 'Customer'},
+        text_content = f"""
+        Hello {order.user.first_name or 'Customer'},
 
-    {subject}
+        {subject}
 
-    Order ID: {order.order_id}
+        Order ID: {order.order_id}
 
-    Thank you for shopping with us.
-    """
+        Thank you for shopping with us.
+        """
 
-    email = EmailMultiAlternatives(
-        subject=subject,
-        body=text_content,
-        from_email=settings.EMAIL_HOST_USER,
-        to=[order.user.email],
-    )
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.EMAIL_HOST_USER,
+            to=[order.user.email],
+        )
 
-    email.attach_alternative(
-        html_content,
-        "text/html"
-    )
+        email.attach_alternative(html_content, "text/html")
 
-    email.send(fail_silently=False)
+        email.send(fail_silently=True)
+
+    except Exception as e:
+        print("EMAIL SYSTEM ERROR:", e)
 
 

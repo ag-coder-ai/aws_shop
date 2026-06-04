@@ -17,7 +17,8 @@ from .models import (
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from orders.utils.order_id import generate_order_id
-
+import logging
+logger = logging.getLogger(__name__)
 from django.core.exceptions import ValidationError
 
 from .services import send_order_email
@@ -45,410 +46,180 @@ from orders.services import send_order_email
 import re
 from django.core.validators import validate_email
 
+import re
+import threading
+from django.http import JsonResponse
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 @login_required
 @transaction.atomic
 def create_checkout(request):
 
     if request.method != "POST":
-
-        return JsonResponse({
-            "success": False,
-            "message": "Invalid request"
-        })
+        return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
 
     data = request.POST
 
+    # =========================================
+    # CART
+    # =========================================
     try:
-
         cart = Cart.objects.prefetch_related(
-            "items__variant",
             "items__variant__product",
             "items__variant__size",
-            "items__variant__color",
-            "items__variant__product__images"
+            "items__variant__color"
         ).get(user=request.user)
-
     except Cart.DoesNotExist:
-
-        return JsonResponse({
-            "success": False,
-            "message": "Cart not found"
-        })
-
-    # =========================================
-    # EMPTY CART CHECK
-    # =========================================
+        return JsonResponse({"success": False, "message": "Cart not found"}, status=400)
 
     if not cart.items.exists():
-
-        return JsonResponse({
-            "success": False,
-            "message": "Cart is empty"
-        })
+        return JsonResponse({"success": False, "message": "Cart is empty"}, status=400)
 
     payment_method = data.get("payment_method")
 
     # =========================================
-    # STORE CHECKOUT DATA IN SESSION
+    # VALIDATION
     # =========================================
+    field_errors = {}
 
-    request.session["checkout_data"] = {
+    full_name = data.get("full_name", "").strip()
+    phone = data.get("phone", "").strip()
+    email = data.get("email", "").strip().lower()
+    address = data.get("address", "").strip()
+    city = data.get("city", "").strip()
+    state = data.get("state", "").strip()
+    pincode = data.get("pincode", "").strip()
 
-        "full_name": data.get("full_name"),
+    if not full_name or len(full_name) < 3:
+        field_errors["full_name"] = ["Enter valid full name"]
 
-        "phone": data.get("phone"),
+    if not re.match(r"^[6-9]\d{9}$", phone):
+        field_errors["phone"] = ["Enter valid 10 digit mobile"]
 
-        "email": data.get("email"),
+    try:
+        validate_email(email)
+    except ValidationError:
+        field_errors["email"] = ["Enter valid email"]
 
-        "address": data.get("address"),
+    if not address or len(address) < 10:
+        field_errors["address"] = ["Enter valid address"]
 
-        "city": data.get("city"),
+    if not city:
+        field_errors["city"] = ["City required"]
 
-        "state": data.get("state"),
+    if not state:
+        field_errors["state"] = ["State required"]
 
-        "pincode": data.get("pincode"),
+    if not re.match(r"^[1-9][0-9]{5}$", pincode):
+        field_errors["pincode"] = ["Enter valid pincode"]
 
-        "payment_method": payment_method,
-    }
+    if field_errors:
+        return JsonResponse({"success": False, "field_errors": field_errors}, status=400)
 
     # =========================================
-    # COD PAYMENT
+    # COD LIMIT
     # =========================================
-
-    if payment_method == "COD":
-        # =========================================
-        # COD LIMIT CHECK
-        # =========================================
-
-        if cart.total_amount > 2000:
-            return JsonResponse({
-
-                "success": False,
-                "message": "Cash on Delivery is allowed only for orders below ₹2000. Please choose online payment."
-
-            }, status=400)
-
-        # =========================================
-        # CREATE ORDER
-        # =========================================
-
-        order = Order.objects.create(
-
-            user=request.user,
-
-            order_id=generate_order_id(),
-
-            subtotal=cart.subtotal,
-
-            total=cart.total_amount,
-
-            payment_method="COD",
-
-            payment_status=PaymentStatus.PENDING,
-
-            status=OrderStatus.CONFIRMED
-        )
-
-        # =========================================
-        # VALIDATION
-        # =========================================
-
-        field_errors = {}
-
-        full_name = data.get("full_name", "").strip()
-
-        phone = data.get("phone", "").strip()
-
-        email = data.get("email", "").strip().lower()
-
-        address = data.get("address", "").strip()
-
-        city = data.get("city", "").strip()
-
-        state = data.get("state", "").strip()
-
-        pincode = data.get("pincode", "").strip()
-
-        # =========================================
-        # FULL NAME
-        # =========================================
-
-        if not full_name:
-
-            field_errors["full_name"] = [
-                "Full name is required"
-            ]
-
-        elif len(full_name) < 3:
-
-            field_errors["full_name"] = [
-                "Full name must be at least 3 characters"
-            ]
-
-        # =========================================
-        # PHONE VALIDATION
-        # =========================================
-
-        phone_regex = r"^[6-9]\d{9}$"
-
-        if not re.match(phone_regex, phone):
-            field_errors["phone"] = [
-                "Enter valid 10 digit Indian mobile number"
-            ]
-
-        # =========================================
-        # EMAIL VALIDATION
-        # =========================================
-
-        try:
-
-            validate_email(email)
-
-        except ValidationError:
-
-            field_errors["email"] = [
-                "Enter a valid email address"
-            ]
-
-        # =========================================
-        # ADDRESS VALIDATION
-        # =========================================
-
-        if not address:
-
-            field_errors["address_line_1"] = [
-                "Address is required"
-            ]
-
-        elif len(address) < 10:
-
-            field_errors["address_line_1"] = [
-                "Address is too short"
-            ]
-
-        # =========================================
-        # CITY VALIDATION
-        # =========================================
-
-        if not city:
-            field_errors["city"] = [
-                "City is required"
-            ]
-
-        # =========================================
-        # STATE VALIDATION
-        # =========================================
-
-        if not state:
-            field_errors["state"] = [
-                "State is required"
-            ]
-
-        # =========================================
-        # PINCODE VALIDATION
-        # =========================================
-
-        pincode_regex = r"^[1-9][0-9]{5}$"
-
-        if not re.match(pincode_regex, pincode):
-            field_errors["postal_code"] = [
-                "Enter valid 6 digit Indian pincode"
-            ]
-
-        # =========================================
-        # RETURN ERRORS
-        # =========================================
-
-        if field_errors:
-            return JsonResponse({
-
-                "success": False,
-
-                "field_errors": field_errors
-
-            }, status=400)
-
-
-        # =========================================
-        # CREATE SHIPPING ADDRESS
-        # =========================================
-
-
-
-        try:
-
-            ShippingAddress.objects.create(
-
-                order=order,
-
-                full_name=data.get("full_name"),
-                # full_name=full_name
-                phone=phone,
-
-                email=email,
-
-                address_line_1=address,
-
-                city=city,
-
-                state=state,
-
-                postal_code=pincode,
-
-                country="India"
-            )
-
-        except ValidationError as e:
-
-            transaction.set_rollback(True)
-
-            return JsonResponse({
-
-                "success": False,
-
-                "field_errors": e.message_dict
-
-            }, status=400)
-
-        # =========================================
-        # CREATE ORDER ITEMS + REDUCE STOCK
-        # =========================================
-
-        for item in cart.items.select_related(
-            "variant",
-            "variant__product",
-            "variant__size",
-            "variant__color"
-        ):
-
-            variant = ProductVariant.objects.select_for_update().get(
-                id=item.variant.id
-            )
-
-            # =========================================
-            # STOCK CHECK
-            # =========================================
-
-            if variant.stock_quantity < item.quantity:
-
-                transaction.set_rollback(True)
-
-                return JsonResponse({
-
-                    "success": False,
-
-                    "message": (
-                        f"{variant.product.name} "
-                        f"does not have enough stock"
-                    )
-
-                })
-
-            # =========================================
-            # REDUCE STOCK
-            # =========================================
-
-            variant.stock_quantity -= item.quantity
-
-            variant.save()
-
-            # =========================================
-            # CREATE ORDER ITEM
-            # =========================================
-
-            OrderItem.objects.create(
-
-                order=order,
-
-                product_name=variant.product.name,
-
-                product_image=(
-                    variant.product.primary_image.image
-                    if variant.product.primary_image
-                    else None
-                ),
-
-                variant_id=variant.id,
-
-                sku=variant.sku,
-
-                size=variant.size.name,
-
-                color=variant.color.name,
-
-                price=variant.wholesale_price,
-
-                quantity=item.quantity
-            )
-
-            # =========================================
-            # INVENTORY LOG
-            # =========================================
-
-            InventoryLog.objects.create(
-
-                variant=variant,
-
-                transaction_type="order",
-
-                quantity=-item.quantity,
-
-                note=f"Order ID: {order.order_id}"
-            )
-
-        # =========================================
-        # UPDATE PRODUCT STATUS
-        # =========================================
-
-        for variant in cart.items.all():
-
-            product = variant.variant.product
-
-            if product.total_stock <= 0:
-
-                product.status = "out_of_stock"
-
-            else:
-
-                product.status = "published"
-
-            product.save()
-
-        # =========================================
-        # CLEAR CART
-        # =========================================
-
-        cart.items.all().delete()
-
-        # =========================================
-        # SEND EMAIL
-        # =========================================
-
-        send_order_email(
-
-            order,
-
-            "🎉 Order Confirmed",
-
-            "orders/order_confirmation.html"
-        )
-
-        # =========================================
-        # SUCCESS RESPONSE
-        # =========================================
+    if payment_method == "COD" and cart.total_amount > 2000:
+        return JsonResponse({
+            "success": False,
+            "message": "COD allowed only below ₹2000"
+        }, status=400)
+
+    # =========================================
+    # PREPAID FLOW (ONLY RETURN AMOUNT)
+    # =========================================
+    if payment_method == "PREPAID":
+
+        request.session["checkout_data"] = {
+            "full_name": full_name,
+            "phone": phone,
+            "email": email,
+            "address": address,
+            "city": city,
+            "state": state,
+            "pincode": pincode,
+        }
 
         return JsonResponse({
-
             "success": True,
-
-            "order_id": order.order_id
+            "amount": float(cart.total_amount)
         })
 
-    # PREPAID → ONLY return cart summary
+    # =========================================
+    # COD ORDER CREATE
+    # =========================================
+    order = Order.objects.create(
+        user=request.user,
+        order_id=generate_order_id(),
+        subtotal=cart.subtotal,
+        total=cart.total_amount,
+        payment_method="COD",
+        payment_status=PaymentStatus.PENDING,
+        status=OrderStatus.CONFIRMED
+    )
+
+    ShippingAddress.objects.create(
+        order=order,
+        full_name=full_name,
+        phone=phone,
+        email=email,
+        address_line_1=address,
+        city=city,
+        state=state,
+        postal_code=pincode,
+        country="India"
+    )
+
+    for item in cart.items.select_related("variant__product"):
+
+        variant = ProductVariant.objects.select_for_update().get(id=item.variant.id)
+
+        if variant.stock_quantity < item.quantity:
+            transaction.set_rollback(True)
+            return JsonResponse({
+                "success": False,
+                "message": f"{variant.product.name} out of stock"
+            }, status=400)
+
+        variant.stock_quantity -= item.quantity
+        variant.save()
+
+        OrderItem.objects.create(
+            order=order,
+            product_name=variant.product.name,
+            product_image=variant.product.primary_image.image if variant.product.primary_image else None,
+            variant_id=variant.id,
+            sku=variant.sku,
+            size=variant.size.name,
+            color=variant.color.name,
+            price=variant.wholesale_price,
+            quantity=item.quantity
+        )
+
+    cart.items.all().delete()
+
+    # =========================================
+    # EMAIL (ASYNC)
+    # =========================================
+    def async_email():
+        try:
+            send_order_email(
+                order,
+                "🎉 Order Confirmed",
+                "orders/order_confirmation.html"
+            )
+        except Exception as e:
+            logger.error(f"Email failed: {e}")
+
+    threading.Thread(target=async_email).start()
+
     return JsonResponse({
         "success": True,
-        "amount": float(cart.total_amount)
+        "order_id": order.order_id,
+        "amount": float(order.total)  # ADD THIS
     })
 
 from .models import Pincode
