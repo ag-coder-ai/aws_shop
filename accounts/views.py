@@ -482,3 +482,21 @@ def edit_profile_view(request):
     return render(request, "accounts/edit_profile.html", {
         "profile": profile
     })
+
+
+from django.contrib.auth.views import PasswordResetView
+import logging
+
+logger = logging.getLogger(__name__)
+from django.core.mail import send_mail
+class DebugPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        logger.error("PASSWORD RESET TRIGGERED")
+        send_mail(
+            "Debug",
+            "Testing email trigger",
+            "agvasu2015@gmail.com",
+            ["agvasu2015@gmail.com"],
+            fail_silently=False,
+        )
+        return super().form_valid(form)
