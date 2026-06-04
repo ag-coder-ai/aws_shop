@@ -53,6 +53,7 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 @login_required
 @transaction.atomic
@@ -201,9 +202,13 @@ def create_checkout(request):
 
     cart.items.all().delete()
 
+
     # =========================================
     # EMAIL (ASYNC)
     # =========================================
+    email_user = settings.EMAIL_HOST_USER
+    print("EMAIL USER:", email_user)
+
     def async_email():
         try:
             send_order_email(
@@ -211,6 +216,7 @@ def create_checkout(request):
                 "🎉 Order Confirmed",
                 "orders/order_confirmation.html"
             )
+
         except Exception as e:
             logger.error(f"Email failed: {e}")
 

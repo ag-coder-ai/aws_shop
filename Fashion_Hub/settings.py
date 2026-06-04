@@ -173,19 +173,12 @@ RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET", default="")
 
 
 
-
-EMAIL_TIMEOUT = 10
+import os
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
-print("EMAIL USER:", config("EMAIL_HOST_USER"))
-
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
