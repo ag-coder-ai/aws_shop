@@ -9,7 +9,16 @@ from payments.models import Payment
 from django.views.decorators.csrf import csrf_exempt
 from orders.services import send_order_email
 from orders.models import OrderItem
-client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+import razorpay
+from django.conf import settings
+
+client = razorpay.Client(
+    auth=(
+        settings.RAZORPAY_KEY_ID,
+        settings.RAZORPAY_KEY_SECRET
+    )
+)
 
 @login_required
 def create_payment(request):

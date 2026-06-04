@@ -163,10 +163,15 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
 # settings.py
 
-RAZORPAY_KEY_ID = "rzp_test_SrypSSZCYzAO4r"
-RAZORPAY_KEY_SECRET = "GsQNPXp6knkcdHKQUILdrlfe"
+from decouple import config
+
+RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")
+
+
 
 from decouple import config
 EMAIL_TIMEOUT = 10
