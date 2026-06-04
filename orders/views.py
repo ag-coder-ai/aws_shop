@@ -209,18 +209,25 @@ def create_checkout(request):
     email_user = settings.EMAIL_HOST_USER
     print("EMAIL USER:", email_user)
 
-    def async_email():
-        try:
-            send_order_email(
-                order,
-                "🎉 Order Confirmed",
-                "orders/order_confirmation.html"
-            )
+    send_order_email(
+        order,
+        "🎉 Order Confirmed",
+        "orders/order_confirmation.html"
+    )
 
-        except Exception as e:
-            logger.error(f"Email failed: {e}")
-
-    threading.Thread(target=async_email).start()
+    #
+    # def async_email():
+    #     try:
+    #         send_order_email(
+    #             order,
+    #             "🎉 Order Confirmed",
+    #             "orders/order_confirmation.html"
+    #         )
+    #
+    #     except Exception as e:
+    #         logger.error(f"Email failed: {e}")
+    #
+    # threading.Thread(target=async_email).start()
 
     return JsonResponse({
         "success": True,

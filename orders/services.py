@@ -258,8 +258,7 @@ def send_order_email(order, subject, template_name, context_extra=None):
 
         email.attach_alternative(html_content, "text/html")
 
-        email.send(fail_silently=True)
-
+        email.send(fail_silently=False)
     except Exception as e:
         print("EMAIL SYSTEM ERROR:", e)
 
