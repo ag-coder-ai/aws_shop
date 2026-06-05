@@ -85,7 +85,10 @@ WSGI_APPLICATION = 'Fashion_Hub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 import dj_database_url
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 import os
 import dj_database_url
 
@@ -103,7 +106,6 @@ else:
         }
     }
 
-print("DATABASE_URL =", os.getenv("DATABASE_URL"))
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
