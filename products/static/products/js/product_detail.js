@@ -542,3 +542,62 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+
+let currentIndex = 0;
+let totalSlides = document.querySelectorAll(".slide").length;
+const track = document.getElementById("sliderTrack");
+
+function showSlide(index){
+    if(index >= totalSlides) currentIndex = 0;
+    else if(index < 0) currentIndex = totalSlides - 1;
+    else currentIndex = index;
+
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+function nextSlide(){
+    showSlide(currentIndex + 1);
+}
+
+let autoSlide = setInterval(nextSlide, 2000); // 3 sec auto slide
+
+// pause on hover
+document.querySelector(".slider-wrapper").addEventListener("mouseenter", () => {
+    clearInterval(autoSlide);
+});
+
+document.querySelector(".slider-wrapper").addEventListener("mouseleave", () => {
+    autoSlide = setInterval(nextSlide, 3000);
+});
+
+// thumbnail click
+function goToSlide(index){
+    showSlide(index);
+}
+
+// optional initial
+showSlide(0);
+
+
+
+
+function openSizeChart(){
+    document.getElementById("sizeModal").classList.add("active");
+    document.getElementById("sizeOverlay").classList.add("active");
+}
+
+function closeSizeChart(){
+    document.getElementById("sizeModal").classList.remove("active");
+    document.getElementById("sizeOverlay").classList.remove("active");
+}
+
+/* ESC key close (PRO UX) */
+document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+        closeSizeChart();
+    }
+});
+
+
+

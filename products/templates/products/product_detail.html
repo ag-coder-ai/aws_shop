@@ -35,65 +35,44 @@
         <!-- LEFT SIDE : IMAGES -->
         <!-- ============================================= -->
 
-        <div class="image-box">
+<div class="image-box">
 
-            <!-- MAIN IMAGE -->
+    <div class="slider-wrapper">
 
-            <div class="main-image-wrapper">
+        <div class="slider-track" id="sliderTrack">
 
-                <!-- ❤️ WISHLIST BUTTON -->
-               <button
-                    id="wishlistBtn"
-                    class="wishlist-btn {% if is_in_wishlist %}active{% endif %}"
-                    data-product-id="{{ product.id }}"
-                >
+                    {% for img in images %}
+                    <div class="slide">
+                        <img src="{{ img.image.url }}" alt="{{ product.name }}">
+                    </div>
+                    {% endfor %}
 
-                    {% if is_in_wishlist %}
-                        ❤️
-                    {% else %}
-                        🤍
-                    {% endif %}
+                </div>
 
-</button>
-
-                {% if primary_image %}
-
-                    <img id="mainImage"
-                         src="{{ primary_image.image.url }}"
-                         alt="{{ product.name }}">
-
-                {% else %}
-
-                    <img id="mainImage"
-                         src="{% static 'images/no-image.png' %}"
-                         alt="No Image">
-
-                {% endif %}
-
+                <!-- ❤️ WISHLIST -->
+                <button id="wishlistBtn"
+                        class="wishlist-btn {% if is_in_wishlist %}active{% endif %}"
+                        data-product-id="{{ product.id }}">
+                    {% if is_in_wishlist %}❤️{% else %}🤍{% endif %}
+                </button>
 
             </div>
 
-
-            <!-- THUMBNAILS -->
-
+            <!-- THUMBNAILS (optional still works) -->
             <div class="thumbs">
 
-                {% for img in images %}
-
-                    <div class="thumb-item">
-
-                        <img src="{{ img.image.url }}"
-                             alt="{{ product.name }}"
-                             onclick="changeImage(this)">
-
-                    </div>
+           {% for img in images|slice:":6" %}
+                <div class="thumb-item">
+                    <img src="{{ img.image.url }}"
+                         data-index="{{ forloop.counter0 }}"
+                         onclick="goToSlide(this.dataset.index)">
+                </div>
 
                 {% endfor %}
 
             </div>
 
         </div>
-
 
 
         <!-- ============================================= -->
@@ -154,7 +133,14 @@
             <div id="stockStatus"
                  class="stock-status">
 
-                Select size & color
+              <h4 >Select size & color</h4>
+                 <button type="button"
+            class="stock-size-link"
+            onclick="openSizeChart()">
+
+                     Size Chart
+
+    </button>
 
             </div>
 
@@ -382,6 +368,41 @@
 
 
 
+<!-- OVERLAY -->
+<div class="size-overlay" id="sizeOverlay" onclick="closeSizeChart()"></div>
+
+<!-- MODAL -->
+<div class="size-modal" id="sizeModal">
+
+    <button class="close-size" onclick="closeSizeChart()">✖</button>
+
+    <h2>Size Chart</h2>
+    <p>Find your perfect fit using measurements below</p>
+
+    <table>
+        <tr>
+            <th>Size</th>
+            <th>Chest</th>
+            <th>Length</th>
+        </tr>
+        <tr>
+            <td>S</td>
+            <td>36"</td>
+            <td>26"</td>
+        </tr>
+        <tr>
+            <td>M</td>
+            <td>38"</td>
+            <td>27"</td>
+        </tr>
+        <tr>
+            <td>L</td>
+            <td>40"</td>
+            <td>28"</td>
+        </tr>
+    </table>
+
+</div>
 <!-- ===================================================== -->
 <!-- JS -->
 <!-- ===================================================== -->
