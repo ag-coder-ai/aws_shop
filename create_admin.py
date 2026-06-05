@@ -10,13 +10,15 @@ User = get_user_model()
 
 EMAIL = "admin@shop.com"
 PASSWORD = "Admin@12345"
+PHONE = "9999999999"   # ✅ ADD THIS
 
 if not User.objects.filter(email=EMAIL).exists():
     User.objects.create_superuser(
         email=EMAIL,
         password=PASSWORD,
-        full_name="Admin"
+        full_name="Admin",
+        phone=PHONE   # ✅ REQUIRED FIX
     )
-    print("Superuser created")
+    print("✅ Superuser created")
 else:
-    print("Already exists")
+    print("⚠️ Superuser already exists")
