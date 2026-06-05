@@ -462,17 +462,16 @@ def edit_profile_view(request):
 
     if request.method == "POST":
 
-        full_name = request.POST.get("full_name", "").strip()
-        email = request.POST.get("email", "").strip()
+        user.full_name = request.POST.get("full_name", "").strip()
+        user.email = request.POST.get("email", "").strip()
+
         phone = request.POST.get("phone", "").strip()
 
-        # USER UPDATE
-        user.full_name = full_name
-        user.email = email
-        user.phone = phone   # ✅ IMPORTANT FIX
+        # Save in User table
+        user.phone = phone
         user.save()
 
-        # PROFILE UPDATE (optional if you still keep it)
+        # Save in Profile table
         profile.phone = phone
         profile.save()
 
@@ -480,23 +479,6 @@ def edit_profile_view(request):
         return redirect("home")
 
     return render(request, "accounts/edit_profile.html", {
-        "profile": profile
+        "profile": profile,
     })
 
-
-from django.contrib.auth.views import PasswordResetView
-import logging
-
-logger = logging.getLogger(__name__)
-from django.core.mail import send_mail
-class DebugPasswordResetView(PasswordResetView):
-    def form_valid(self, form):
-        logger.error("PASSWORD RESET TRIGGERED")
-        send_mail(
-            "Debug",
-            "Testing email trigger",
-            "agvasu2015@gmail.com",
-            ["agvasu2015@gmail.com"],
-            fail_silently=False,
-        )
-        return super().form_valid(form)

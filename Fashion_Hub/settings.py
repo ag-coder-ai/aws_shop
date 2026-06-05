@@ -86,10 +86,24 @@ WSGI_APPLICATION = 'Fashion_Hub.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 import dj_database_url
 
-DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-}
+import os
+import dj_database_url
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL)
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
+print("DATABASE_URL =", os.getenv("DATABASE_URL"))
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 

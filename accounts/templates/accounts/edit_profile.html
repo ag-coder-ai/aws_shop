@@ -387,13 +387,13 @@
                         Phone
                     </label>
 
-                    <input
-                        type="text"
-                        name="phone"
-                        value="{{ profile.phone|default_if_none:'' }}"
-                        placeholder="Enter your phone number"
-                        required
-                    >
+                   <input
+                    type="text"
+                    name="phone"
+                    value="{{ profile.phone|default:request.user.phone }}"
+                    placeholder="Enter your phone number"
+                    required
+                >
 
                 </div>
 
