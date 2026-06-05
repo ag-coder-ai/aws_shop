@@ -1,417 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Footer</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 <style>
 
-
-/* =========================
-   ROOT
-========================= */
-
-:root{
-    --bg:#0b0d12;
-    --card:#141a24;
-    --text:#ffffff;
-    --muted:#9aa3b2;
-    --border:rgba(255,255,255,0.08);
-    --accent:#7c5cff;
-    --radius:14px;
-}
-
-/* =========================
-   BASE
-========================= */
+/* =========================================
+   FOOTER BASE
+========================================= */
 
 .footer{
-    background:linear-gradient(180deg,#0f121a,#0b0d12);
-    color:var(--text);
+    background:#0f172a;
+    color:#ffffff;
     margin-top:80px;
-    padding-top:40px;
 }
 
-/* container */
+/* =========================================
+   CONTAINER
+========================================= */
+
 .footer-container{
-    width:92%;
-    max-width:1200px;
+    max-width:1400px;
     margin:auto;
-}
 
-/* =========================
-   TOP LAYOUT
-========================= */
+    padding:70px 30px;
 
-.footer-top{
     display:grid;
-    grid-template-columns:2fr 1fr 1fr;
-    gap:40px;
-    padding:50px 0;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:24px;
+
+    align-items:start; /* IMPORTANT FIX */
 }
 
-/* BRAND */
-.footer-logo{
-    font-size:30px;
-    font-weight:900;
-    letter-spacing:0.5px;
+/* =========================================
+   BRAND
+========================================= */
+
+.footer-brand h2{
+    font-size:32px;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.footer-brand p{
+    color:#cbd5e1;
+    line-height:1.8;
+    max-width:420px;
+}
+
+/* =========================================
+   SOCIAL
+========================================= */
+
+.footer-social{
     display:flex;
-    gap:10px;
+    gap:12px;
+    margin-top:18px;
+}
+
+.footer-social a{
+    width:42px;
+    height:42px;
+
+    display:flex;
     align-items:center;
+    justify-content:center;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,0.08);
+    color:#fff;
+
+    text-decoration:none;
+
+    transition:.3s;
 }
 
-.footer-desc{
-    color:var(--muted);
-    margin-top:12px;
-    line-height:1.7;
-    font-size:14px;
+.footer-social a:hover{
+    background:#f59e0b;
+    transform:translateY(-3px);
 }
 
-/* =========================
+/* =========================================
+   CARD
+========================================= */
+
+.footer-card{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:14px;
+
+    padding:14px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    transition:.3s;
+}
+
+.footer-card:hover{
+    background:rgba(255,255,255,0.06);
+}
+
+/* =========================================
    TITLE
-========================= */
+========================================= */
 
 .footer-title{
-    font-size:15px;
-    margin-bottom:18px;
-    position:relative;
-}
+    width:100%;
+    background:none;
+    border:none;
 
-.footer-title::after{
-    content:"";
-    width:30px;
-    height:2px;
-    background:var(--accent);
-    position:absolute;
-    left:0;
-    bottom:-6px;
-}
-
-/* =========================
-   LINKS
-========================= */
-
-.footer-links{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-/* ITEM CARD */
-.footer-item{
-    position:relative;
-}
-
-/* LINK */
-.footer-item a{
-    display:block;
-    padding:12px 14px;
-    border-radius:12px;
-    background:rgba(255,255,255,0.03);
-    border:1px solid var(--border);
     color:#fff;
-    text-decoration:none;
-    transition:0.25s;
-    font-size:14px;
+
+    font-size:17px;
+    font-weight:700;
+
+    display:flex;
+    justify-content:space-between;
+
+    cursor:pointer;
 }
 
-.footer-item a:hover{
-    background:rgba(124,92,255,0.12);
-    border-color:rgba(124,92,255,0.4);
-    transform:translateY(-2px);
+.footer-title span{
+    transition:.3s;
 }
 
-/* =========================
-   DESKTOP POPUP (CLEAN)
-========================= */
+/* =========================================
+   CONTENT
+========================================= */
 
-.footer-popup{
-    position:absolute;
-    top:50%;
-    left:105%;
-    width:230px;
-    transform:translateY(-50%);
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:14px;
+.footer-content{
+    max-height:0;
+    overflow:hidden;
 
     opacity:0;
     visibility:hidden;
-    transition:0.25s;
-    z-index:99;
+
+    transition:all .4s ease;
+
 }
 
-.footer-item:hover .footer-popup{
-    opacity:1;
-    visibility:visible;
+/* ITEM */
+.footer-item{
+    padding:10px 0;
+    border-bottom:1px solid rgba(255,255,255,0.06);
 }
 
-/* popup text */
-.footer-popup h4{
+.footer-item:last-child{
+    border-bottom:none;
+}
+
+.footer-item h4{
     font-size:14px;
-    margin-bottom:6px;
-    color:#fff;
+    margin-bottom:4px;
 }
 
-.footer-popup p{
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.4;
+.footer-item p{
+    font-size:12px;
+    color:#cbd5e1;
+    line-height:1.5;
+    margin:0;
 }
 
-/* =========================
-   FEATURES (MODERN CARDS)
-========================= */
+/* =========================================
+   DESKTOP HOVER EXPAND (IMPORTANT FIX)
+========================================= */
 
-.footer-features{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:16px;
-    padding:30px 0;
-    border-top:1px solid var(--border);
-    border-bottom:1px solid var(--border);
+@media(min-width:769px){
+
+
+    .footer-card{
+        position:relative;
+    }
+
+    .footer-content{
+        max-height:0;
+        opacity:0;
+        visibility:hidden;
+        transform:translateY(6px);
+        transition:all .35s ease;
+    }
+
+    .footer-card:hover .footer-content{
+        max-height:600px;
+        opacity:1;
+        visibility:visible;
+        transform:translateY(0);
+        margin-top:12px;
+    }
+
+
+    .footer-title span{
+        display:;
+    }
 }
 
-.feature{
-    background:rgba(255,255,255,0.03);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:14px;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    font-size:13px;
-}
-
-/* =========================
-   BOTTOM
-========================= */
-
-.footer-bottom{
-    display:flex;
-    justify-content:space-between;
-    padding:20px 0;
-    color:var(--muted);
-    font-size:13px;
-}
-
-/* =========================
-   MOBILE (PRO UI)
-========================= */
+/* =========================================
+   MOBILE ACCORDION
+========================================= */
 
 @media(max-width:768px){
 
-    /* STACK TOP INTO FLEX GRID */
-    .footer-top{
-        display:flex;
-        flex-wrap:wrap;
-        gap:12px;
+    .footer-container{
+        grid-template-columns:1fr;
+        padding:50px 16px;
     }
 
     .footer-brand{
-        width:100%;
-    }
-
-    /* 2 COLUMN LAYOUT */
-    .footer-column{
-        width:calc(50% - 6px);
-        background:rgba(255,255,255,0.03);
-        border:1px solid var(--border);
-        border-radius:14px;
-        padding:14px;
-    }
-
-    /* LINKS GRID */
-    .footer-links{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:8px;
-    }
-
-    .footer-item a{
-        font-size:12px;
         text-align:center;
-        padding:10px;
     }
 
-    /* ACCORDION */
-    .footer-popup{
-        position:relative;
-        left:auto;
-        top:auto;
-        transform:none;
-
-        max-height:0;
-        overflow:hidden;
-        opacity:1;
-        visibility:visible;
-
-        padding:0;
-        margin-top:0;
-
-        background:rgba(124,92,255,0.08);
-        border:1px solid rgba(124,92,255,0.2);
-        border-radius:10px;
-
-        transition:max-height 0.3s ease, padding 0.3s ease;
+    .footer-brand p{
+        max-width:100%;
     }
 
-    .footer-item.active .footer-popup{
-        max-height:240px;
-        padding:10px;
-        margin-top:8px;
+    .footer-social{
+        justify-content:center;
     }
 
-    .footer-features{
-        grid-template-columns:repeat(2,1fr);
-    }
+  .footer-card.active .footer-content{
+    max-height:600px;
 
-    .footer-bottom{
-        flex-direction:column;
-        text-align:center;
-        gap:8px;
+    opacity:1;
+    visibility:visible;
+
+    margin-top:12px;
+}
+
+    .footer-card.active .footer-title span{
+        transform:rotate(45deg);
     }
 }
 
-/* SMALL MOBILE */
-@media(max-width:480px){
+/* =========================================
+   FOOTER BOTTOM
+========================================= */
 
-    .footer-column{
-        width:100%;
-    }
+.footer-bottom{
+    border-top:1px solid rgba(255,255,255,0.08);
 
-    .footer-links{
-        grid-template-columns:1fr;
-    }
+    text-align:center;
 
-    .footer-features{
-        grid-template-columns:1fr;
-    }
+    padding:18px;
+
+    color:#94a3c2;
+
+    font-size:14px;
 }
 
+    .footer-content{
+    display:block;
+}
+
+
+    .whatsapp-float{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+
+    width:55px;
+    height:55px;
+
+    background:#25D366;
+    color:#fff;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:26px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.25);
+
+    z-index:999;
+
+    transition:all .3s ease;
+    text-decoration:none;
+}
+
+.whatsapp-float:hover{
+    transform:scale(1.1);
+    background:#1ebe5d;
+}
 
 </style>
 
-<!-- ========================= FOOTER ========================= -->
+</head>
+
+<body>
 
 <footer class="footer">
 
 <div class="footer-container">
 
-    <!-- TOP -->
-    <div class="footer-top">
+    <!-- BRAND -->
+    <div class="footer-brand">
 
-        <!-- BRAND -->
-        <div class="footer-brand">
-            <div class="footer-logo">🧵 UnityThreads</div>
-            <p class="footer-desc">
-                Premium cotton streetwear built for comfort, durability and modern lifestyle.
-            </p>
-        </div>
+        <h2>UnityThreads</h2>
 
-        <!-- COMPANY -->
-        <div class="footer-column">
-            <h3 class="footer-title">Company</h3>
+        <p>
+            Modern fashion built for comfort, confidence, and everyday lifestyle.
+        </p>
 
-            <div class="footer-links">
+        <div class="footer-social">
 
-                <div class="footer-item">
-                    <a href="#">About</a>
-                    <div class="footer-popup">
-                        <h4>About Us</h4>
-                        <p>We create premium fashion clothing for everyday wear.</p>
-                    </div>
-                </div>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-x-twitter"></i></a>
+            <a href="https://wa.me/917799692015" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
 
-                <div class="footer-item">
-                    <a href="#">Careers</a>
-                    <div class="footer-popup">
-                        <h4>Careers</h4>
-                        <p>Join our growing fashion and tech team.</p>
-                    </div>
-                </div>
-
-                <div class="footer-item">
-                    <a href="#">Blog</a>
-                    <div class="footer-popup">
-                        <h4>Blog</h4>
-                        <p>Latest fashion trends and styling guides.</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- SUPPORT -->
-        <div class="footer-column">
-            <h3 class="footer-title">Support</h3>
-
-            <div class="footer-links">
-
-                <div class="footer-item">
-                    <a href="#">Help</a>
-                    <div class="footer-popup">
-                        <h4>Help Center</h4>
-                        <p>Get support for orders and account issues.</p>
-                    </div>
-                </div>
-
-                <div class="footer-item">
-                    <a href="#">Shipping</a>
-                    <div class="footer-popup">
-                        <h4>Shipping</h4>
-                        <p>Fast delivery across India with tracking.</p>
-                    </div>
-                </div>
-
-                <div class="footer-item">
-                    <a href="#">Returns</a>
-                    <div class="footer-popup">
-                        <h4>Returns</h4>
-                        <p>Easy return and refund policy.</p>
-                    </div>
-                </div>
-
-            </div>
         </div>
 
     </div>
 
-    <!-- FEATURES -->
-    <div class="footer-features">
+    <!-- COMPANY -->
+    <div class="footer-card">
 
-        <div class="feature">🚚 Fast Delivery</div>
-        <div class="feature">🔒 Secure Payment</div>
-        <div class="feature">🔁 Easy Returns</div>
-        <div class="feature">📞 24/7 Support</div>
+        <button class="footer-title">
+            Company <span>+</span>
+        </button>
+
+        <div class="footer-content">
+
+            <div class="footer-item">
+                <h4>About UnityThreads</h4>
+                <p>Modern fashion brand focused on premium quality and comfort.</p>
+            </div>
+
+            <div class="footer-item">
+                <h4>Our Story</h4>
+                <p>Built with a vision of minimal, affordable luxury clothing.</p>
+            </div>
+
+            <div class="footer-item">
+                <h4>Sustainability</h4>
+                <p>Eco-friendly materials and responsible production.</p>
+            </div>
+
+        </div>
 
     </div>
 
-    <!-- BOTTOM -->
-    <div class="footer-bottom">
-        <div>© 2026 UnityThreads</div>
-        <div>Privacy • Terms • Cookies</div>
+    <!-- SUPPORT -->
+    <div class="footer-card">
+
+        <button class="footer-title">
+            Support <span>+</span>
+        </button>
+
+        <div class="footer-content">
+
+            <div class="footer-item">
+                <h4>Help Center</h4>
+                <p>Instant help for orders, payments and account issues.</p>
+            </div>
+
+            <div class="footer-item">
+                <h4>Returns</h4>
+                <p>Easy 7-day return and refund process.</p>
+            </div>
+
+            <div class="footer-item">
+                <h4>Size Guide</h4>
+                <p>Find your perfect fit easily.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LEGAL -->
+    <div class="footer-card">
+
+        <button class="footer-title">
+            Legal <span>+</span>
+        </button>
+
+        <div class="footer-content">
+
+            <div class="footer-item">
+                <h4>Privacy Policy</h4>
+                <p>Your data is safe and protected.</p>
+            </div>
+
+            <div class="footer-item">
+                <h4>Terms</h4>
+                <p>Rules and usage conditions.</p>
+            </div>
+
+            <div class="footer-item">
+                <h4>Refund Policy</h4>
+                <p>Refunds processed within 5–7 days.</p>
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
+<div class="footer-bottom">
+    © 2026 UnityThreads. All Rights Reserved.
+</div>
+
 </footer>
 
-<!-- ========================= JS ========================= -->
-
 <script>
-const items = document.querySelectorAll(".footer-item");
 
-items.forEach(item => {
-    const link = item.querySelector("a");
+document.addEventListener("DOMContentLoaded", () => {
 
-    link.addEventListener("click", (e) => {
-        if(window.innerWidth <= 768){
-            e.preventDefault();
+    if(window.innerWidth <= 768){
 
-            const isOpen = item.classList.contains("active");
+        document.querySelectorAll(".footer-title").forEach(btn => {
 
-            items.forEach(i => i.classList.remove("active"));
+            btn.addEventListener("click", () => {
 
-            if(!isOpen){
-                item.classList.add("active");
-            }
-        }
-    });
+                const card = btn.parentElement;
+
+                document.querySelectorAll(".footer-card")
+                .forEach(c => {
+                    if(c !== card) c.classList.remove("active");
+                });
+
+                card.classList.toggle("active");
+
+            });
+
+        });
+
+    }
+
 });
+
 </script>
+
+</body>
+</html>

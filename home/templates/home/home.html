@@ -5,48 +5,53 @@
 {% block content %}
 {% load static %}
 
-
-<!-- ================= HERO SECTION ================= -->
-
 <section class="brand-hero">
 
     <div class="hero-slider">
 
-        <div class="hero-slide active">
+        {% for product in featured_products %}
 
-            <img
-                src="{% static 'home/images/hero1.jpg' %}"
-                alt="Premium Cotton Wear"
-            >
+            <div class="hero-slide {% if forloop.first %}active{% endif %}">
 
-            <div class="hero-overlay"></div>
+                {% with img=product.images.first %}
 
-            <div class="hero-content">
+                    {% if img %}
 
-                <h1>
-                    Elevate Your Everyday Style
-                </h1>
+                        <img class="hero-bg"
+                             src="{{ img.image.url }}"
+                             alt="{{ product.name }}">
 
-                <p>
-                    Discover premium cotton T-Shirts, Shirts,
-                    Hoodies & Trousers crafted for comfort,
-                    minimal luxury and modern streetwear fashion.
-                </p>
+                    {% else %}
 
-                <div class="hero-actions">
+                        <img class="hero-bg"
+                             src="{% static 'home/images/hero1.jpg' %}"
+                             alt="Fallback">
 
-                    <a href="{% url 'product_list' %}"
-                       class="hero-btn primary-btn">
+                    {% endif %}
 
+                {% endwith %}
+
+                <div class="hero-overlay"></div>
+
+                <!-- SAME CONTENT ALWAYS -->
+                <div class="hero-content">
+
+                    <h1>Elevate Your Everyday Style</h1>
+
+                    <p>
+                        Discover premium cotton T-Shirts, Shirts, Hoodies & Trousers
+                        crafted for comfort and modern streetwear fashion.
+                    </p>
+
+                    <a href="{% url 'product_list' %}" class="hero-btn">
                         Shop Collection
-
                     </a>
 
                 </div>
 
             </div>
 
-        </div>
+        {% endfor %}
 
     </div>
 
@@ -177,54 +182,62 @@
 </section>
 
 <!-- ================= BRAND STORY ================= -->
-
 <section class="brand-story">
 
+    {% if brand_story %}
+
     <div class="story-image">
-
         <img
-            src="{% static 'home/images/brand-story1.jpg' %}"
-            alt="Brand Story"
+            src="{{ brand_story.image.url }}"
+            alt="{{ brand_story.title }}"
         >
-
     </div>
 
     <div class="story-content">
 
-        <span>OUR BRAND</span>
+        <span>
+            {{ brand_story.subtitle }}
+        </span>
 
         <h2>
-            Built For Modern Fashion Lovers
+            {{ brand_story.title }}
         </h2>
 
         <p>
-            We create premium cotton clothing that combines
-            comfort, durability and luxury aesthetics.
-            Every product is designed for everyday wear
-            while maintaining elevated street-style appeal.
+            {{ brand_story.description }}
         </p>
 
         <div class="story-features">
 
+            {% if brand_story.feature_1 %}
             <div class="story-feature">
-                 100% Premium Cotton
+                {{ brand_story.feature_1 }}
             </div>
+            {% endif %}
 
+            {% if brand_story.feature_2 %}
             <div class="story-feature">
-                 Minimal Luxury Design
+                {{ brand_story.feature_2 }}
             </div>
+            {% endif %}
 
+            {% if brand_story.feature_3 %}
             <div class="story-feature">
-                Long Lasting Comfort
+                {{ brand_story.feature_3 }}
             </div>
+            {% endif %}
 
+            {% if brand_story.feature_4 %}
             <div class="story-feature">
-                 Modern Streetwear Fits
+                {{ brand_story.feature_4 }}
             </div>
+            {% endif %}
 
         </div>
 
     </div>
+
+    {% endif %}
 
 </section>
 
@@ -307,5 +320,30 @@
     </div>
 
 </section>
+<script>
+window.addEventListener("load", function () {
 
+    const slides = document.querySelectorAll(".hero-slide");
+
+    console.log("Slides Found:", slides.length);
+
+    if (slides.length <= 1) return;
+
+    let current = 0;
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle("active", i === index);
+        });
+    }
+
+    setInterval(() => {
+        current = (current + 1) % slides.length;
+        showSlide(current);
+    }, 4000);
+
+});
+</script>
 {% endblock %}
+
+

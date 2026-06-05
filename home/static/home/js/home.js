@@ -118,3 +118,4 @@ if (slides.length > 0) {
     showSlide(0);
     startCarousel();
 }
+
