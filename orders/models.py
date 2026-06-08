@@ -733,9 +733,6 @@ class ShippingAddress(models.Model):
     # =====================================================
 
     def save(self, *args, **kwargs):
-
-        self.full_clean()
-
         super().save(*args, **kwargs)
 
     # =====================================================
@@ -749,15 +746,7 @@ class ShippingAddress(models.Model):
             f"- {self.postal_code}"
         )
 
-class Pincode(models.Model):
-    pin_code = models.CharField(max_length=6, unique=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.pin_code} - {self.city}"
 # =========================================================
 # SHIPMENT EVENTS (TRACKING TIMELINE)
 # =========================================================

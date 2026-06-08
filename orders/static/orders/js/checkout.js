@@ -712,20 +712,17 @@ document.addEventListener("DOMContentLoaded", () => {
                             verify
                         );
 
-                        if (verify.success) {
+                   if (verify.success) {
 
-                            showToast(
-                                "Payment successful"
-                            );
+                            showToast("Payment successful");
 
                             setTimeout(() => {
+                                window.location.replace(
+                                    `/orders/success/?order_id=${verify.order_id}`
+                                );
+                            }, 800);
 
-                                window.location.href =
-                                    `/orders/success/?order_id=${verify.order_id}`;
-
-                            }, 1200);
-
-                        } else {
+                            } else {
 
                             showToast(
 
@@ -750,14 +747,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 },
 
-                modal: {
-
+               modal: {
+                    escape: false,
+                    backdropclose: false,
                     ondismiss: function () {
-
-                        showToast(
-                            "Payment cancelled",
-                            "error"
-                        );
+                        showToast("Payment cancelled", "error");
                     }
                 },
 

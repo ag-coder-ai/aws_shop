@@ -322,9 +322,9 @@ body {
     }
 
     .timeline-dot {
-        left: -18px;
-        width: 10px;
-        height: 10px;
+        left: -15px;
+        width: 13px;
+        height: 13px;
     }
 
     .timeline-content {

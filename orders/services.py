@@ -259,3 +259,5 @@ def send_order_email(order, subject, template_name, context_extra=None):
 
     except Exception as e:
         print("EMAIL ERROR:", e)
+
+

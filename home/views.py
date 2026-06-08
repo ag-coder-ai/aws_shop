@@ -13,7 +13,7 @@ def home_view(request):
         is_featured=True
     ).order_by('-id')[:5]
 
-    categories = Category.objects.filter(is_active=True).order_by("name")[:6]
+    categories = Category.objects.filter(is_active=True).order_by("id")[:6]
     brand_story = BrandStory.objects.first()
     best_sellers = Product.objects.filter(
         is_active=True

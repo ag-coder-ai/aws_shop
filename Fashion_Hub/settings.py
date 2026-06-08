@@ -187,3 +187,9 @@ from decouple import config
 RESEND_API_KEY = config("RESEND_API_KEY")
 
 resend.api_key = RESEND_API_KEY
+
+
+from decouple import config
+
+SHIPROCKET_EMAIL = config("SHIPROCKET_EMAIL")
+SHIPROCKET_PASSWORD = config("SHIPROCKET_PASSWORD")

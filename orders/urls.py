@@ -1,7 +1,7 @@
 # orders/urls.py
 
 from django.urls import path
-from .views import checkout_view,create_checkout, order_success, order_history, order_detail, track_order,tracking_status_api,download_invoice,cancel_order,request_return,get_pincode_data
+from .views import checkout_view,create_checkout, order_success, order_history, order_detail, track_order,tracking_status_api,download_invoice,cancel_order,request_return
 
 
 urlpatterns = [
@@ -41,8 +41,4 @@ urlpatterns = [
     path("return/<str:order_id>/",
          request_return,
          name="request_return"),
-    path("api/pincode/<str:pin>/",
-         get_pincode_data,
-         name="get_pincode_data"
-         ),
 ]

@@ -58,6 +58,7 @@ from django.conf import settings
 @login_required
 @transaction.atomic
 def create_checkout(request):
+    import re
 
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
@@ -97,16 +98,53 @@ def create_checkout(request):
     if not full_name or len(full_name) < 3:
         field_errors["full_name"] = ["Enter valid full name"]
 
-    if not re.match(r"^[6-9]\d{9}$", phone):
-        field_errors["phone"] = ["Enter valid 10 digit mobile"]
+    phone = re.sub(r"\D", "", phone)
+
+    if phone.startswith("91") and len(phone) == 12:
+        phone = phone[2:]
+
+    if len(phone) != 10:
+        field_errors["phone"] = ["Enter valid 10 digit mobile number"]
+
+    elif phone[0] not in "6789":
+        field_errors["phone"] = ["Enter valid Indian mobile number"]
+
+    elif phone in [
+        "9999999999",
+        "8888888888",
+        "7777777777",
+        "6666666666",
+        "9876543210",
+    ]:
+        field_errors["phone"] = ["Enter valid mobile number"]
 
     try:
         validate_email(email)
     except ValidationError:
         field_errors["email"] = ["Enter valid email"]
 
-    if not address or len(address) < 10:
+    import re
+
+    address = re.sub(r"\s+", " ", address)
+
+    # Required
+    if not address:
+        field_errors["address"] = ["Address is required"]
+
+    # Length limits
+    elif len(address) < 10:
+        field_errors["address"] = ["Enter complete address"]
+
+    elif len(address) > 255:
+        field_errors["address"] = ["Address too long"]
+
+    # Must contain letters
+    elif not re.search(r"[A-Za-z]", address):
         field_errors["address"] = ["Enter valid address"]
+
+    # Prevent junk patterns
+    elif re.match(r"^(.)\1+$", address.replace(" ", "")):
+        field_errors["address"] = ["Enter meaningful address"]
 
     if not city:
         field_errors["city"] = ["City required"]
@@ -114,15 +152,45 @@ def create_checkout(request):
     if not state:
         field_errors["state"] = ["State required"]
 
-    if not re.match(r"^[1-9][0-9]{5}$", pincode):
+    pincode = (pincode or "").strip()
+
+    FAKE_PINS = {
+        "000000", "111111", "222222", "333333",
+        "444444", "555555", "666666", "777777",
+        "888888", "999999", "123456", "654321"
+    }
+
+    if pincode in FAKE_PINS:
+        field_errors["pincode"] = ["Enter valid pincode"]
+
+    PIN_REGEX = r"^[1-9][0-9]{5}$"
+
+    if not re.fullmatch(PIN_REGEX, pincode):
+        field_errors["pincode"] = ["Enter valid 6-digit Indian pincode"]
+
+    # 🚫 Known non-serviceable / difficult regions (India islands etc.)
+    BLOCKED_PINCODES = {
+        # Andaman & Nicobar Islands
+        "744101", "744102", "744103", "744104", "744105",
+
+        # Lakshadweep
+        "682551", "682552", "682553", "682554",
+
+        # Some very remote/high-risk test exclusions (optional)
+        "000000", "111111", "999999", "123456"
+    }
+
+    if pincode in BLOCKED_PINCODES :
         field_errors["pincode"] = ["Enter valid pincode"]
 
     if field_errors:
-        return JsonResponse({"success": False, "field_errors": field_errors}, status=400)
+        return JsonResponse({"success": False, "field_errors": field_errors},status=400)
+
 
     # =========================================
     # COD LIMIT
     # =========================================
+
     if payment_method == "COD" and cart.total_amount > 2000:
         return JsonResponse({
             "success": False,
@@ -132,6 +200,7 @@ def create_checkout(request):
     # =========================================
     # PREPAID FLOW (ONLY RETURN AMOUNT)
     # =========================================
+
     if payment_method == "PREPAID":
 
         request.session["checkout_data"] = {
@@ -215,88 +284,13 @@ def create_checkout(request):
         "orders/order_confirmation.html"
     )
 
-    #
-    # def async_email():
-    #     try:
-    #         send_order_email(
-    #             order,
-    #             "🎉 Order Confirmed",
-    #             "orders/order_confirmation.html"
-    #         )
-    #
-    #     except Exception as e:
-    #         logger.error(f"Email failed: {e}")
-    #
-    # threading.Thread(target=async_email).start()
-
     return JsonResponse({
         "success": True,
         "order_id": order.order_id,
         "amount": float(order.total)  # ADD THIS
     })
 
-from .models import Pincode
-import requests
 
-def get_pincode_data(request, pin):
-
-    if len(pin) != 6 or not pin.isdigit():
-        return JsonResponse({
-            "success": False,
-            "message": "Invalid pincode"
-        })
-
-    try:
-        cached = Pincode.objects.filter(pin_code=pin).first()
-
-        if cached:
-            return JsonResponse({
-                "success": True,
-                "city": cached.city,
-                "state": cached.state,
-                "source": "cache"
-            })
-
-        url = f"https://api.postalpincode.in/pincode/{pin}"
-        res = requests.get(url, timeout=5, verify=False)
-        if res.status_code != 200:
-            return JsonResponse({
-                "success": False,
-                "message": "External API failed"
-            })
-
-        data = res.json()
-
-        if not data or data[0]["Status"] != "Success":
-            return JsonResponse({
-                "success": False,
-                "message": "Pincode not found"
-            })
-
-        post_office = data[0]["PostOffice"][0]
-
-        city = post_office["District"]
-        state = post_office["State"]
-
-        Pincode.objects.create(
-            pin_code=pin,
-            city=city,
-            state=state
-        )
-
-        return JsonResponse({
-            "success": True,
-            "city": city,
-            "state": state,
-            "source": "api"
-        })
-
-    except Exception as e:
-        print("ERROR:", str(e))  # 🔥 DEBUG
-        return JsonResponse({
-            "success": False,
-            "message": str(e)
-        })
 @login_required
 def order_success(request):
 
