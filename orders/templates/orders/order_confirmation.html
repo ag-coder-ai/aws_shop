@@ -60,7 +60,7 @@
     </div>
 
     <div class="order-id">
-        Order ID: <strong>{{ order.order_id }}</strong>
+        Order ID: <strong>{{ order_id }}</strong>
     </div>
 
 <p>Hi {{ username }}, your order has been successfully placed.</p>
@@ -78,9 +78,9 @@
         </div>
     {% endfor %}
 
-    <a class="btn" href="http://127.0.0.1:4040.ngrok-free.app/orders/track/{{ order.order_id }}/">
-        Track Order
-    </a>
+ <a class="btn" href="{{ track_url }}">
+    Track Order
+</a>
 
     <p style="margin-top:20px;color:#777;">
         Thank you for shopping with us ❤️

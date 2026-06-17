@@ -232,7 +232,7 @@ from django.conf import settings
 import resend
 import logging
 from django.template.loader import render_to_string
-
+BASE_URL = "https://www.unitythreads.lifestyle"
 logger = logging.getLogger(__name__)
 
 def send_order_email(order, subject, template_name, context_extra=None):
@@ -247,9 +247,12 @@ def send_order_email(order, subject, template_name, context_extra=None):
 
         # ✅ Clean production context (NO nested ORM in templates)
         context = {
-            "username": order.user.username,
-            "order_id": order.id,
-            "email": order.user.email,
+            "username": order.user.username or order.user.email.split("@")[0],
+            "order_id": order.order_id,
+            "payment_method": order.payment_method,
+            "status": order.status,
+            "total": order.total,
+            "track_url": f"https://www.unitythreads.lifestyle/orders/track/{order.order_id}/"
         }
 
         if context_extra:
