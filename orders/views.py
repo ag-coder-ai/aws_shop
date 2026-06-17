@@ -355,6 +355,7 @@ def order_detail(request, order_id):
         "order": order,
         "items": order.items.all()
     })
+
 from django.core import signing
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -362,8 +363,13 @@ from django.shortcuts import get_object_or_404
 def track_order(request, token):
 
     try:
-        order_id = signing.loads(token)
-    except signing.BadSignature:
+        order_id = signing.loads(
+            token,
+            salt="track-order",
+            max_age=60 * 60 * 24 * 7  # optional: 7 days expiry
+        )
+
+    except (signing.BadSignature, signing.SignatureExpired):
         raise Http404("Invalid or expired tracking link")
 
     order = get_object_or_404(Order, order_id=order_id)
