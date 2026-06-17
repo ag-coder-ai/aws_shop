@@ -246,7 +246,7 @@ def send_order_email(order, subject, template_name, context_extra=None):
 
     try:
         response = resend.Emails.send({
-            "from": "Your Store <onboarding@resend.dev>",
+            "from": "orders@unitythreads.lifestyle",
             "to": order.user.email,
             "subject": subject,
             "html": html_content,
