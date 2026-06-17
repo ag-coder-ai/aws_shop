@@ -220,6 +220,8 @@ def create_order_from_cart(
 # COMMON ORDER EMAIL SENDER
 # =========================================================
 
+
+
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -228,13 +230,18 @@ from django.conf import settings
 
 
 import resend
-
+import logging
 from django.template.loader import render_to_string
+
+logger = logging.getLogger(__name__)
 
 def send_order_email(order, subject, template_name, context_extra=None):
 
-    if context_extra is None:
-        context_extra = {}
+    if not order.user.email:
+        logger.error(f"Order {order.id} has no email")
+        return False
+
+    context_extra = context_extra or {}
 
     context = {
         "order": order,
@@ -247,17 +254,15 @@ def send_order_email(order, subject, template_name, context_extra=None):
     try:
         response = resend.Emails.send({
             "from": "orders@unitythreads.lifestyle",
-            "to": order.user.email,
+            "to": [order.user.email],   # IMPORTANT FIX
             "subject": subject,
             "html": html_content,
         })
 
-        print("RESEND RESPONSE:", response)
+        logger.info(f"Email sent for order {order.id}: {response}")
 
-        print("EMAIL SENT SUCCESSFULLY")
-
+        return True
 
     except Exception as e:
-        print("EMAIL ERROR:", e)
-
-
+        logger.exception(f"Email failed for order {order.id}")
+        return False
