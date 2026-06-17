@@ -65,15 +65,15 @@
 
 <p>Hi {{ username }}, your order has been successfully placed.</p>
     <div class="box">
-        <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
-        <p><strong>Status:</strong> {{ order.status }}</p>
-        <p class="total">Total: ₹{{ order.total }}</p>
+       <p><strong>Payment Method:</strong> {{ payment_method }}</p>
+        <p><strong>Status:</strong> {{ status }}</p>
+        <p class="total">Total: ₹{{ total }}</p>
     </div>
 
     <h4>Items:</h4>
 
-    {% for item in order.items.all %}
-        <div class="box">
+{% for item in items %}
+    <div class="box">
             {{ item.product_name }} (x{{ item.quantity }}) - ₹{{ item.price }}
         </div>
     {% endfor %}
