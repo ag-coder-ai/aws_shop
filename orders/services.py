@@ -228,12 +228,14 @@ from django.conf import settings
 
 
 
-
 import resend
 import logging
 from django.template.loader import render_to_string
-BASE_URL = "https://www.unitythreads.lifestyle"
+from django.core import signing
+
 logger = logging.getLogger(__name__)
+
+BASE_URL = "https://www.unitythreads.lifestyle"
 
 def send_order_email(order, subject, template_name, context_extra=None):
 
@@ -242,20 +244,25 @@ def send_order_email(order, subject, template_name, context_extra=None):
         return False
 
     try:
-        # 🔥 Ensure fresh DB relation (prevents lazy loading issues)
+        # 🔥 Ensure fresh DB relation
         order = order.__class__.objects.select_related("user").get(id=order.id)
 
-        # ✅ Clean production context (NO nested ORM in templates)
-        track_id = str(order.order_id)
+        # 🔐 CREATE SECURE SIGNED TOKEN (PRODUCTION STANDARD)
+        token = signing.dumps(str(order.order_id), salt="track-order")
 
+        # 🌐 SECURE TRACK URL
+        track_url = f"{BASE_URL}/orders/track/{token}/"
+
+        # ✅ CLEAN CONTEXT
         context = {
             "username": order.user.username or order.user.email.split("@")[0],
-            "order_id": track_id,
+            "order_id": order.order_id,
             "payment_method": order.payment_method,
             "status": order.status,
             "total": order.total,
-            "track_url": f"https://www.unitythreads.lifestyle/orders/track/{track_id}/",
+            "track_url": track_url,
         }
+
         if context_extra:
             context.update(context_extra)
 
