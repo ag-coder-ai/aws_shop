@@ -70,14 +70,6 @@
         <p class="total">Total: ₹{{ total }}</p>
     </div>
 
-    <h4>Items:</h4>
-
-{% for item in items %}
-    <div class="box">
-            {{ item.product_name }} (x{{ item.quantity }}) - ₹{{ item.price }}
-        </div>
-    {% endfor %}
-
  <a class="btn" href="{{ track_url }}">
     Track Order
 </a>
