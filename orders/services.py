@@ -237,29 +237,36 @@ logger = logging.getLogger(__name__)
 
 def send_order_email(order, subject, template_name, context_extra=None):
 
-    if not order.user.email:
-        logger.error(f"Order {order.id} has no email")
+    if not order.user or not order.user.email:
+        logger.error(f"Order {order.id} has invalid user/email")
         return False
 
-    context_extra = context_extra or {}
-
-    context = {
-        "order": order,
-        "user": order.user,
-        **context_extra
-    }
-
-    html_content = render_to_string(template_name, context)
-
     try:
+        # 🔥 Ensure fresh DB relation (prevents lazy loading issues)
+        order = order.__class__.objects.select_related("user").get(id=order.id)
+
+        # ✅ Clean production context (NO nested ORM in templates)
+        context = {
+            "username": order.user.username,
+            "order_id": order.id,
+            "email": order.user.email,
+        }
+
+        if context_extra:
+            context.update(context_extra)
+
+        # Render email template
+        html_content = render_to_string(template_name, context)
+
+        # Send email via Resend
         response = resend.Emails.send({
-            "from": "orders@unitythreads.lifestyle",
-            "to": [order.user.email],   # IMPORTANT FIX
+            "from": "Unity Threads <fashion@unitythreads.lifestyle>",
+            "to": [order.user.email],
             "subject": subject,
             "html": html_content,
         })
 
-        logger.info(f"Email sent for order {order.id}: {response}")
+        logger.info(f"Email sent successfully for order {order.id}: {response}")
 
         return True
 
