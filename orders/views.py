@@ -356,36 +356,34 @@ def order_detail(request, order_id):
         "items": order.items.all()
     })
 
-from django.core import signing
-from django.http import Http404
-from django.shortcuts import get_object_or_404
+def track_order(request, order_id):
 
-def track_order(request, token):
-
-    try:
-        order_id = signing.loads(
-            token,
-            salt="track-order",
-            max_age=60 * 60 * 24 * 7  # optional: 7 days expiry
-        )
-
-    except (signing.BadSignature, signing.SignatureExpired):
-        raise Http404("Invalid or expired tracking link")
-
-    order = get_object_or_404(Order, order_id=order_id)
+    order = get_object_or_404(
+        Order,
+        order_id=order_id,
+        user=request.user
+    )
 
     tracking_url = None
 
     if order.courier_partner == "Delhivery":
-        tracking_url = f"https://www.delhivery.com/track/package/{order.tracking_number}"
+
+        tracking_url = (
+            f"https://www.delhivery.com/track/package/{order.tracking_number}"
+        )
 
     elif order.courier_partner == "Shiprocket":
-        tracking_url = f"https://shiprocket.co/tracking/{order.tracking_number}"
+
+        tracking_url = (
+            f"https://shiprocket.co/tracking/{order.tracking_number}"
+        )
 
     return render(request, "orders/track_order.html", {
         "order": order,
         "tracking_url": tracking_url
     })
+
+
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST

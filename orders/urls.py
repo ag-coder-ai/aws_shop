@@ -18,7 +18,11 @@ urlpatterns = [
         order_detail,
         name="order_detail"
     ),
-    path("orders/track/<str:token>/",track_order),
+    path(
+        "track/<str:order_id>/",
+        track_order,
+        name="track_order"
+    ),
 
     path(
         "track-api/<str:order_id>/",
