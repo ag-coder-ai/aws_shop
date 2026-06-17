@@ -251,7 +251,7 @@ def send_order_email(order, subject, template_name, context_extra=None):
             "payment_method": order.payment_method,
             "status": order.status,
             "total": order.total,
-            "items":items,
+            "items":order.items,
             "track_url": f"{BASE_URL}/orders/track/{order.order_id}/"
         }
 
