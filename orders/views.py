@@ -355,35 +355,22 @@ def order_detail(request, order_id):
         "order": order,
         "items": order.items.all()
     })
-
 def track_order(request, order_id):
 
-    order = get_object_or_404(
-        Order,
-        order_id=order_id,
-        user=request.user
-    )
+    order = get_object_or_404(Order, order_id=order_id)
 
     tracking_url = None
 
     if order.courier_partner == "Delhivery":
-
-        tracking_url = (
-            f"https://www.delhivery.com/track/package/{order.tracking_number}"
-        )
+        tracking_url = f"https://www.delhivery.com/track/package/{order.tracking_number}"
 
     elif order.courier_partner == "Shiprocket":
-
-        tracking_url = (
-            f"https://shiprocket.co/tracking/{order.tracking_number}"
-        )
+        tracking_url = f"https://shiprocket.co/tracking/{order.tracking_number}"
 
     return render(request, "orders/track_order.html", {
         "order": order,
         "tracking_url": tracking_url
     })
-
-
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
