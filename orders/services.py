@@ -246,15 +246,16 @@ def send_order_email(order, subject, template_name, context_extra=None):
         order = order.__class__.objects.select_related("user").get(id=order.id)
 
         # ✅ Clean production context (NO nested ORM in templates)
+        track_id = str(order.order_id)
+
         context = {
             "username": order.user.username or order.user.email.split("@")[0],
-            "order_id": order.order_id,
+            "order_id": track_id,
             "payment_method": order.payment_method,
             "status": order.status,
             "total": order.total,
-            "track_url": f"https://www.unitythreads.lifestyle/orders/track/{order.order_id}/"
+            "track_url": f"https://www.unitythreads.lifestyle/orders/track/{track_id}/",
         }
-
         if context_extra:
             context.update(context_extra)
 
