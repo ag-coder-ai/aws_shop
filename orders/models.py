@@ -187,104 +187,45 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
 
-        is_update = self.pk is not None
+        if self.pk:
+            old = Order.objects.get(pk=self.pk)
+            old_status = old.shipping_status
+        else:
+            old_status = None
 
-        old_shipping_status = None
-
-        if is_update:
-            old_order = Order.objects.get(pk=self.pk)
-
-            old_shipping_status = (
-                old_order.shipping_status
-            )
-
-        # SAVE FIRST
         super().save(*args, **kwargs)
 
-        # =========================================
-        # SHIPPING STATUS CHANGED
-        # =========================================
-
-        if (
-                is_update
-                and
-                old_shipping_status != self.shipping_status
-        ):
+        if old_status != self.shipping_status:
 
             from .services import send_order_email
 
-            # =====================================
-            # SHIPPED
-            # =====================================
-
             if self.shipping_status == "SHIPPED":
-
                 send_order_email(
-
                     order=self,
-
                     subject="Your Order Has Been Shipped 🚚",
-
-                    template_name=(
-                        "orders/shipped.html"
-                    )
+                    template_name="orders/shipped.html"
                 )
 
-            # =====================================
-            # OUT FOR DELIVERY
-            # =====================================
-
-            elif (
-                    self.shipping_status
-                    ==
-                    "OUT_FOR_DELIVERY"
-            ):
-
+            elif self.shipping_status == "OUT_FOR_DELIVERY":
                 send_order_email(
-
                     order=self,
-
                     subject="Out For Delivery 🚛",
-
-                    template_name=(
-                        "orders/out_for_delivery.html"
-                    )
+                    template_name="orders/out_for_delivery.html"
                 )
-
-            # =====================================
-            # DELIVERED
-            # =====================================
 
             elif self.shipping_status == "DELIVERED":
-
                 send_order_email(
-
                     order=self,
-
                     subject="Order Delivered ✅",
-
-                    template_name=(
-                        "orders/delivered.html"
-                    )
+                    template_name="orders/delivered.html"
                 )
-
-            # =====================================
-            # RETURNED
-            # =====================================
 
             elif self.shipping_status == "RETURNED":
-
                 send_order_email(
-
                     order=self,
-
                     subject="Order Returned",
-
-                    template_name=(
-                        "orders/refunded.html"
-                    )
+                    template_name="orders/refunded.html"
                 )
-
     def __str__(self):
         return self.order_id
 
