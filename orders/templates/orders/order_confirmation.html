@@ -60,14 +60,14 @@
     </div>
 
     <div class="order-id">
-        Order ID: <strong>{{ order_id }}</strong>
+        Order ID: <strong>{{ order.order_id }</strong>
     </div>
 
 <p>Hi {{ username }}, your order has been successfully placed.</p>
     <div class="box">
-       <p><strong>Payment Method:</strong> {{ payment_method }}</p>
-        <p><strong>Status:</strong> {{ status }}</p>
-        <p class="total">Total: ₹{{ total }}</p>
+       <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        <p class="total">Total: ₹{{ order.total }}</p>
     </div>
 
  <a class="btn" href="{{ track_url }}">

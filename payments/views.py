@@ -85,7 +85,7 @@ from orders.models import ShippingAddress
 logger = logging.getLogger(__name__)
 
 
-@csrf_exempt
+
 @transaction.atomic
 def verify_payment(request):
 
