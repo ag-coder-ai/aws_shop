@@ -26,7 +26,7 @@
     <div style="padding:35px;">
 
         <h2 style="margin-top:0;">
-            Hi {{ order.user.first_name|default:"Customer" }},
+            Hi {{ username |default:user.email }},
         </h2>
 
         <p style="color:#4b5563;line-height:1.8;">
@@ -56,18 +56,9 @@
         <!-- BUTTON -->
         <div style="text-align:center;margin-top:35px;">
 
-            <a href="http://127.0.0.1:8000/orders/track/{{ order.order_id }}/"
-               style="
-                    background:#2563eb;
-                    color:white;
-                    padding:14px 28px;
-                    border-radius:10px;
-                    text-decoration:none;
-                    display:inline-block;
-                    font-weight:bold;
-               ">
-                Track Your Order
-            </a>
+             <a class="btn" href="{{ track_url }}">
+    Track Order
+</a>
 
         </div>
 

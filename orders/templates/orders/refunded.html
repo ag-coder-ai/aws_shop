@@ -41,7 +41,7 @@
     </div>
 
     <p>
-        Hi {{ order.user.first_name|default:"Customer" }},
+        Hi {{ username |default:user.email }},
     </p>
 
     <p>
