@@ -247,11 +247,7 @@ def send_order_email(order, subject, template_name, context_extra=None):
 
         # ✅ Clean production context (NO nested ORM in templates)
         context = {
-            "username": order.user.username or order.user.email.split("@")[0],
-            "order_id": order.order_id,
-            "payment_method": order.payment_method,
-            "status": order.status,
-            "total": order.total,
+            "order": order,
             "track_url": f"{BASE_URL}/orders/track/{order.order_id}/"
         }
 

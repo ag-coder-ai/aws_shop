@@ -355,6 +355,7 @@ def order_detail(request, order_id):
         "order": order,
         "items": order.items.all()
     })
+
 def track_order(request, order_id):
 
     order = get_object_or_404(Order, order_id=order_id)
@@ -509,3 +510,62 @@ def download_invoice(request, order_id):
     response['Content-Disposition'] = f'attachment; filename="invoice_{order.order_id}.pdf"'
 
     return response
+
+
+
+
+
+
+
+
+
+
+
+
+import resend
+import logging
+from django.template.loader import render_to_string
+BASE_URL = "https://www.unitythreads.lifestyle"
+logger = logging.getLogger(__name__)
+
+def send_order_email(order, subject, template_name, context_extra=None):
+
+    if not order.user or not order.user.email:
+        logger.error(f"Order {order.id} has invalid user/email")
+        return False
+
+    try:
+        # 🔥 Ensure fresh DB relation (prevents lazy loading issues)
+        order = order.__class__.objects.select_related("user").get(id=order.id)
+
+        # ✅ Clean production context (NO nested ORM in templates)
+        context = {
+            "username": order.user.username or order.user.email.split("@")[0],
+            "order_id": order.order_id,
+            "payment_method": order.payment_method,
+            "status": order.status,
+            "total": order.total,
+            "track_url": f"{BASE_URL}/orders/track/{order.order_id}/"
+        }
+
+        if context_extra:
+            context.update(context_extra)
+
+        # Render email template
+        html_content = render_to_string(template_name, context)
+
+        # Send email via Resend
+        response = resend.Emails.send({
+            "from": "Unity Threads <fashion@unitythreads.lifestyle>",
+            "to": [order.user.email],
+            "subject": subject,
+            "html": html_content,
+        })
+
+        logger.info(f"Email sent successfully for order {order.id}: {response}")
+
+        return True
+
+    except Exception as e:
+        logger.exception(f"Email failed for order {order.id}")
+        return False
