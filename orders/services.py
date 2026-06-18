@@ -275,7 +275,6 @@ def send_order_email(order, subject, template_name, context_extra=None):
         context = {
             "order": order,
             "order_id": order.order_id,
-            "username": order.user.username or order.user.email.split(" @ ")[0],
             "track_url": f"{BASE_URL}/orders/track/{order.order_id}/",
             "tracking_url": get_tracking_url(order),
         }
