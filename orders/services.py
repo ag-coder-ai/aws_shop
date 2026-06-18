@@ -242,13 +242,40 @@ def send_order_email(order, subject, template_name, context_extra=None):
         return False
 
     try:
-        # 🔥 Ensure fresh DB relation (prevents lazy loading issues)
+        # 🔥 Ensure fresh DB relation
         order = order.__class__.objects.select_related("user").get(id=order.id)
 
-        # ✅ Clean production context (NO nested ORM in templates)
+        # =========================
+        # 🚚 Courier Tracking Logic
+        # =========================
+        def get_tracking_url(order):
+            courier = (order.courier_partner or "").lower()
+            tracking_id = order.tracking_number
+
+            if not tracking_id:
+                return None
+
+            if courier == "delhivery":
+                return f"https://www.delhivery.com/track/package/{tracking_id}"
+
+            elif courier == "ekart":
+                return f"https://ekartlogistics.com/shipmenttrack/{tracking_id}"
+
+            elif courier == "bluedart":
+                return f"https://www.bluedart.com/tracking?tracknumbers={tracking_id}"
+
+            elif courier == "dtdc":
+                return f"https://www.dtdc.in/tracking.asp?awbno={tracking_id}"
+
+            return None
+
+        # =========================
+        # 📦 Email Context
+        # =========================
         context = {
             "order": order,
-            "track_url": f"{BASE_URL}/orders/track/{order.order_id}/"
+            "track_url": f"{BASE_URL}/orders/track/{order.order_id}/",
+            "tracking_url": get_tracking_url(order),
         }
 
         if context_extra:

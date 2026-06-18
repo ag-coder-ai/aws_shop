@@ -44,6 +44,14 @@
             </p>
 
         </div>
+        {% if tracking_url %}
+<p>
+    <strong>Courier Tracking:</strong><br>
+    <a href="{{ tracking_url }}" target="_blank" style="color:#2563eb;">
+        Track on Courier Website
+    </a>
+</p>
+{% endif %}
 
     </div>
 
