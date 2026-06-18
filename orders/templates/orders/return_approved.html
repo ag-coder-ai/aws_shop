@@ -61,7 +61,7 @@
 
     <div class="info">
 
-        Hi {{ username |default:user.email }},
+        Hi {{ order.user.first_name|default:"Customer" }},
 
         <br><br>
 

@@ -24,7 +24,7 @@
     <div style="padding:35px;">
 
         <h2>
-            Hi {{ username |default:user.email }},
+            Hi {{ order.user.first_name|default:"Customer" }},
         </h2>
 
         <p style="color:#4b5563;line-height:1.8;">
