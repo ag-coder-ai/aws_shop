@@ -168,7 +168,7 @@ def verify_payment(request):
         send_order_email(
             order,
             "🎉 Order Confirmed",
-            "orders/order_confirmation.html"
+            "orders/order_confirmation1.html"
         )
 
         return JsonResponse({
