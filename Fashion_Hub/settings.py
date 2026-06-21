@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+import resend
+from decouple import config
+import cloudinary
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +25,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a$l6a2k0ws+*iw7pn0fg@e8n%ulm09kd-isi^(-m3x$!-d1@3q'
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "54.236.20.28",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
@@ -53,6 +63,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -82,19 +93,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Fashion_Hub.wsgi.application'
 
 
-# Database
-import os
-import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()  # loads local .env
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=not os.getenv("DEBUG", "True") == "True"
-    )
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
 
 # Password validation
@@ -145,8 +152,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # =========================
 import os
 
-import cloudinary
-from decouple import config
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
@@ -165,31 +170,23 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 # settings.py
 
-from decouple import config
 
 RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID", default="")
 RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET", default="")
 
-
-
-
-import resend
-from decouple import config
+SECRET_KEY = config("SECRET_KEY")
 
 
 
 RESEND_API_KEY = config("RESEND_API_KEY")
 
 resend.api_key = RESEND_API_KEY
-
-
-from decouple import config
 
 SHIPROCKET_EMAIL = config("SHIPROCKET_EMAIL")
 SHIPROCKET_PASSWORD = config("SHIPROCKET_PASSWORD")
