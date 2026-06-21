@@ -32,7 +32,11 @@ SECRET_KEY = 'django-insecure-a$l6a2k0ws+*iw7pn0fg@e8n%ulm09kd-isi^(-m3x$!-d1@3q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "unitythreads.lifestyle",
+    "www.unitythreads.lifestyle",
+    "54.236.20.28",
+]
 
 
 # Application definition
