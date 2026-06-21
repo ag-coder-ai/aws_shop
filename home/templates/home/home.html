@@ -1,9 +1,11 @@
 {% extends "home/base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% load static %}
+
+<!-- ================= HERO SECTION ================= -->
 
 <section class="brand-hero">
 
@@ -15,25 +17,20 @@
 
                 {% with img=product.images.first %}
 
-                    {% if img %}
-
+                    {% if img and img.image %}
                         <img class="hero-bg"
                              src="{{ img.image.url }}"
-                             alt="{{ product.name }}">
-
+                             alt="{{ product.name|default:'Product' }}">
                     {% else %}
-
                         <img class="hero-bg"
                              src="{% static 'home/images/hero1.jpg' %}"
-                             alt="Fallback">
-
+                             alt="Fallback Image">
                     {% endif %}
 
                 {% endwith %}
 
                 <div class="hero-overlay"></div>
 
-                <!-- SAME CONTENT ALWAYS -->
                 <div class="hero-content">
 
                     <h1>Elevate Your Everyday Style</h1>
@@ -51,6 +48,20 @@
 
             </div>
 
+        {% empty %}
+            <!-- SAFE fallback when no featured products -->
+            <div class="hero-slide active">
+
+                <img class="hero-bg"
+                     src="{% static 'home/images/hero1.jpg' %}"
+                     alt="Fallback">
+
+                <div class="hero-content">
+                    <h1>Elevate Your Everyday Style</h1>
+                    <p>Discover premium fashion collection</p>
+                </div>
+
+            </div>
         {% endfor %}
 
     </div>
@@ -59,54 +70,37 @@
 
 <!-- ================= CATEGORY SECTION ================= -->
 
-
 <section class="category-section">
 
     <div class="section-header">
-
         <span>SHOP BY CATEGORY</span>
-
-        <h2>
-            Essential Fashion Categories
-        </h2>
-
+        <h2>Essential Fashion Categories</h2>
     </div>
 
     <div class="category-grid">
 
-  {% for category in categories|slice:":4" %}
+        {% for category in categories|slice:":4" %}
 
-    <a
-        href="/products/?category={{ category.slug }}"
-        class="category-card"
-    >
+            <a href="/products/?category={{ category.slug }}" class="category-card">
 
-        {% if category.image %}
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                {% else %}
+                    <img src="{% static 'home/images/no-image.png' %}" alt="No Image">
+                {% endif %}
 
-        <img
-            src="{{ category.image.url }}"
-            alt="{{ category.name }}"
-        >
+                <div class="category-overlay">
+                    <h3>{{ category.name|default:"Category" }}</h3>
+                    <span>Explore Collection</span>
+                </div>
 
-        {% endif %}
+            </a>
 
-        <div class="category-overlay">
+        {% empty %}
+            <p>No categories available</p>
+        {% endfor %}
 
-            <h3>
-                {{ category.name }}
-            </h3>
-
-            <span>
-                Explore Collection
-            </span>
-
-        </div>
-
-    </a>
-
-    {% endfor %}
-
-</div>
+    </div>
 
 </section>
 
@@ -115,66 +109,50 @@
 <section class="featured-section">
 
     <div class="section-header">
-
         <span>BEST SELLERS</span>
-
-        <h2>
-            Trending Premium Wears
-        </h2>
-
+        <h2>Trending Premium Wears</h2>
     </div>
 
     <div class="product-grid">
 
         {% for product in best_sellers %}
 
-        <div class="product-card">
+            <div class="product-card">
 
-            <div class="product-image-wrapper">
+                <div class="product-image-wrapper">
 
-                <a href="{% url 'product_detail' product.slug %}">
+                    <a href="{% url 'product_detail' product.slug %}">
 
-                    {% if product.primary_image %}
+                        {% if product.primary_image and product.primary_image.image %}
 
-                    <img
-                        src="{{ product.primary_image.image.url }}"
-                        alt="{{ product.name }}"
-                        class="product-image"
-                    >
+                            <img src="{{ product.primary_image.image.url }}"
+                                 alt="{{ product.name }}"
+                                 class="product-image">
 
-                    {% else %}
+                        {% else %}
 
-                    <img
-                        src="{% static 'home/images/no-image.png' %}"
-                        alt="No Image"
-                        class="product-image"
-                    >
+                            <img src="{% static 'home/images/no-image.png' %}"
+                                 alt="No Image"
+                                 class="product-image">
 
-                    {% endif %}
+                        {% endif %}
 
-                </a>
+                    </a>
 
-            </div>
+                </div>
 
-            <div class="product-content">
+                <div class="product-content">
 
-                <span class="product-brand">
-                    PREMIUM COTTON
-                </span>
+                    <span class="product-brand">PREMIUM COTTON</span>
 
-                <h3>
-                    {{ product.name }}
-                </h3>
-
-                <div class="product-bottom">
-
+                    <h3>{{ product.name|default:"Unnamed Product" }}</h3>
 
                 </div>
 
             </div>
 
-        </div>
-
+        {% empty %}
+            <p>No products available</p>
         {% endfor %}
 
     </div>
@@ -182,61 +160,52 @@
 </section>
 
 <!-- ================= BRAND STORY ================= -->
+
 <section class="brand-story">
 
     {% if brand_story %}
 
-    <div class="story-image">
-        <img
-            src="{{ brand_story.image.url }}"
-            alt="{{ brand_story.title }}"
-        >
-    </div>
+        <div class="story-image">
 
-    <div class="story-content">
-
-        <span>
-            {{ brand_story.subtitle }}
-        </span>
-
-        <h2>
-            {{ brand_story.title }}
-        </h2>
-
-        <p>
-            {{ brand_story.description }}
-        </p>
-
-        <div class="story-features">
-
-            {% if brand_story.feature_1 %}
-            <div class="story-feature">
-                {{ brand_story.feature_1 }}
-            </div>
-            {% endif %}
-
-            {% if brand_story.feature_2 %}
-            <div class="story-feature">
-                {{ brand_story.feature_2 }}
-            </div>
-            {% endif %}
-
-            {% if brand_story.feature_3 %}
-            <div class="story-feature">
-                {{ brand_story.feature_3 }}
-            </div>
-            {% endif %}
-
-            {% if brand_story.feature_4 %}
-            <div class="story-feature">
-                {{ brand_story.feature_4 }}
-            </div>
+            {% if brand_story.image %}
+                <img src="{{ brand_story.image.url }}"
+                     alt="{{ brand_story.title|default:'Brand Story' }}">
             {% endif %}
 
         </div>
 
-    </div>
+        <div class="story-content">
 
+            <span>{{ brand_story.subtitle|default:"" }}</span>
+
+            <h2>{{ brand_story.title|default:"Our Story" }}</h2>
+
+            <p>{{ brand_story.description|default:"" }}</p>
+
+            <div class="story-features">
+
+                {% if brand_story.feature_1 %}
+                    <div class="story-feature">{{ brand_story.feature_1 }}</div>
+                {% endif %}
+
+                {% if brand_story.feature_2 %}
+                    <div class="story-feature">{{ brand_story.feature_2 }}</div>
+                {% endif %}
+
+                {% if brand_story.feature_3 %}
+                    <div class="story-feature">{{ brand_story.feature_3 }}</div>
+                {% endif %}
+
+                {% if brand_story.feature_4 %}
+                    <div class="story-feature">{{ brand_story.feature_4 }}</div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% else %}
+        <p>No brand story available</p>
     {% endif %}
 
 </section>
@@ -246,88 +215,48 @@
 <section class="why-us-section">
 
     <div class="section-header">
-
         <span>WHY CHOOSE US</span>
-
-        <h2>
-            Premium Experience Guaranteed
-        </h2>
-
+        <h2>Premium Experience Guaranteed</h2>
     </div>
 
     <div class="why-grid">
 
         <div class="why-card">
-
-            <div class="why-icon">
-                🚚
-            </div>
-
+            <div class="why-icon">🚚</div>
             <h3>Fast Delivery</h3>
-
-            <p>
-                Quick delivery across India
-                with live tracking support.
-            </p>
-
+            <p>Quick delivery across India with live tracking support.</p>
         </div>
 
         <div class="why-card">
-
-            <div class="why-icon">
-                🔒
-            </div>
-
+            <div class="why-icon">🔒</div>
             <h3>Secure Payments</h3>
-
-            <p>
-                Razorpay protected secure
-                online payment system.
-            </p>
-
+            <p>Razorpay protected secure online payment system.</p>
         </div>
 
         <div class="why-card">
-
-            <div class="why-icon">
-                ⭐
-            </div>
-
+            <div class="why-icon">⭐</div>
             <h3>Premium Quality</h3>
-
-            <p>
-                Carefully crafted luxury
-                cotton fashion products.
-            </p>
-
+            <p>Carefully crafted luxury cotton fashion products.</p>
         </div>
 
         <div class="why-card">
-
-            <div class="why-icon">
-                ↩️
-            </div>
-
+            <div class="why-icon">↩️</div>
             <h3>Easy Returns</h3>
-
-            <p>
-                Hassle-free returns with
-                smooth customer support.
-            </p>
-
+            <p>Hassle-free returns with smooth customer support.</p>
         </div>
 
     </div>
 
 </section>
+
+<!-- ================= SLIDER SCRIPT ================= -->
+
 <script>
 window.addEventListener("load", function () {
 
     const slides = document.querySelectorAll(".hero-slide");
 
-    console.log("Slides Found:", slides.length);
-
-    if (slides.length <= 1) return;
+    if (!slides || slides.length <= 1) return;
 
     let current = 0;
 
@@ -344,6 +273,5 @@ window.addEventListener("load", function () {
 
 });
 </script>
+
 {% endblock %}
-
-
