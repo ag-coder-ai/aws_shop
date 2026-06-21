@@ -30,13 +30,14 @@ SECRET_KEY = 'django-insecure-a$l6a2k0ws+*iw7pn0fg@e8n%ulm09kd-isi^(-m3x$!-d1@3q
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    "unitythreads.lifestyle",
-    "www.unitythreads.lifestyle",
-    "54.236.20.28",
+    'unitythreads.lifestyle',
+    'www.unitythreads.lifestyle',
+    '54.236.20.28',
 ]
+
 
 
 # Application definition
@@ -164,3 +165,10 @@ if RESEND_API_KEY:
 
 SHIPROCKET_EMAIL = config("SHIPROCKET_EMAIL")
 SHIPROCKET_PASSWORD = config("SHIPROCKET_PASSWORD")
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
