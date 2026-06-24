@@ -1,0 +1,419 @@
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    color: #111827;
+    line-height: 1.5;
+    padding-top: 70px;
+}
+
+/* =========================================
+   PAGE
+========================================= */
+
+.tracking-page {
+    padding: 40px 20px;
+}
+
+.tracking-wrapper {
+    max-width: 1150px;
+    margin: auto;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.tracking-header {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.tracking-header h1 {
+    font-size: 32px;
+    color: #111827;
+}
+
+.sub-text {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* =========================================
+   STATUS BADGE
+========================================= */
+
+.status-badge {
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.status-badge.pending { background: #f59e0b; }
+.status-badge.shipped { background: #2563eb; }
+.status-badge.out { background: #7c3aed; }
+.status-badge.delivered { background: #10b981; }
+
+/* =========================================
+   INFO GRID
+========================================= */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.info-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+
+.info-card span {
+    font-size: 12px;
+    color: #9ca3af;
+    text-transform: uppercase;
+}
+
+.info-card h3 {
+    font-size: 18px;
+}
+
+/* =========================================
+   TIMELINE CARD (FIXED ALIGNMENT)
+========================================= */
+
+.timeline-card,
+.activity-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.timeline-card h2,
+.activity-card h2 {
+    font-size: 20px;
+    margin-bottom: 18px;
+}
+
+/* =========================================
+   TIMELINE (IMPORTANT FIX HERE)
+========================================= */
+
+.timeline {
+    position: relative;
+    padding-left: 28px;   /* IMPORTANT FIX */
+}
+
+/* vertical line */
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 10px;          /* fixed line position */
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+
+/* ITEM */
+.timeline-item {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    padding-bottom: 18px;
+    opacity: 0.5;
+    transition: 0.25s ease;
+}
+
+/* ACTIVE ITEM */
+.timeline-item.active {
+    opacity: 1;
+}
+
+/* DOT FIX (MOST IMPORTANT) */
+.timeline-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+
+    background: #d1d5db;
+
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #d1d5db;
+
+    flex-shrink: 0;
+
+    position: relative;
+    left: -27px;   /* THIS LOCKS DOT ON LINE */
+}
+
+/* ACTIVE DOT */
+.timeline-item.active .timeline-dot {
+    background: #111827;
+    box-shadow: 0 0 0 2px #111827;
+}
+
+/* CONTENT */
+.timeline-content {
+    background: #f9fafb;
+    padding: 12px 14px;
+    border-radius: 12px;
+    width: 100%;
+}
+
+.timeline-content h4 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.timeline-content p {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.track-btn,
+.invoice-btn,
+.back-btn,
+.shop-btn {
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.track-btn {
+    background: #111827;
+    color: #fff;
+}
+
+.invoice-btn {
+    background: #111827;
+    color: #fff;
+}
+
+.back-btn {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: #111827;
+}
+/* =========================================
+   CANCEL CARD (DESKTOP)
+========================================= */
+
+.cancelled-card {
+    max-width: 700px;
+    width: 100%;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.cancel-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #fee2e2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 36px;
+}
+
+/* =========================================
+   MOBILE FIRST FIX
+========================================= */
+
+@media (max-width: 900px) {
+
+    .cancelled-card {
+        padding: 28px;
+        border-radius: 18px;
+        margin: 20px 12px;
+    }
+
+    .cancel-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 30px;
+    }
+
+    .tracking-header h1 {
+        font-size: 26px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .tracking-page {
+        padding: 12px;
+    }
+
+    .cancelled-card {
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    .cancel-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 26px;
+    }
+
+    .tracking-header {
+        padding: 16px;
+    }
+
+    .tracking-header h1 {
+        font-size: 22px;
+        line-height: 1.3;
+    }
+
+    .timeline {
+        padding-left: 20px;
+    }
+
+    .timeline-dot {
+        left: -15px;
+        width: 13px;
+        height: 13px;
+    }
+
+    .timeline-content {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* =========================================
+   CANCEL ACTION BUTTONS (DESKTOP)
+========================================= */
+
+.cancel-actions{
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.shop-btn,
+.back-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    min-width: 180px;
+
+    transition: all 0.25s ease;
+}
+
+/* PRIMARY (Continue Shopping) */
+.shop-btn{
+    background: #111827;
+    color: #fff;
+    border: 1px solid #111827;
+}
+
+.shop-btn:hover{
+    background: #1f2937;
+    transform: translateY(-2px);
+}
+
+/* SECONDARY (Back To Orders) */
+.back-btn{
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+}
+
+.back-btn:hover{
+    background: #e5e7eb;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   MOBILE FIX
+========================================= */
+
+@media (max-width: 768px){
+
+    .cancel-actions{
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 12px;
+        margin-top: 20px;
+        padding: 0 10px;
+    }
+
+    .shop-btn,
+    .back-btn{
+        width: 100%;
+        min-width: unset;
+
+        padding: 14px;
+
+        font-size: 15px;
+
+        border-radius: 10px;
+    }
+}
