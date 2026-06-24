@@ -1,5 +1,6 @@
-# orders/services.py
 
+import logging
+import resend
 import uuid
 from products.models import ProductVariant
 from decimal import Decimal
@@ -216,24 +217,17 @@ def create_order_from_cart(
     return order
 
 
+
 # =========================================================
 # COMMON ORDER EMAIL SENDER
 # =========================================================
 
 
 
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.conf import settings
 
-
-
-
-import resend
-import logging
-from django.template.loader import render_to_string
 BASE_URL = "https://www.unitythreads.lifestyle"
 logger = logging.getLogger(__name__)
+
 
 def send_order_email(order, subject, template_name, context_extra=None):
 
@@ -275,6 +269,9 @@ def send_order_email(order, subject, template_name, context_extra=None):
         context = {
             "order": order,
             "order_id": order.order_id,
+            "payment_method": order.payment_method,
+            "status": order.status,
+            "total": order.total,
             "track_url": f"{BASE_URL}/orders/track/{order.order_id}/",
             "tracking_url": get_tracking_url(order),
         }
@@ -293,7 +290,8 @@ def send_order_email(order, subject, template_name, context_extra=None):
             "html": html_content,
         })
 
-        logger.info(f"Email sent successfully for order {order.id}: {response}")
+        logger.info(
+            f"Email sent successfully for order {order.id}: {response}")
 
         return True
 
