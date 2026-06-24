@@ -1,3 +1,4 @@
+# orders/services.py
 
 import logging
 import resend
@@ -83,7 +84,7 @@ def create_order_from_cart(
 
     payment_status = PaymentStatus.PENDING
 
-    if payment_method == PaymentMethod.PREPAID:
+    if str(payment_method) == "PREPAID":
         payment_status = PaymentStatus.PAID
 
     # =====================================================
@@ -91,6 +92,13 @@ def create_order_from_cart(
     # =====================================================
 
     order_status = OrderStatus.CONFIRMED
+
+    if Order.objects.filter(
+            user=user,
+            status=OrderStatus.CONFIRMED,
+            total=total
+    ).exists():
+        raise Exception("Possible duplicate order detected")
 
     # =====================================================
     # CREATE ORDER
@@ -129,8 +137,9 @@ def create_order_from_cart(
 
     for item in cart_items:
 
-        variant = item.variant
-
+        variant = ProductVariant.objects.select_for_update().get(
+            id=item.variant.id
+        )
         # =================================================
         # STOCK CHECK
         # =================================================
@@ -147,7 +156,7 @@ def create_order_from_cart(
 
         variant.stock_quantity -= item.quantity
 
-        variant.save()
+        variant.save(update_fields=["stock_quantity"])
 
         # =================================================
         # PRODUCT IMAGE SNAPSHOT
@@ -217,17 +226,21 @@ def create_order_from_cart(
     return order
 
 
-
 # =========================================================
 # COMMON ORDER EMAIL SENDER
 # =========================================================
 
 
 
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
 
+import resend
+import logging
+from django.template.loader import render_to_string
 BASE_URL = "https://www.unitythreads.lifestyle"
 logger = logging.getLogger(__name__)
-
 
 def send_order_email(order, subject, template_name, context_extra=None):
 
@@ -290,8 +303,7 @@ def send_order_email(order, subject, template_name, context_extra=None):
             "html": html_content,
         })
 
-        logger.info(
-            f"Email sent successfully for order {order.id}: {response}")
+        logger.info(f"Email sent successfully for order {order.id}: {response}")
 
         return True
 

@@ -22,6 +22,12 @@ logger = logging.getLogger(__name__)
 from django.core.exceptions import ValidationError
 from .utils.redis_lock import RedisLock
 from .services import send_order_email
+from discounts.services import CouponService
+from decimal import Decimal
+
+from django.db import models
+from django.utils import timezone
+from discounts.models import Coupon
 
 @login_required
 def checkout_view(request):
@@ -31,9 +37,23 @@ def checkout_view(request):
     if cart.items.count() == 0:
         return redirect("carts")
 
+    now = timezone.now()
+
+    # ==============================
+    # ACTIVE COUPONS (SAFE VERSION)
+    # ==============================
+    coupons = Coupon.objects.filter(
+        active=True
+    ).filter(
+        models.Q(valid_from__isnull=True) | models.Q(valid_from__lte=now),
+        models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=now),
+        used_count__lt=models.F("usage_limit")
+    )
+
     return render(request, "orders/checkout.html", {
         "cart": cart,
-        "items": cart.items.all()
+        "items": cart.items.all(),
+        "coupons": coupons
     })
 
 from django.contrib.auth.decorators import login_required
@@ -54,11 +74,15 @@ from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from payments.models import Payment
 
 @login_required
 @transaction.atomic
 def create_checkout(request):
     import re
+    from decimal import Decimal
+    from django.core.exceptions import ValidationError
+    from django.conf import settings
     from .utils.redis_lock import RedisLock
 
     if request.method != "POST":
@@ -66,9 +90,6 @@ def create_checkout(request):
 
     data = request.POST
 
-    # =========================================
-    # REDIS LOCK
-    # =========================================
     lock_key = f"checkout_lock_user_{request.user.id}"
     lock = RedisLock(lock_key, timeout=20)
 
@@ -80,26 +101,25 @@ def create_checkout(request):
 
     try:
 
-        # =========================================
+        # =========================
         # CART
-        # =========================================
-        try:
-            cart = Cart.objects.prefetch_related(
-                "items__variant__product",
-                "items__variant__size",
-                "items__variant__color"
-            ).get(user=request.user)
-        except Cart.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Cart not found"}, status=400)
+        # =========================
+        cart = Cart.objects.prefetch_related(
+            "items__variant__product",
+            "items__variant__size",
+            "items__variant__color"
+        ).get(user=request.user)
 
         if not cart.items.exists():
             return JsonResponse({"success": False, "message": "Cart is empty"}, status=400)
 
         payment_method = data.get("payment_method")
 
-        # =========================================
-        # VALIDATION (UNCHANGED)
-        # =========================================
+        coupon_code = (data.get("coupon_code") or data.get("code") or "").strip()
+
+        # =========================
+        # VALIDATION
+        # =========================
         field_errors = {}
 
         full_name = data.get("full_name", "").strip()
@@ -123,81 +143,106 @@ def create_checkout(request):
 
         if not address:
             field_errors["address"] = ["Address is required"]
-        elif len(address) < 10:
-            field_errors["address"] = ["Enter complete address"]
-
-        if not city:
-            field_errors["city"] = ["City required"]
-
-        if not state:
-            field_errors["state"] = ["State required"]
-
-        if not re.fullmatch(r"^[1-9][0-9]{5}$", pincode):
-            field_errors["pincode"] = ["Enter valid pincode"]
 
         if field_errors:
             return JsonResponse({"success": False, "field_errors": field_errors}, status=400)
 
-        # =========================================
-        # COD LIMIT
-        # =========================================
-        if payment_method == "COD" and cart.total_amount > 2000:
+        # =========================
+        # PAYMENT METHOD FLOW
+        # =========================
+        if payment_method not in ["COD", "PREPAID"]:
             return JsonResponse({
                 "success": False,
-                "message": "COD allowed only below ₹2000"
+                "message": "Invalid payment method"
             }, status=400)
 
-        # =========================================
-        # PREPAID FLOW (UNCHANGED)
-        # =========================================
-        if payment_method == "PREPAID":
-            request.session["checkout_data"] = {
-                "full_name": full_name,
-                "phone": phone,
-                "email": email,
-                "address": address,
-                "city": city,
-                "state": state,
-                "pincode": pincode,
-            }
+        # =========================
+        # COUPON (SAFE)
+        # =========================
+        cart_total = cart.total_amount
+        discount = Decimal("0.00")
+        final_total = cart_total
+        used_coupon = None
+        coupon_msg = "No coupon applied"
 
-            return JsonResponse({
-                "success": True,
-                "amount": float(cart.total_amount)
-            })
+        if coupon_code:
+            try:
+                from discounts.services import CouponService
 
-        # =========================================================
-        # 🔥 STOCK HANDLING (FIXED PRODUCTION VERSION)
-        # =========================================================
+                used_coupon, discount, final_total, coupon_msg = CouponService.apply_coupon(
+                    cart_total,
+                    coupon_code,
+                    user=request.user
+                )
+
+            except Exception as e:
+                used_coupon = None
+                discount = Decimal("0.00")
+                final_total = cart_total
+                coupon_msg = str(e)
+
+        # =========================
+        # STOCK CHECK (ONLY RESERVE LOGIC CAN BE ADDED LATER)
+        # =========================
         for item in cart.items.select_for_update():
 
             variant = ProductVariant.objects.select_for_update().get(
                 id=item.variant.id
             )
 
-            # safety check
             if variant.stock_quantity < item.quantity:
                 return JsonResponse({
                     "success": False,
                     "message": f"{variant.product.name} out of stock"
                 }, status=400)
 
-            # 🔥 FINAL CORRECT COD DEDUCTION
-            variant.stock_quantity -= item.quantity
+        # =========================
+        # PREPAID FLOW (ONLY PAYMENT INIT)
+        # =========================
+        if payment_method == "PREPAID":
 
-            # optional safety: keep reserved_stock clean (if used elsewhere)
-            variant.reserved_stock = max(0, variant.reserved_stock - item.quantity)
+            from payments.views import get_razorpay_client
+            client = get_razorpay_client()
 
-            variant.save(update_fields=["stock_quantity", "reserved_stock"])
+            razorpay_order = client.order.create({
+                "amount": int(final_total * 100),
+                "currency": "INR",
+                "payment_capture": 1
+            })
 
-        # =========================================
-        # ORDER CREATE (COD)
-        # =========================================
+            Payment.objects.create(
+                user=request.user,
+                order=None,
+                razorpay_order_id=razorpay_order["id"],
+                amount=final_total,
+                status="CREATED"
+            )
+
+            return JsonResponse({
+                "success": True,
+                "payment_required": True,
+
+                "key": settings.RAZORPAY_KEY_ID,
+                "order_id": razorpay_order["id"],
+                "amount": int(final_total * 100),
+                "currency": "INR",
+
+                "cart_total": float(cart_total),
+                "discount": float(discount),
+                "final_total": float(final_total),
+                "coupon_applied": used_coupon.code if used_coupon else None,
+                "message": coupon_msg
+            })
+
+        # =========================
+        # COD FLOW (ORDER CREATED HERE)
+        # =========================
         order = Order.objects.create(
             user=request.user,
             order_id=generate_order_id(),
             subtotal=cart.subtotal,
-            total=cart.total_amount,
+            total=final_total,
+            discount=discount,
             payment_method="COD",
             payment_status=PaymentStatus.PENDING,
             status=OrderStatus.CONFIRMED
@@ -215,9 +260,6 @@ def create_checkout(request):
             country="India"
         )
 
-        # =========================================
-        # ORDER ITEMS
-        # =========================================
         for item in cart.items.select_related("variant__product"):
 
             OrderItem.objects.create(
@@ -232,24 +274,29 @@ def create_checkout(request):
                 quantity=item.quantity
             )
 
-        # =========================================
-        # CLEAR CART
-        # =========================================
         cart.items.all().delete()
 
-        # =========================================
-        # EMAIL
-        # =========================================
         send_order_email(
             order,
             "🎉 Order Confirmed (COD)",
             "orders/order_confirmation.html"
         )
 
+        if used_coupon:
+            used_coupon.used_count += 1
+            used_coupon.save(update_fields=["used_count"])
+
         return JsonResponse({
             "success": True,
             "order_id": order.order_id,
-            "amount": float(order.total)
+            "amount": float(order.total),
+            "discount": float(discount),
+            "coupon": used_coupon.code if used_coupon else None,
+            "message": (
+                "Order placed successfully with coupon"
+                if used_coupon else
+                "Order placed successfully"
+            )
         })
 
     finally:
@@ -474,14 +521,6 @@ def download_invoice(request, order_id):
     response['Content-Disposition'] = f'attachment; filename="invoice_{order.order_id}.pdf"'
 
     return response
-
-
-
-
-
-
-
-
 
 
 

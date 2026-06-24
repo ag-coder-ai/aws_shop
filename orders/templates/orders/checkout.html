@@ -287,14 +287,147 @@
 
             <div class="summary-row">
 
-                <span>Discount</span>
+    <span>Discount</span>
 
-                <span>
-                    ₹0.00
+    <span id="discountAmount">
+        ₹0.00
+    </span>
+
+</div>
+
+<!-- =========================
+     COUPON SECTION (ADD HERE)
+========================= -->
+
+<!-- =========================
+     COUPON SYSTEM (UPGRADED)
+========================= -->
+
+<div class="coupon-box" style="margin-top:15px;">
+
+    <label style="font-size:13px; font-weight:600;">
+        Apply Coupon
+    </label>
+
+    <!-- INPUT ROW -->
+    <div style="display:flex; gap:10px; margin-top:8px;">
+
+        <input type="text"
+               id="couponCode"
+               placeholder="Enter coupon code"
+               style="
+                   flex:1;
+                   padding:12px;
+                   border:1.5px solid #d1d5db;
+                   border-radius:10px;
+                   font-size:13px;
+                   outline:none;
+                   transition:0.2s ease;
+               ">
+
+        <button type="button"
+                id="applyCouponBtn"
+                style="
+                    padding:12px 16px;
+                    background:#111827;
+                    color:#fff;
+                    border:none;
+                    border-radius:10px;
+                    font-size:13px;
+                    cursor:pointer;
+                    transition:0.2s ease;
+                ">
+            Apply
+        </button>
+
+    </div>
+
+    <!-- MESSAGE -->
+    <p id="couponMessage"
+       style="font-size:12px; margin-top:6px; color:#6b7280;">
+    </p>
+
+
+    <!-- =========================
+         AVAILABLE COUPONS LIST
+    ========================== -->
+
+<!-- =========================
+     AVAILABLE COUPONS (SCROLL UI)
+========================= -->
+
+{% if coupons %}
+<div style="
+    margin-top:15px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:10px;
+    background:#fafafa;
+">
+
+    <div style="
+        font-size:13px;
+        font-weight:600;
+        margin-bottom:8px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+        <span>Available Coupons</span>
+        <small style="color:#6b7280;">Tap to apply</small>
+    </div>
+
+    <!-- SCROLL AREA -->
+    <div style="
+        max-height:140px;
+        overflow-y:auto;
+        padding-right:6px;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+    ">
+
+        {% for coupon in coupons %}
+        <div onclick="applyCouponFromList('{{ coupon.code }}')"
+             style="
+                border:1px dashed #d1d5db;
+                background:#fff;
+                padding:10px;
+                border-radius:10px;
+                cursor:pointer;
+                transition:0.2s ease;
+             "
+             onmouseover="this.style.borderColor='#111827'"
+             onmouseout="this.style.borderColor='#d1d5db'">
+
+            <div style="display:flex; justify-content:space-between;">
+
+                <strong style="font-size:13px;">
+                    {{ coupon.code }}
+                </strong>
+
+                <span style="font-size:12px; color:#16a34a;">
+                    {{ coupon.discount_value }}
+                    {% if coupon.discount_type == 'PERCENT' %}
+                        % OFF
+                    {% else %}
+                        ₹ OFF
+                    {% endif %}
                 </span>
 
             </div>
 
+            <small style="color:#6b7280; font-size:11px;">
+                Min ₹{{ coupon.min_purchase }}
+            </small>
+
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endif %}
+</div>
 
             <div class="summary-divider"></div>
 

@@ -78,6 +78,14 @@ class Order(models.Model):
 
     payment_reference = models.CharField(max_length=100, null=True, blank=True)
 
+    coupon = models.ForeignKey(
+        "discounts.Coupon",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
