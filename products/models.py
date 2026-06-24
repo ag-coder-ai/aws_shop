@@ -326,6 +326,7 @@ class ProductVariant(BaseModel):
     stock_quantity = models.PositiveIntegerField(default=0)
 
     is_active = models.BooleanField(default=True)
+    reserved_stock = models.PositiveIntegerField(default=0)
 
     class Meta:
 
@@ -356,6 +357,10 @@ class ProductVariant(BaseModel):
             f"{self.size.name} - "
             f"{self.color.name}"
         )
+
+    @property
+    def available_stock(self):
+        return self.stock_quantity - self.reserved_stock
 
 
 # =========================================================

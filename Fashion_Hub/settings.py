@@ -186,6 +186,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID", default="")
 RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET", default="")
+RAZORPAY_WEBHOOK_SECRET = config("RAZORPAY_KEY_SECRET", default="")
 
 RESEND_API_KEY = config("RESEND_API_KEY")
 
@@ -202,3 +203,21 @@ X_FRAME_OPTIONS = "DENY"
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
+
+CACHES = {
+
+    "default": {
+
+        "BACKEND": "django_redis.cache.RedisCache",
+
+        "LOCATION": "redis://127.0.0.1:6379/1",
+
+        "OPTIONS": {
+
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+
+        }
+
+    }
+
+}

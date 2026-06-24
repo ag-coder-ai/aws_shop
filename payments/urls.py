@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     create_payment,
+    razorpay_webhook,
     verify_payment,
 )
 
@@ -12,10 +13,7 @@ urlpatterns = [
         create_payment,
         name="create_payment"
     ),
-    path(
-        "verify/",
-        verify_payment,
-        name="verify_payment"
-    ),
+    path("webhook/", razorpay_webhook),
+    path("verify/", verify_payment),
 
 ]
