@@ -76,6 +76,7 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from payments.models import Payment
 
+
 @login_required
 @transaction.atomic
 def create_checkout(request):
@@ -114,7 +115,6 @@ def create_checkout(request):
             return JsonResponse({"success": False, "message": "Cart is empty"}, status=400)
 
         payment_method = data.get("payment_method")
-
         coupon_code = (data.get("coupon_code") or data.get("code") or "").strip()
 
         # =========================
@@ -141,15 +141,9 @@ def create_checkout(request):
         except ValidationError:
             field_errors["email"] = ["Enter valid email"]
 
-        if not address:
-            field_errors["address"] = ["Address is required"]
-
         if field_errors:
             return JsonResponse({"success": False, "field_errors": field_errors}, status=400)
 
-        # =========================
-        # PAYMENT METHOD FLOW
-        # =========================
         if payment_method not in ["COD", "PREPAID"]:
             return JsonResponse({
                 "success": False,
@@ -157,7 +151,7 @@ def create_checkout(request):
             }, status=400)
 
         # =========================
-        # COUPON (SAFE)
+        # COUPON
         # =========================
         cart_total = cart.total_amount
         discount = Decimal("0.00")
@@ -182,13 +176,11 @@ def create_checkout(request):
                 coupon_msg = str(e)
 
         # =========================
-        # STOCK CHECK (ONLY RESERVE LOGIC CAN BE ADDED LATER)
+        # STOCK CHECK (SAFE LOCKED VERSION)
         # =========================
-        for item in cart.items.select_for_update():
 
-            variant = ProductVariant.objects.select_for_update().get(
-                id=item.variant.id
-            )
+        for item in cart.items.select_for_update():
+            variant = ProductVariant.objects.select_for_update().get(id=item.variant_id)
 
             if variant.stock_quantity < item.quantity:
                 return JsonResponse({
@@ -197,7 +189,7 @@ def create_checkout(request):
                 }, status=400)
 
         # =========================
-        # PREPAID FLOW (ONLY PAYMENT INIT)
+        # PREPAID FLOW
         # =========================
         if payment_method == "PREPAID":
 
@@ -215,18 +207,17 @@ def create_checkout(request):
                 order=None,
                 razorpay_order_id=razorpay_order["id"],
                 amount=final_total,
-                status="CREATED"
+                status="CREATED",
+                payment_reference=razorpay_order["id"]
             )
 
             return JsonResponse({
                 "success": True,
                 "payment_required": True,
-
                 "key": settings.RAZORPAY_KEY_ID,
                 "order_id": razorpay_order["id"],
                 "amount": int(final_total * 100),
                 "currency": "INR",
-
                 "cart_total": float(cart_total),
                 "discount": float(discount),
                 "final_total": float(final_total),
@@ -235,7 +226,7 @@ def create_checkout(request):
             })
 
         # =========================
-        # COD FLOW (ORDER CREATED HERE)
+        # COD FLOW (SAFE STOCK REDUCTION)
         # =========================
         order = Order.objects.create(
             user=request.user,
@@ -262,17 +253,31 @@ def create_checkout(request):
 
         for item in cart.items.select_related("variant__product"):
 
+            # 🔥 FIXED: locked variant row
+            variant = ProductVariant.objects.select_for_update().get(
+                id=item.variant.id
+            )
+
+            if variant.stock_quantity < item.quantity:
+                return JsonResponse({
+                    "success": False,
+                    "message": f"{variant.product.name} out of stock"
+                }, status=400)
+
             OrderItem.objects.create(
                 order=order,
-                product_name=item.variant.product.name,
-                product_image=item.variant.product.primary_image.image if item.variant.product.primary_image else None,
-                variant_id=item.variant.id,
-                sku=item.variant.sku,
-                size=item.variant.size.name,
-                color=item.variant.color.name,
-                price=item.variant.wholesale_price,
+                product_name=variant.product.name,
+                product_image=variant.product.primary_image.image if variant.product.primary_image else None,
+                variant_id=variant.id,
+                sku=variant.sku,
+                size=variant.size.name,
+                color=variant.color.name,
+                price=variant.wholesale_price,
                 quantity=item.quantity
             )
+
+            variant.stock_quantity -= item.quantity
+            variant.save(update_fields=["stock_quantity"])
 
         cart.items.all().delete()
 
@@ -292,11 +297,7 @@ def create_checkout(request):
             "amount": float(order.total),
             "discount": float(discount),
             "coupon": used_coupon.code if used_coupon else None,
-            "message": (
-                "Order placed successfully with coupon"
-                if used_coupon else
-                "Order placed successfully"
-            )
+            "message": "Order placed successfully"
         })
 
     finally:

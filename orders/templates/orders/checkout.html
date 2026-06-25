@@ -267,8 +267,8 @@
 
                 <span>Subtotal</span>
 
-                <span>
-                    ₹{{ cart.subtotal }}
+                <span id="cartSubtotal">
+                        ₹{{ cart.subtotal }}
                 </span>
 
             </div>
@@ -295,9 +295,7 @@
 
 </div>
 
-<!-- =========================
-     COUPON SECTION (ADD HERE)
-========================= -->
+
 
 <!-- =========================
      COUPON SYSTEM (UPGRADED)
@@ -352,9 +350,6 @@
          AVAILABLE COUPONS LIST
     ========================== -->
 
-<!-- =========================
-     AVAILABLE COUPONS (SCROLL UI)
-========================= -->
 
 {% if coupons %}
 <div style="

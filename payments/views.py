@@ -28,7 +28,6 @@ def get_razorpay_client():
         )
     )
 
-
 @login_required
 def create_payment(request):
 
@@ -43,11 +42,12 @@ def create_payment(request):
     if not cart.items.exists():
         return JsonResponse({"success": False, "message": "Cart is empty"}, status=400)
 
-    coupon_code = (request.POST.get("coupon_code") or request.POST.get("code") or "").strip()
+    coupon_code = (request.POST.get("coupon_code") or "").strip()
 
     cart_total = cart.total_amount
     discount = Decimal("0.00")
     final_total = cart_total
+
     coupon_applied = None
 
     if coupon_code:
@@ -57,12 +57,9 @@ def create_payment(request):
                 coupon_code,
                 user=request.user
             )
-            if coupon:
-                coupon_applied = coupon.code
+            coupon_applied = coupon.code if coupon else None
         except Exception:
-            discount = Decimal("0.00")
-            final_total = cart_total
-            coupon_applied = None
+            pass
 
     client = get_razorpay_client()
 
@@ -77,31 +74,29 @@ def create_payment(request):
         order=None,
         razorpay_order_id=razorpay_order["id"],
         amount=final_total,
-        status="CREATED"
+        status="CREATED",
+        payment_reference=razorpay_order["id"],  # IMPORTANT
+        razorpay_event_id=None
     )
 
     return JsonResponse({
         "success": True,
-        "payment_required": True,
-
         "key": settings.RAZORPAY_KEY_ID,
         "order_id": razorpay_order["id"],
         "amount": int(final_total * 100),
         "currency": "INR",
-
         "cart_total": float(cart_total),
         "discount": float(discount),
         "final_total": float(final_total),
         "coupon_applied": coupon_applied,
     })
 
-
 @csrf_exempt
 def razorpay_webhook(request):
 
     try:
         payload = request.body
-        signature = request.headers.get("X-Razorpay-Signature")
+        signature = request.META.get("HTTP_X_RAZORPAY_SIGNATURE")
 
         if not signature:
             return JsonResponse({"status": "missing signature"}, status=400)
@@ -123,8 +118,11 @@ def razorpay_webhook(request):
             return JsonResponse({"status": "ignored"})
 
         payment_entity = event["payload"]["payment"]["entity"]
+
         razorpay_order_id = payment_entity["order_id"]
         razorpay_payment_id = payment_entity["id"]
+
+        event_key = f"{razorpay_order_id}:{razorpay_payment_id}:captured"
 
         with transaction.atomic():
 
@@ -132,88 +130,85 @@ def razorpay_webhook(request):
                 razorpay_order_id=razorpay_order_id
             )
 
-            if payment.status == "PAID":
+            # ✅ HARD IDENTITY CHECK
+            if payment.razorpay_payment_id:
                 return JsonResponse({"status": "already processed"})
 
-            payment.status = "PAID"
+            if Payment.objects.filter(razorpay_event_id=event_key).exists():
+                return JsonResponse({"status": "duplicate ignored"})
+
+            # mark paid
+            payment.status = "SUCCESS"
             payment.razorpay_payment_id = razorpay_payment_id
-            payment.save()
+            payment.razorpay_event_id = event_key
+            payment.save(update_fields=[
+                "status",
+                "razorpay_payment_id",
+                "razorpay_event_id"
+            ])
 
-            cart = Cart.objects.select_for_update().get(user=payment.user)
+            # prevent duplicate order
+            if Order.objects.filter(payment_reference=razorpay_order_id).exists():
+                return JsonResponse({"status": "order already exists"})
 
-            coupon_code = payment.coupon_code
+            cart = Cart.objects.select_for_update().prefetch_related(
+                "items__variant__product",
+                "items__variant__size",
+                "items__variant__color"
+            ).get(user=payment.user)
 
-            cart_total = cart.total_amount
-            discount = Decimal("0.00")
-            final_total = cart_total
-            used_coupon = None
-
-            # =========================
-            # APPLY COUPON AGAIN SAFELY
-            # =========================
-            if coupon_code:
-                try:
-                    used_coupon, discount, final_total = CouponService.apply_coupon(
-                        cart_total,
-                        coupon_code,
-                        user=payment.user
-                    )
-                except Exception:
-                    pass
-
-            # =========================
+            # ======================
             # STOCK VALIDATION FIRST
-            # =========================
-            for item in cart.items.select_for_update():
-
-                variant = ProductVariant.objects.select_for_update().get(
-                    id=item.variant.id
-                )
+            # ======================
+            for item in cart.items.all():
+                variant = ProductVariant.objects.select_for_update().get(id=item.variant_id)
 
                 if variant.stock_quantity < item.quantity:
                     raise Exception(f"{variant.product.name} out of stock")
 
-                variant.stock_quantity -= item.quantity
-                variant.save(update_fields=["stock_quantity"])
-
-            # =========================
+            # ======================
             # CREATE ORDER
-            # =========================
+            # ======================
             order = Order.objects.create(
                 user=payment.user,
                 order_id=generate_order_id(),
                 subtotal=cart.subtotal,
-                total=final_total,
-                discount=discount,
+                total=payment.amount,
+                discount=Decimal("0.00"),
                 payment_method="PREPAID",
                 payment_status="PAID",
                 status=OrderStatus.CONFIRMED,
                 payment_reference=razorpay_order_id
             )
 
-            # coupon usage
-            if used_coupon:
-                used_coupon.used_count += 1
-                used_coupon.save(update_fields=["used_count"])
+            payment.order = order
+            payment.save(update_fields=["order"])
 
-            # order items
-            items = []
+            # ======================
+            # STOCK DEDUCTION
+            # ======================
             for item in cart.items.all():
+                variant = ProductVariant.objects.select_for_update().get(id=item.variant_id)
 
-                variant = item.variant
+                variant.stock_quantity = max(0, variant.stock_quantity - item.quantity)
+                variant.save(update_fields=["stock_quantity"])
 
-                items.append(OrderItem(
+            # ======================
+            # ORDER ITEMS
+            # ======================
+            OrderItem.objects.bulk_create([
+                OrderItem(
                     order=order,
-                    variant_id=variant.id,
-                    product_name=variant.product.name,
-                    product_image=variant.product.primary_image.image if variant.product.primary_image else None,
-                    size=variant.size.name,
-                    color=variant.color.name,
-                    price=variant.wholesale_price,
+                    variant_id=item.variant_id,
+                    product_name=item.variant.product.name,
+                    product_image=item.variant.product.primary_image.image if item.variant.product.primary_image else None,
+                    size=item.variant.size.name,
+                    color=item.variant.color.name,
+                    price=item.variant.wholesale_price,
                     quantity=item.quantity
-                ))
-
-            OrderItem.objects.bulk_create(items)
+                )
+                for item in cart.items.all()
+            ])
 
             cart.items.all().delete()
 
@@ -233,64 +228,3 @@ def razorpay_webhook(request):
             "success": False,
             "message": str(e)
         }, status=500)
-
-
-
-
-
-
-
-import json
-import razorpay
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-def verify_payment(request):
-
-    if request.method != "POST":
-        return JsonResponse({"success": False, "message": "Invalid method"}, status=405)
-
-    try:
-        client = get_razorpay_client()
-
-        data = json.loads(request.body.decode("utf-8")) if request.content_type == "application/json" else request.POST
-
-        order_id = data.get("razorpay_order_id")
-        payment_id = data.get("razorpay_payment_id")
-        signature = data.get("razorpay_signature")
-
-        if not all([order_id, payment_id, signature]):
-            return JsonResponse({"success": False, "message": "Missing payment data"}, status=400)
-
-        client.utility.verify_payment_signature({
-            "razorpay_order_id": order_id,
-            "razorpay_payment_id": payment_id,
-            "razorpay_signature": signature
-        })
-
-        payment = Payment.objects.filter(razorpay_order_id=order_id).first()
-
-        if not payment:
-            return JsonResponse({"success": False, "message": "Payment not found"}, status=400)
-
-        payment.status = "PAID"
-        payment.razorpay_payment_id = payment_id
-        payment.save()
-
-        return JsonResponse({
-            "success": True,
-            "message": "Payment verified successfully. Order will be created shortly."
-        })
-
-    except razorpay.errors.SignatureVerificationError:
-        return JsonResponse({
-            "success": False,
-            "message": "Payment verification failed (invalid signature)"
-        }, status=400)
-
-    except Exception as e:
-        return JsonResponse({
-            "success": False,
-            "message": str(e)
-        }, status=400)

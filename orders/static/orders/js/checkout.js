@@ -192,150 +192,153 @@ document.querySelectorAll(".payment-option").forEach(option => {
 
 let appliedCoupon = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("click", async (e) => {
 
-    const btn = document.getElementById("placeOrderBtn");
+    if (!e.target || e.target.id !== "placeOrderBtn") return;
 
-    if (!btn) return;
+    e.preventDefault();
 
-    btn.addEventListener("click", async (e) => {
+    const btn = e.target;
 
-        e.preventDefault();
+    console.log("🔥 PLACE ORDER CLICKED");
 
-        clearErrors();
+    btn.disabled = true;
+    btn.innerText = "Processing...";
 
-        btn.disabled = true;
-        btn.innerText = "Processing...";
+    try {
 
-        try {
+        const isValid = validateCheckoutForm();
 
-            const isValid = validateCheckoutForm();
-
-            if (!isValid) {
-                btn.disabled = false;
-                btn.innerText = "Place Secure Order";
-                return;
-            }
-
-            const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
-
-            if (!paymentMethod) {
-                showToast("Select payment method", "error");
-                btn.disabled = false;
-                btn.innerText = "Place Secure Order";
-                return;
-            }
-
-            /* =========================
-               CREATE CHECKOUT
-            ========================= */
-
-            const checkout = await post("/orders/create-checkout/", {
-                full_name: getVal("fullName"),
-                phone: getVal("phone"),
-                email: getVal("email").toLowerCase(),
-                address: getVal("address"),
-                city: getVal("city"),
-                state: getVal("state"),
-                pincode: getVal("pincode"),
-                coupon_code: appliedCoupon,
-                payment_method: paymentMethod
-            });
-
-            if (!checkout.success) {
-                if (checkout.field_errors) {
-                    showFieldErrors(checkout.field_errors);
-                } else {
-                    showToast(checkout.message || "Checkout failed", "error");
-                }
-                return;
-            }
-
-            /* =========================
-               COD FLOW
-            ========================= */
-
-            if (paymentMethod === "COD") {
-                showToast("Order placed successfully");
-
-                setTimeout(() => {
-                    window.location.href = `/orders/success/?order_id=${checkout.order_id}`;
-                }, 1000);
-
-                return;
-            }
-
-            /* =========================
-               PREPAID FLOW
-            ========================= */
-
-            const payment = await post("/payments/create/", {
-                coupon_code: appliedCoupon
-            });
-
-            if (!payment.success) {
-                showToast(payment.message || "Payment initialization failed", "error");
-                return;
-            }
-
-            /* =========================
-               RAZORPAY
-            ========================= */
-
-            const options = {
-
-                key: payment.key,
-                amount: payment.amount,
-                currency: payment.currency,
-                order_id: payment.order_id,
-
-                name: "Fashion Hub",
-                description: "Secure Checkout",
-
-                handler: function (response) {
-
-                    console.log("RAZORPAY SUCCESS:", response);
-
-                    showToast("Payment successful. Processing order...");
-
-                    // webhook handles order creation
-                    setTimeout(() => {
-                        window.location.href = "/orders/success/?status=pending";
-                    }, 1200);
-                },
-
-                modal: {
-                    escape: false,
-                    backdropclose: false,
-                    ondismiss: function () {
-                        showToast("Payment cancelled", "error");
-                    }
-                },
-
-                prefill: {
-                    name: getVal("fullName"),
-                    email: getVal("email"),
-                    contact: getVal("phone")
-                },
-
-                theme: {
-                    color: "#111827"
-                }
-            };
-
-            const razorpay = new Razorpay(options);
-            razorpay.open();
-
-        } catch (err) {
-
-            console.error("CHECKOUT ERROR:", err);
-            showToast("Unable to process checkout", "error");
-
-        } finally {
+        if (!isValid) {
             btn.disabled = false;
             btn.innerText = "Place Secure Order";
+            return;
         }
-    });
+
+        const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
+
+        if (!paymentMethod) {
+            showToast("Select payment method", "error");
+            btn.disabled = false;
+            btn.innerText = "Place Secure Order";
+            return;
+        }
+
+        /* =========================
+           CREATE CHECKOUT
+        ========================= */
+        const couponSnapshot = appliedCoupon;
+        const checkout = await post("/orders/create-checkout/", {
+            full_name: getVal("fullName"),
+            phone: getVal("phone"),
+            email: getVal("email").toLowerCase(),
+            address: getVal("address"),
+            city: getVal("city"),
+            state: getVal("state"),
+            pincode: getVal("pincode"),
+            coupon_code: couponSnapshot,
+            payment_method: paymentMethod
+        });
+
+        if (!checkout.success) {
+            if (checkout.field_errors) {
+                showFieldErrors(checkout.field_errors);
+            } else {
+                showToast(checkout.message || "Checkout failed", "error");
+            }
+            btn.disabled = false;
+            btn.innerText = "Place Secure Order";
+            return;
+        }
+
+        /* =========================
+           COD FLOW
+        ========================= */
+
+        if (paymentMethod === "COD") {
+            showToast("Order placed successfully");
+
+            setTimeout(() => {
+                window.location.href = `/orders/success/?order_id=${checkout.order_id}`;
+            }, 1000);
+
+            return;
+        }
+
+        /* =========================
+           PREPAID FLOW
+        ========================= */
+
+
+        const payment = await post("/payments/create/", {
+            coupon_code: appliedCoupon
+        });
+
+        if (!payment.success) {
+            showToast(payment.message || "Payment initialization failed", "error");
+            btn.disabled = false;
+            btn.innerText = "Place Secure Order";
+            return;
+        }
+
+        /* =========================
+           RAZORPAY
+        ========================= */
+
+        const options = {
+
+            key: payment.key,
+            amount: payment.amount,
+            currency: payment.currency,
+            order_id: payment.order_id,
+
+            name: "Fashion Hub",
+            description: "Secure Checkout",
+
+        handler: function (response) {
+
+                console.log("PAYMENT SUCCESS:", response);
+
+                showToast("Payment successful. Processing order...");
+
+                // webhook will handle everything
+
+                setTimeout(() => {
+                    window.location.href = "/orders/success/?status=processing";
+                }, 1500);
+            },
+
+            modal: {
+                escape: false,
+                backdropclose: false,
+                ondismiss: function () {
+                    showToast("Payment cancelled", "error");
+                }
+            },
+
+            prefill: {
+                name: getVal("fullName"),
+                email: getVal("email"),
+                contact: getVal("phone")
+            },
+
+            theme: {
+                color: "#111827"
+            }
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+
+    } catch (err) {
+
+        console.error("CHECKOUT ERROR:", err);
+        showToast("Unable to process checkout", "error");
+
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Place Secure Order";
+    }
 });
 
 /* =========================================
@@ -356,6 +359,9 @@ async function applyCoupon(code) {
         showToast("Coupon already applied", "info");
         return;
     }
+    if (appliedCoupon) {
+    document.getElementById("applyCouponBtn").disabled = true;
+}
 
     btn.disabled = true;
     btn.innerText = "Applying...";
@@ -377,6 +383,9 @@ async function applyCoupon(code) {
 
         msg.style.color = "green";
         msg.innerText = `Coupon applied: ${appliedCoupon}`;
+
+        document.getElementById("discountAmount").innerText = "₹" + res.discount;
+        document.getElementById("grandTotal").innerText = "₹" + res.final_total;
 
         showToast("Coupon applied successfully");
 
