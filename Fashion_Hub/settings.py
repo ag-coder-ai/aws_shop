@@ -30,11 +30,14 @@ SECRET_KEY = 'django-insecure-a$l6a2k0ws+*iw7pn0fg@e8n%ulm09kd-isi^(-m3x$!-d1@3q
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    '*'
+    'unitythreads.lifestyle',
+    'www.unitythreads.lifestyle',
+    '54.236.20.28',
 ]
+
 
 
 
@@ -56,7 +59,7 @@ INSTALLED_APPS = [
     'wishlist',
     "cloudinary",
     "cloudinary_storage",
-    # "storages",
+    "storages",
     "discounts",
 ]
 
@@ -76,14 +79,14 @@ AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_QUERYSTRING_AUTH = False
 AWS_DEFAULT_ACL = None
 
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-#     },
-#     "staticfiles": {
-#         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-#     },
-# }
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 
 
@@ -130,23 +133,24 @@ load_dotenv()  # loads local .env
 import dj_database_url
 from decouple import config
 
-# DATABASES = {
-#     "default": dj_database_url.config(
-#         default=config("DATABASE_URL"),
-#         conn_max_age=600
-#     )
-# }
-
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL"),
+        conn_max_age=600
+    )
 }
+
+#
+# from pathlib import Path
+#
+# BASE_DIR = Path(__file__).resolve().parent.parent
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
