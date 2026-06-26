@@ -335,7 +335,7 @@
                     cursor:pointer;
                     transition:0.2s ease;
                 ">
-            Apply
+            <span id="couponBtnText">Apply</span>
         </button>
 
     </div>
@@ -383,17 +383,18 @@
     ">
 
         {% for coupon in coupons %}
-        <div onclick="applyCouponFromList('{{ coupon.code }}')"
-             style="
-                border:1px dashed #d1d5db;
-                background:#fff;
-                padding:10px;
-                border-radius:10px;
-                cursor:pointer;
-                transition:0.2s ease;
-             "
-             onmouseover="this.style.borderColor='#111827'"
-             onmouseout="this.style.borderColor='#d1d5db'">
+        <div class="coupon-item"
+     onclick="applyCouponFromList('{{ coupon.code }}')"
+     style="
+        border:1px dashed #d1d5db;
+        background:#fff;
+        padding:10px;
+        border-radius:10px;
+        cursor:pointer;
+        transition:0.2s ease;
+     "
+     onmouseover="this.style.borderColor='#111827'"
+     onmouseout="this.style.borderColor='#d1d5db'">
 
             <div style="display:flex; justify-content:space-between;">
 
@@ -518,7 +519,6 @@
 
 {% csrf_token %}
 
-<script src="{% static 'orders/js/checkout.js' %}"></script>
-
+<script src="/static/orders/js/checkout.js?v=1"></script>
 </body>
 </html>

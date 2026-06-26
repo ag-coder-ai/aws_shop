@@ -78,6 +78,20 @@ body{
 }
 
 /* =========================================
+   COUPON
+========================================= */
+
+.coupon-box input:focus {
+    border-color: #111827;
+    outline: none;
+}
+.coupon-card:hover {
+    border-color: #111827;
+    background: #f3f4f6;
+    transform: scale(1.02);
+    transition: 0.2s ease;
+}
+/* =========================================
    CARD HEADER
 ========================================= */
 
@@ -91,6 +105,10 @@ body{
 .card-header h2{
     font-size: 18px;
     font-weight: 700;
+}
+
+.coupon-item {
+    touch-action: manipulation;
 }
 
 /* =========================================

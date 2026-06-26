@@ -1,3 +1,4 @@
+
 "use strict";
 
 /* =========================================
@@ -345,10 +346,23 @@ document.addEventListener("click", async (e) => {
    COUPON SYSTEM
 ========================================= */
 
-async function applyCoupon(code) {
+/* =========================================
+   COUPON SYSTEM
+========================================= */
+
+window.applyCoupon = async function(code) {
+
+    console.log("APPLY COUPON FUNCTION CALLED");
 
     const btn = document.getElementById("applyCouponBtn");
     const msg = document.getElementById("couponMessage");
+    const text = document.getElementById("couponBtnText");
+
+    // 🛑 SAFE GUARD
+    if (!btn || !msg || !text) {
+        console.error("DOM elements missing on page");
+        return;
+    }
 
     if (!code) {
         showToast("Enter coupon code", "error");
@@ -359,12 +373,9 @@ async function applyCoupon(code) {
         showToast("Coupon already applied", "info");
         return;
     }
-    if (appliedCoupon) {
-    document.getElementById("applyCouponBtn").disabled = true;
-}
 
     btn.disabled = true;
-    btn.innerText = "Applying...";
+    text.innerText = "Applying...";
 
     try {
 
@@ -394,15 +405,37 @@ async function applyCoupon(code) {
         showToast("Something went wrong", "error");
     } finally {
         btn.disabled = false;
-        btn.innerText = "Apply";
+        text.innerText = "Apply";
     }
-}
+};
 
-/* =========================
-   GLOBAL FUNCTION FIX
-========================= */
+
+/* =========================================
+   APPLY FROM LIST
+========================================= */
 
 window.applyCouponFromList = function (code) {
     document.getElementById("couponCode").value = code;
-    applyCoupon(code);
+
+    setTimeout(() => {
+        applyCoupon(code);
+    }, 50);
 };
+
+
+/* =========================================
+   BUTTON EVENT HANDLER
+========================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const btn = document.getElementById("applyCouponBtn");
+
+    if (btn) {
+        btn.addEventListener("click", function () {
+            const code = document.getElementById("couponCode").value.trim();
+            applyCoupon(code);
+        });
+    }
+
+});
