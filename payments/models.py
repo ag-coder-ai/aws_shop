@@ -25,6 +25,7 @@ class Payment(models.Model):
     )
 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    cart_snapshot = models.TextField(null=True, blank=True)
 
     status = models.CharField(
         max_length=20,

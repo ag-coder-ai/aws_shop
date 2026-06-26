@@ -20,6 +20,7 @@ from django.db import models
 from decimal import Decimal
 from django.utils import timezone
 
+
 def get_razorpay_client():
     return razorpay.Client(
         auth=(
@@ -28,19 +29,23 @@ def get_razorpay_client():
         )
     )
 
+
 @login_required
 def create_payment(request):
 
     if request.method != "POST":
-        return JsonResponse({"success": False, "message": "Invalid method"}, status=400)
+        return JsonResponse(
+            {"success": False, "message": "Invalid method"}, status=400)
 
     try:
         cart = Cart.objects.get(user=request.user)
     except Cart.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Cart not found"}, status=400)
+        return JsonResponse(
+            {"success": False, "message": "Cart not found"}, status=400)
 
     if not cart.items.exists():
-        return JsonResponse({"success": False, "message": "Cart is empty"}, status=400)
+        return JsonResponse(
+            {"success": False, "message": "Cart is empty"}, status=400)
 
     coupon_code = (request.POST.get("coupon_code") or "").strip()
 
@@ -91,53 +96,78 @@ def create_payment(request):
         "coupon_applied": coupon_applied,
     })
 
+
+import json
+import hmac
+import hashlib
+from decimal import Decimal
 @csrf_exempt
 def razorpay_webhook(request):
+
+    print("WEBHOOK HIT")
 
     try:
         payload = request.body
         signature = request.META.get("HTTP_X_RAZORPAY_SIGNATURE")
 
+        # -------------------------
+        # 1. Signature check
+        # -------------------------
         if not signature:
             return JsonResponse({"status": "missing signature"}, status=400)
 
         secret = settings.RAZORPAY_WEBHOOK_SECRET
 
-        generated = hmac.new(
+        generated_signature = hmac.new(
             secret.encode(),
             payload,
             hashlib.sha256
         ).hexdigest()
 
-        if not hmac.compare_digest(generated, signature):
+        if not hmac.compare_digest(generated_signature, signature):
             return JsonResponse({"status": "invalid signature"}, status=400)
 
+        # -------------------------
+        # 2. Parse event
+        # -------------------------
         event = json.loads(payload)
+        event_type = event.get("event")
 
-        if event.get("event") != "payment.captured":
+        payment_entity = event.get("payload", {}).get("payment", {}).get("entity", {})
+        razorpay_order_id = payment_entity.get("order_id")
+        razorpay_payment_id = payment_entity.get("id")
+
+        # 🔥 ONE CLEAN LOG ONLY
+        print(f"RAZORPAY WEBHOOK | event={event_type} | order={razorpay_order_id}")
+
+        # -------------------------
+        # 3. Only required events
+        # -------------------------
+        if event_type not in ["payment.captured", "payment.authorized"]:
             return JsonResponse({"status": "ignored"})
 
-        payment_entity = event["payload"]["payment"]["entity"]
+        if not razorpay_order_id:
+            return JsonResponse({"status": "missing order_id"}, status=400)
 
-        razorpay_order_id = payment_entity["order_id"]
-        razorpay_payment_id = payment_entity["id"]
+        event_key = f"{razorpay_order_id}:{razorpay_payment_id}:{event_type}"
 
-        event_key = f"{razorpay_order_id}:{razorpay_payment_id}:captured"
-
+        # -------------------------
+        # 4. Transaction block
+        # -------------------------
         with transaction.atomic():
 
             payment = Payment.objects.select_for_update().get(
                 razorpay_order_id=razorpay_order_id
             )
 
-            # ✅ HARD IDENTITY CHECK
-            if payment.razorpay_payment_id:
+            # idempotency
+            if payment.status == "SUCCESS":
                 return JsonResponse({"status": "already processed"})
 
             if Payment.objects.filter(razorpay_event_id=event_key).exists():
                 return JsonResponse({"status": "duplicate ignored"})
 
-            # mark paid
+            # update payment
             payment.status = "SUCCESS"
             payment.razorpay_payment_id = razorpay_payment_id
             payment.razorpay_event_id = event_key
@@ -147,28 +177,23 @@ def razorpay_webhook(request):
                 "razorpay_event_id"
             ])
 
-            # prevent duplicate order
-            if Order.objects.filter(payment_reference=razorpay_order_id).exists():
-                return JsonResponse({"status": "order already exists"})
-
+            # lock cart
             cart = Cart.objects.select_for_update().prefetch_related(
                 "items__variant__product",
                 "items__variant__size",
                 "items__variant__color"
             ).get(user=payment.user)
 
-            # ======================
-            # STOCK VALIDATION FIRST
-            # ======================
+            # stock validation
             for item in cart.items.all():
-                variant = ProductVariant.objects.select_for_update().get(id=item.variant_id)
+                variant = ProductVariant.objects.select_for_update().get(
+                    id=item.variant_id
+                )
 
                 if variant.stock_quantity < item.quantity:
                     raise Exception(f"{variant.product.name} out of stock")
 
-            # ======================
-            # CREATE ORDER
-            # ======================
+            # create order
             order = Order.objects.create(
                 user=payment.user,
                 order_id=generate_order_id(),
@@ -184,24 +209,24 @@ def razorpay_webhook(request):
             payment.order = order
             payment.save(update_fields=["order"])
 
-            # ======================
-            # STOCK DEDUCTION
-            # ======================
+            # deduct stock
             for item in cart.items.all():
-                variant = ProductVariant.objects.select_for_update().get(id=item.variant_id)
-
-                variant.stock_quantity = max(0, variant.stock_quantity - item.quantity)
+                variant = ProductVariant.objects.select_for_update().get(
+                    id=item.variant_id
+                )
+                variant.stock_quantity -= item.quantity
                 variant.save(update_fields=["stock_quantity"])
 
-            # ======================
-            # ORDER ITEMS
-            # ======================
+            # create order items
             OrderItem.objects.bulk_create([
                 OrderItem(
                     order=order,
                     variant_id=item.variant_id,
                     product_name=item.variant.product.name,
-                    product_image=item.variant.product.primary_image.image if item.variant.product.primary_image else None,
+                    product_image=(
+                        item.variant.product.primary_image.image
+                        if item.variant.product.primary_image else None
+                    ),
                     size=item.variant.size.name,
                     color=item.variant.color.name,
                     price=item.variant.wholesale_price,
@@ -210,18 +235,31 @@ def razorpay_webhook(request):
                 for item in cart.items.all()
             ])
 
+            # clear cart
             cart.items.all().delete()
 
+        # -------------------------
+        # 5. Email OUTSIDE transaction
+        # -------------------------
+        try:
             send_order_email(
                 order,
-                "🎉 Order Confirmed",
+                "🎉 Payment Successful - Order Confirmed",
                 "orders/order_confirmation.html"
             )
+        except Exception:
+            pass
 
         return JsonResponse({
             "success": True,
             "order_id": order.order_id
         })
+
+    except Payment.DoesNotExist:
+        return JsonResponse({"status": "payment not found"}, status=404)
+
+    except Cart.DoesNotExist:
+        return JsonResponse({"status": "cart not found"}, status=404)
 
     except Exception as e:
         return JsonResponse({

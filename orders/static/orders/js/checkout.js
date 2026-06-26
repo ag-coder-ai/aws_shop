@@ -292,7 +292,7 @@ document.addEventListener("click", async (e) => {
             currency: payment.currency,
             order_id: payment.order_id,
 
-            name: "Fashion Hub",
+            name: "UnityThreads",
             description: "Secure Checkout",
 
         handler: function (response) {

@@ -206,9 +206,16 @@ def create_checkout(request):
                 user=request.user,
                 order=None,
                 razorpay_order_id=razorpay_order["id"],
+                payment_reference=razorpay_order["id"],
                 amount=final_total,
                 status="CREATED",
-                payment_reference=razorpay_order["id"]
+                cart_snapshot=json.dumps([
+                    {
+                        "variant_id": item.variant_id,
+                        "qty": item.quantity
+                    }
+                    for item in cart.items.all()
+                ])
             )
 
             return JsonResponse({
