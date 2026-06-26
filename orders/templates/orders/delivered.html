@@ -7,33 +7,84 @@
 
 <body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,sans-serif;">
 
+<div style="max-width:650px;margin:40px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.08);">
 
-<div style="max-width:650px;margin:40px auto;background:white;border-radius:18px;overflow:hidden;">
-
+    <!-- HEADER -->
     <div style="background:#059669;padding:35px;text-align:center;color:white;">
 
-        <h1>
-            Order Delivered ✅
+        <h1 style="margin:0;font-size:26px;">
+            🎉 Order Delivered Successfully
         </h1>
 
-        <p>
-            Order ID: {{ order.order_id }}
+        <p style="margin-top:10px;font-size:14px;opacity:0.9;">
+            Order ID: <strong>{{ order.order_id }}</strong>
         </p>
 
     </div>
 
+    <!-- BODY -->
     <div style="padding:35px;">
 
-        <h2>
-            Hi {{ order.user.first_name|default:"Customer" }},
+        <h2 style="margin-top:0;font-size:18px;color:#111827;">
+            Hi <strong>
+            {% if order.user.full_name %}
+                {{ order.user.full_name }}
+            {% else %}
+                {{ order.user.first_name|default:"Customer" }}
+            {% endif %}
+            </strong>,
         </h2>
 
-        <p style="line-height:1.8;color:#4b5563;">
-            Your order has been delivered successfully.
+        <p style="color:#4b5563;line-height:1.7;font-size:14px;">
+            Your order has been successfully delivered. We hope everything is perfect and meets your expectations.
         </p>
 
-        <p style="line-height:1.8;color:#4b5563;">
-            We hope you enjoy your purchase ❤️
+        <p style="color:#4b5563;line-height:1.7;font-size:14px;">
+            Thank you for choosing <strong>UnityThreads</strong> ❤️
+        </p>
+
+        <!-- INFO BOX -->
+        <div style="background:#f9fafb;border:1px solid #e5e7eb;padding:18px;border-radius:12px;margin:25px 0;font-size:14px;color:#374151;">
+
+            <p style="margin:8px 0;">
+                <strong>Delivery Status:</strong>
+                <span style="color:#059669;font-weight:bold;">Delivered</span>
+            </p>
+
+            <p style="margin:8px 0;">
+                <strong>Order ID:</strong> {{ order.order_id }}
+            </p>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div style="text-align:center;margin-top:35px;">
+
+            <!-- TRACK ORDER -->
+            <a href="{{ track_url }}"
+               style="display:inline-block;background:#059669;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-size:14px;margin:5px;">
+                View Order
+            </a>
+
+            <!-- SHOP AGAIN -->
+            <a href="https://www.unitythreads.lifestyle"
+               style="display:inline-block;background:#111827;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-size:14px;margin:5px;">
+                Shop Again 🛍️
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div style="padding:20px;text-align:center;background:#f9fafb;color:#6b7280;font-size:12px;">
+
+        <p style="margin:5px 0;">
+            We’d love to see you again at <strong>UnityThreads</strong>
+        </p>
+
+        <p style="margin:5px 0;">
+            © {{ year|default:"2026" }} UnityThreads. All rights reserved.
         </p>
 
     </div>

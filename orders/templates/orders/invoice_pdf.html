@@ -1,23 +1,139 @@
-<!-- invoice_pdf.html -->
-<h2>Invoice</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice - {{ order.order_id }}</title>
 
-<p>Order: {{ order.order_id }}</p>
-<p>Email: {{ order.user.email }}</p>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            color: #111827;
+        }
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Product</th>
-        <th>Qty</th>
-        <th>Total</th>
-    </tr>
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
 
-    {% for item in order.items.all %}
-    <tr>
-        <td>{{ item.product_name }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>₹{{ item.total_price }}</td>
-    </tr>
-    {% endfor %}
-</table>
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
 
-<h3>Total: ₹{{ order.total }}</h3>
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .sub {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .info {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th {
+            background: #f9fafb;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .total-box {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .total-box strong {
+            font-size: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="invoice-box">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="brand">UnityThreads</div>
+        <div class="sub">Official Invoice</div>
+    </div>
+
+    <!-- ORDER INFO -->
+    <div class="info">
+        <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+        <p><strong>Email:</strong> {{ order.user.email }}</p>
+        <p><strong>Customer:</strong>
+            {% if order.user.full_name %}
+                {{ order.user.full_name }}
+            {% else %}
+                {{ order.user.username|default:"Customer" }}
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- ITEMS TABLE -->
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+        </tr>
+
+        {% for item in order.items.all %}
+        <tr>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ item.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- TOTAL -->
+    <div class="total-box">
+        Total Amount: <strong>₹{{ order.total }}</strong>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Thank you for shopping with UnityThreads ❤️<br>
+        This is a system generated invoice.
+    </div>
+
+</div>
+
+</body>
+</html>
